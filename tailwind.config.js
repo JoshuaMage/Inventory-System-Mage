@@ -2,10 +2,27 @@
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    fontFamily: {
-      'sans': ['Segoe UI Symbol'],
+    extend: {
+      fontFamily: {
+        sans: ['"Nunito Sans"', 'sans-serif'],
+      },
+      fontOpticalSizing: {
+        auto: 'auto',
+      },
+      fontWeight: {
+        normal: 100, // Replace with the desired weight
+      },
+      fontStyle: {
+        normal: 'normal',
+      },
+      fontVariationSettings: {
+        wdth: '93.8',
+        YTLC: '507',
+      },
+      backgroundImage: {
+        'login-image': "url('./src/image/loginBackgrounding.jpg')",
+      },
     },
-    extend: {}
   },
-  plugins: []
+  plugins: [],
 };
