@@ -27,6 +27,7 @@
 
 	function onSubmit(event) {
 		const formData = new FormData(event.target);
+		event.preventDefault();
 
 		const data = {};
 		for (const [key, value] of formData.entries()) {
@@ -56,7 +57,7 @@
 
 				<!-- Form Container -->
 
-				<form action="" class="flex flex-col" on:submit|preventDefault={onSubmit}>
+				<form action="" class="flex flex-col" on:submit={onSubmit}>
 					<label for="name" class="text-1.5xl font-bold">{login.name}</label>
 					<input
 						type="text"
@@ -81,23 +82,26 @@
 						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
 						required
 					/>
-					<!-- Button Login -->
-					<button
-						class="text-center bg-orange-50 hover:bg-orange-500 text-stone-950 hover:text-stone-800 p-1.5 font-bold"
-						type="submit">{login.login}</button
-					>
+					<nav class="flex justify-center mt-5">
+						<button
+							class="w-3/4 flex justify-center items-center bg-orange-50 hover:bg-orange-500 text-stone-950 hover:text-stone-800 p-1.5 font-bold"
+							type="submit"
+						>
+							<a href="/home" class="w-full text-center">{login.login}</a>
+						</button>
+					</nav>
 				</form>
 
-				<div class="grid grid-cols-2 gap-4">
+				<nav class="flex justify-center gap-3 mt-4">
 					<button
-						class="text-center bg-orange-50 hover:bg-orange-500 text-stone-950 hover:text-stone-800 p-1.5 mt-5 font-bold"
-						>{login.forgotpass}</button
+						class=" w-2/4 text-center bg-orange-50 hover:bg-orange-500 text-stone-950 hover:text-stone-800 p-1.5 mt-5 font-bold"
+						><a href="/forgotpassword">{login.forgotpass}</a></button
 					>
 					<button
-						class="text-center bg-slate-50 hover:bg-slate-700 text-stone-700 hover:text-stone-50 p-1.5 mt-5 font-bold"
-						>{login.createAcc}</button
+						class=" w-2/4 text-center bg-slate-50 hover:bg-slate-700 text-stone-700 hover:text-stone-50 p-1.5 mt-5 font-bold"
+						><a href="/createaccont">{login.createAcc}</a></button
 					>
-				</div>
+				</nav>
 			</div>
 		</div>
 	</main>

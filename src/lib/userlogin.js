@@ -25,7 +25,18 @@ export const FORGOTPASSWORD = writable([
 		id: 'Employee Id',
 		password: 'Password',
 		confirmPassword: 'Confirm Password',
-		login: 'Login',
+		login: 'Confirm new password',
+		createAcc: 'Create Account'
+	}
+]);
+
+export const CREATEACCOUNT = writable([
+	{
+		title: 'Inventory System',
+		description: 'Create Employee',
+		company: 'Mage Inc',
+		id: 'Employee Id',
+		password: 'Password',
 		createAcc: 'Create Account'
 	}
 ]);

@@ -22,6 +22,7 @@ export default {
       backgroundImage: {
         'login-image': "url('./src/image/loginBackgrounding.jpg')",
         'forgotpass-image': "url('./src/image/forgotpass.jpg')",
+        'createacc-image' : "url('./src/image/workers.jpg')",
       },
     },
   },

@@ -2,7 +2,7 @@
 	import { database } from '$lib/firebaseConfig.js';
 	import { ref, onValue } from 'firebase/database';
 	import { FORGOTPASSWORD } from '$lib/userLogin.js';
-	import '../../src/app.css';
+
 
 	let users = [];
 
