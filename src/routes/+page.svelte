@@ -46,7 +46,7 @@
 		class="h-screen w-screen bg-login-image bg-cover bg-center bg-no-repeat flex justify-center place-content-center"
 	>
 		<!-- First Container -->
-		<div class="container min-h-screen grid grid-cols-2 place-items-center overflow-hidden">
+		<div class="container min-h-screen grid grid-cols-2 place-items-center overflow-x-hidden">
 			<div class="text-neutral-50">
 				<h1 class="text-8xl font-bold mb-8">{login.title}</h1>
 				<p class="text-3xl font-extrabold">{login.description}</p>
