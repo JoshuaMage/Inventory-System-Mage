@@ -56,6 +56,14 @@
 				<!-- Form Container -->
 
 				<form action="" class="flex flex-col justify-center" on:submit|preventDefault={onSubmit}>
+					<label for="name" class="text-black text-1.5xl font-bold">{createaccount.name}</label>
+					<input
+						type="text"
+						name="name"
+						id="name"
+						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
+						required
+					/>
 					<label for="id" class="text-black text-1.5xl font-bold">{createaccount.id}</label>
 					<input
 						type="number"

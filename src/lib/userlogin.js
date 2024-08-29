@@ -35,6 +35,7 @@ export const CREATEACCOUNT = writable([
 		title: 'Inventory System',
 		description: 'Create Employee',
 		company: 'Mage Inc',
+		name: 'Employee Name',
 		id: 'Employee Id',
 		password: 'Password',
 		createAcc: 'Create Account'

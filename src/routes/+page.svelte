@@ -7,7 +7,7 @@
 	let users = [];
 
 	const usersRef = ref(database, 'users');
-
+	
 	onValue(usersRef, (snapshot) => {
 		const data = snapshot.val();
 		users = data ? Object.values(data) : [];
@@ -43,10 +43,10 @@
 
 {#each $LOGIN as login}
 	<main
-		class="h-screen w-screen bg-login-image bg-cover bg-center bg-no-repeat flex justify-center place-content-center"
+		class="h-screen w-screen bg-login-image bg-cover bg-center bg-no-repeat flex justify-center place-content-center overflow-hidden"
 	>
 		<!-- First Container -->
-		<div class="container min-h-screen grid grid-cols-2 place-items-center overflow-x-hidden">
+		<div class="container min-h-screen grid grid-cols-2 place-items-center overflow-hidden">
 			<div class="text-neutral-50">
 				<h1 class="text-8xl font-bold mb-8">{login.title}</h1>
 				<p class="text-3xl font-extrabold">{login.description}</p>
@@ -94,7 +94,7 @@
 
 				<nav class="flex justify-center gap-3 mt-4">
 					<button
-						class=" w-2/4 text-center bg-orange-50 hover:bg-orange-500 text-stone-950 hover:text-stone-800 p-1.5 mt-5 font-bold"
+						class="w-2/4 text-center bg-orange-50 hover:bg-orange-500 text-stone-950 hover:text-stone-800 p-1.5 mt-5 font-bold"
 						><a href="/forgotpassword">{login.forgotpass}</a></button
 					>
 					<button
