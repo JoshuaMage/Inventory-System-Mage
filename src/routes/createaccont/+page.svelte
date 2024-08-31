@@ -42,12 +42,12 @@
 	  <!-- First Container -->
 	  <div class="container min-h-screen grid grid-cols-2 place-items-center overflow-hidden">
 		<div class="text-white">
-		  <h1 class="text-8xl font-bold mb-8">{createaccount.title}</h1>
+		  <h1 class="text-8xl font-bold mb-8 ">{createaccount.title}</h1>
 		  <p class="text-5xl text-white font-extrabold">{createaccount.description}</p>
 		</div>
   
 		<div class="flex flex-col text-black w-3/5 border-4 border-white py-10 px-5 rounded">
-		  <h2 class="text-6xl font-bold mb-5 text-center">{createaccount.company}</h2>
+		  <h2 class="text-6xl font-bold mb-5 text-center text-white">{createaccount.company}</h2>
   
 		  <!-- Form Container -->
 		  <form class="flex flex-col justify-center" on:submit|preventDefault={onSubmit}>
