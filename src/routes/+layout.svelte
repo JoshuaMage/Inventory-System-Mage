@@ -89,9 +89,8 @@
 		</nav>
 	</main>
 
-	<div class="flex h-screen">
 		<!-- Sidebar -->
-		<div class="w-1/4 bg-gray-200">
+<div>
 			{#if activation === 'product'}
 				<nav class="mt-2">
 					<ul class="w-full">
@@ -142,21 +141,21 @@
 						<li
 							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
 						>
-							<a href="/sales/Order">Order</a>
+							<a href="/sales/summary">Summary</a>
 						</li>
 						<li
 							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
 						>
-							<a href="/sales/Invoice">Invoice</a>
+							<a href="/sales/incomestatment">IncomeStatement</a>
 						</li>
 					</ul>
 				</nav>
 			{/if}
-		</div>
 
-		<div class="h-screen">
-			<slot />
+			<div>
+	
+			</div>
 		</div>
-	</div>
 {/if}
+
 <slot />
