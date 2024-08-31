@@ -15,35 +15,99 @@
 		activation = activation === section ? '' : section;
 	}
 
-	$: hideLayout = $page.url.pathname === '/';
+	$: hideLayout = ['/', '/forgotpassword', '/createaccont'].includes($page.url.pathname);
 </script>
 
 {#if !hideLayout}
 	<main class="overflow-hidden w-full border border-b-gray-600 rounded border-solid">
 		<nav class="w-full grid grid-cols-2 gap-5 p-4 rounded shadow-md bg-zinc-100">
 			<section class="flex justify-start text-start gap-12">
-				<a
-					href="/product"
-					on:click|preventDefault={() => toggleAttribute('product')}
-					class="font-black text-xl font-sans p-2 hover:text-red-600"
-				>
-					PRODUCT
-				</a>
-				<a
-					href="/inventory"
-					on:click|preventDefault={() => toggleAttribute('inventory')}
-					class="font-black text-xl font-sans p-2"
-				>
-					INVENTORY
-				</a>
+				<li class=" list-none place-content-center  "> 
+					<a
+						href="/product"
+						on:click|preventDefault={() => toggleAttribute('product')}
+						class="font-black text-xl font-sans p-2 hover:text-red-600 ease-in-out"
+					>
+						PRODUCT
+					</a>
+					{#if activation === 'product'}
+						<nav class="mt-2">
+							<ul class="w-full">
+								<li
+									class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
+								>
+									<a href="/product/productKg">Kilogram</a>
+								</li>
+								<li
+									class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
+								>
+									<a href="/product/productPc">Pc</a>
+								</li>
+								<li
+									class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
+								>
+									<a href="/product/productLiter">Liter</a>
+								</li>
+								<li
+									class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
+								>
+									<a href="/product/productMeter">Meter</a>
+								</li>
+							</ul>
+						</nav>
+					{/if}
+				</li>
 
-				<a
-					href="/sales"
-					on:click|preventDefault={() => toggleAttribute('sales')}
-					class="font-black text-xl font-sans p-2"
-				>
-					SALE
-				</a>
+				<li class="list-none place-content-center"> 
+					<a
+						href="/inventory"
+						on:click|preventDefault={() => toggleAttribute('inventory')}
+						class="font-black text-xl font-sans p-2"
+					>
+						INVENTORY
+					</a>
+					{#if activation === 'inventory'}
+						<nav>
+							<ul class="mt-2">
+								<li
+									class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
+								>
+									<a href="/inventory/Materialstock">Material stock</a>
+								</li>
+								<li
+									class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
+								>
+									<a href="/inventory/MaterialList">Material List</a>
+								</li>
+							</ul>
+						</nav>
+					{/if}
+				</li>
+				<li class="list-none place-content-center"> 
+					<a
+						href="/sales"
+						on:click|preventDefault={() => toggleAttribute('sales')}
+						class="font-black text-xl font-sans p-2"
+					>
+						SALE
+					</a>
+					{#if activation === 'sales'}
+						<nav>
+							<ul class="mt-2">
+								<li
+									class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
+								>
+									<a href="/sales/summary">Order</a>
+								</li>
+								<li
+									class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
+								>
+									<a href="/sales/incomestatement">Invoice</a>
+								</li>
+							</ul>
+						</nav>
+					{/if}
+				</li>
 			</section>
 
 			<section class="flex justify-self-end text-center">
@@ -88,74 +152,5 @@
 			</section>
 		</nav>
 	</main>
-
-		<!-- Sidebar -->
-<div>
-			{#if activation === 'product'}
-				<nav class="mt-2">
-					<ul class="w-full">
-						<li
-							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
-						>
-							<a href="/product/productKg">Kilogram</a>
-						</li>
-						<li
-							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
-						>
-							<a href="/product/productPc">Pc</a>
-						</li>
-						<li
-							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
-						>
-							<a href="/product/productLiter">Liter</a>
-						</li>
-						<li
-							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
-						>
-							<a href="/product/productMeter">Meter</a>
-						</li>
-					</ul>
-				</nav>
-			{/if}
-
-			{#if activation === 'inventory'}
-				<nav>
-					<ul class="mt-2">
-						<li
-							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
-						>
-							<a href="/inventory/Materialstock">Material stock</a>
-						</li>
-						<li
-							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
-						>
-							<a href="/inventory/MaterialList">Material List</a>
-						</li>
-					</ul>
-				</nav>
-			{/if}
-
-			{#if activation === 'sales'}
-				<nav>
-					<ul class="mt-2">
-						<li
-							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
-						>
-							<a href="/sales/summary">Summary</a>
-						</li>
-						<li
-							class="text-black hover:text-white w-full bg-slate-100 hover:bg-zinc-500 gap-1 list-none"
-						>
-							<a href="/sales/incomestatment">IncomeStatement</a>
-						</li>
-					</ul>
-				</nav>
-			{/if}
-
-			<div>
-	
-			</div>
-		</div>
 {/if}
-
 <slot />
