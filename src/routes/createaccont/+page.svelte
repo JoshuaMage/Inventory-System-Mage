@@ -46,7 +46,7 @@
 		  <p class="text-5xl text-white font-extrabold">{createaccount.description}</p>
 		</div>
   
-		<div class="flex flex-col text-black w-3/5 border-4 border-white py-10 px-5 rounded">
+		<div class="flex flex-col text-black w-3/5 border-4 border-white py-10 px-5 rounded hover:shadow-lg hover:shadow-white">
 		  <h2 class="text-6xl font-bold mb-5 text-center text-white">{createaccount.company}</h2>
   
 		  <!-- Form Container -->
@@ -56,7 +56,7 @@
 			  type="number"
 			  name="id"
 			  id="id"
-			  class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
+			  class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black "
 			  bind:value={id}
 			  required
 			/>
@@ -65,7 +65,7 @@
 			  type="text"
 			  name="name"
 			  id="name"
-			  class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
+			  class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 			  bind:value={name}
 			  required
 			/>
@@ -74,14 +74,14 @@
 			  type="password"
 			  name="password"
 			  id="password"
-			  class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
+			  class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 			  bind:value={password}
 			  required
 			/>
   
 			<div class="flex justify-center mt-5">
 			  <button
-				class="w-3/4 flex justify-center items-center bg-slate-50 hover:bg-slate-700 text-stone-700 hover:text-stone-50 p-1.5 font-bold"
+				class="w-3/4 flex justify-center items-center rounded-md bg-orange hover:bg-orange-500 text-white hover:text-orange hover:bg-white p-1.5 font-bold hover:shadow-lg hover:shadow-orange"
 				type="submit"
 			  >
 				{createaccount.createAcc}

@@ -1,0 +1,205 @@
+<script>
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { SVG } from '$lib/arrowsvg';
+
+	let activation = '';
+	let loading = false;
+
+	async function handleLogout() {
+		loading = true;
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+		await goto('/');
+		loading = false;
+	}
+
+	function toggleAttribute(section) {
+		activation = activation === section ? '' : section;
+	}
+
+	$: hideLayout = ['/', '/forgotpassword', '/createaccont'].includes($page.url.pathname);
+</script>
+
+{#if !hideLayout}
+	<main class="overflow-hidden border border-b-gray-600 border-solid">
+		<nav class=" px-10 grid grid-cols-2 bg-slate-100">
+			<section class=" flex justify-self-start place-self-center">
+				<h1
+					class=" font-black text-3xl italicfont-sans p-2 origin-center underline decoration-solid decoration-2"
+				>
+					Mage Hardware
+				</h1>
+			</section>
+			{#each $SVG as icon}
+				<section class="flex flex-col md:flex-row justify-self-end text-start gap-8 mr-10">
+					<ul class="list-none ">
+					<li class="list-none place-content-center">
+						<a
+							href="/product"
+							on:click={() => toggleAttribute('product')}
+							class="group font-bold text-xl font-sans p-2 origin-center"
+						>
+							PRODUCT
+						</a>
+						{#if activation === 'product'}
+							<nav class="mt-8 p-4 absolute bg-white border border-black -translate-y-0.5">
+								<ul class="grid grid-rows-4 w-36 space-y-2 p-2">
+									<li class="list-none flex justify-between items-center group">
+										<a href="/product/productKg" class="hover:font-extrabold">Kilogram</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+									<li class="list-none flex justify-between items-center group">
+										<a href="/product/productPc" class="hover:font-extrabold">Pc</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+									<li class="list-none flex justify-between items-center group">
+										<a href="/product/productLiter" class="hover:font-extrabold">Liter</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+									<li class="list-none flex justify-between items-center group">
+										<a href="/product/productMeter" class="hover:font-extrabold">Meter</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+								</ul>
+							</nav>
+						{/if}
+					</li>
+
+					<li class="list-none place-content-center">
+						<a
+							href="/inventory"
+							on:click={() => toggleAttribute('inventory')}
+							class="font-bold text-xl font-sans p-2"
+						>
+							INVENTORY
+						</a>
+						{#if activation === 'inventory'}
+							<nav class="mt-8 p-4 absolute bg-white border border-black -translate-y-0.5">
+								<ul class="grid grid-rows-5 w-36 space-y-2 p-2">
+									<li class="list-none flex justify-between items-center group">
+										<a href="/inventory/materialStock" class="hover:font-extrabold"
+											>Material stock</a
+										>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+									<li class="list-none flex justify-between items-center group">
+										<a href="/inventory/materialList" class="hover:font-extrabold">Material List</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+									<li class="list-none flex justify-between items-center group">
+										<a href="/inventory/materialPurchase" class="hover:font-extrabold">Purchase</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+									<li class="list-none flex justify-between items-center group">
+										<a href="/inventory/supplier" class="hover:font-extrabold">Supplier</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+									<li class="list-none flex justify-between items-center group">
+										<a href="/inventory/materialOrdering" class="hover:font-extrabold">Ordering</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+								</ul>
+							</nav>
+						{/if}
+					</li>
+
+					<li class="list-none place-content-center">
+						<a
+							href="/sales"
+							on:click={() => toggleAttribute('sales')}
+							class="font-bold text-xl font-sans p-2"
+						>
+							SALE
+						</a>
+						{#if activation === 'sales'}
+							<nav class="mt-8 p-4 absolute bg-white border border-black -translate-y-0.5">
+								<ul class="grid grid-rows-2 w-36 space-y-2 p-2">
+									<li class="list-none flex justify-between items-center group">
+										<a href="/sales/summary" class="hover:font-extrabold">Sumarry</a>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+									<li class="list-none flex justify-between items-center group">
+										<a href="/sales/incomestatement" class="hover:font-extrabold"
+											>Income Statement</a
+										>
+										<div class="group-hover:fill-current w-6 pl-2">
+											{@html icon.svg}
+										</div>
+									</li>
+								</ul>
+							</nav>
+						{/if}
+					</li>
+
+					<li class="list-none place-content-center">
+						<a
+							href="/user"
+							on:click|preventDefault={() => toggleAttribute('users')}
+							class="font-bold text-xl font-sans p-2"
+						>
+							<svg width="40" height="35" viewBox="0 0 2.4 2.4" xmlns="http://www.w3.org/2000/svg">
+								<g />
+								<path
+									d="M1.2.241a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m0 .08a.88.88 0 0 1 .676 1.442 5 5 0 0 0-.423-.146c-.011-.004-.013-.004-.013-.05a.3.3 0 0 1 .031-.107.5.5 0 0 0 .043-.146.33.33 0 0 0 .063-.152c.015-.075.008-.102-.002-.128l-.003-.008a.8.8 0 0 1 .014-.179.33.33 0 0 0-.069-.237.35.35 0 0 0-.27-.129h-.081A.35.35 0 0 0 .898.61a.33.33 0 0 0-.069.237.8.8 0 0 1 .014.179l-.003.008c-.01.026-.017.053-.002.128a.33.33 0 0 0 .063.152.5.5 0 0 0 .043.146q.017.038.017.109c0 .046-.002.046-.012.05a5 5 0 0 0-.422.15A.88.88 0 0 1 .32 1.2c0-.485.395-.88.88-.88M.586 1.829a5 5 0 0 1 .388-.136c.068-.022.068-.08.068-.126a.4.4 0 0 0-.026-.143.5.5 0 0 1-.037-.134.04.04 0 0 0-.013-.026c-.011-.01-.035-.046-.049-.119-.011-.058-.007-.071-.002-.083l.005-.017A.8.8 0 0 0 .907.831.25.25 0 0 1 .96.658a.27.27 0 0 1 .207-.099h.076a.28.28 0 0 1 .21.099.25.25 0 0 1 .053.173.8.8 0 0 0-.013.214l.005.017c.005.012.01.025-.002.083-.015.074-.038.109-.05.119a.04.04 0 0 0-.013.026.5.5 0 0 1-.037.134.34.34 0 0 0-.038.142c0 .046 0 .104.069.126a6 6 0 0 1 .389.133.88.88 0 0 1-.616.255.88.88 0 0 1-.614-.251"
+								/>
+							</svg>
+							{#if activation === 'users'}
+								<nav class="mt-7 p-4 absolute right-5 bg-white border border-black">
+									<ul class="grid grid-rows-2 w-36 space-y-2">
+										<li class="list-none flex justify-between items-center group">
+											<button
+												on:click={handleLogout}
+												disabled={loading}
+												class="disabled:button font-medium text-lg hover:font-extrabold"
+											>
+												{#if loading}
+													Log-out...
+												{:else}
+													Log-out
+												{/if}
+											</button>
+											<div class="group-hover:fill-current w-6 pl-2">
+												{@html icon.svg}
+											</div>
+										</li>
+										<li class="list-none flex justify-between items-center group">
+											<a href="/userSetting" class="font-medium text-lg hover:font-extrabold"
+												>Setting</a
+											>
+											<div class="group-hover:fill-current w-6 pl-2">
+												{@html icon.svg}
+											</div>
+										</li>
+									</ul>
+								</nav>
+							{/if}
+						</a>
+					</li>
+				
+				</ul>
+				</section>
+			{/each}
+		</nav>
+	</main>
+{/if}
+<slot />

@@ -51,7 +51,7 @@
 				<p class="text-5xl text-red-600 font-extrabold">{forgotpassword.description}</p>
 			</div>
 
-			<div class="flex flex-col text-neutral-50 w-3/5 border-4 border-red-500 py-10 px-5 rounded">
+			<div class="flex flex-col text-neutral-50 w-3/5 border-4 border-red-500 py-10 px-5 rounded   hover:shadow-lg hover:shadow-red-950">
 				<h2 class="text-6xl font-bold mb-5 text-center">{forgotpassword.company}</h2>
 
 				<!-- Form Container -->
@@ -62,7 +62,7 @@
 						type="text"
 						name="name"
 						id="name"
-						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
+						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 						required
 					/>
 					<label for="id" class="text-red-600 text-1.5xl font-bold">{forgotpassword.id}</label>
@@ -70,15 +70,15 @@
 						type="number"
 						name="id"
 						id="id"
-						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
+						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 						required
 					/>
-					<label for="password" class="text-red-600 text-1.5xl font-bold">{forgotpassword.password}</label>
+					<label for="password" class="text-red-600 text-1.5xl font-bold ">{forgotpassword.password}</label>
 					<input
 						type="password"
 						name="password"
 						id="password"
-						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
+						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 						required
 					/>
 					<label for="password" class="text-red-600 text-1.5xl font-bold">{forgotpassword.confirmPassword}</label
@@ -87,22 +87,17 @@
 						type="password"
 						name="password"
 						id="password"
-						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold"
+						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 						required
 					/>
 					<!-- Button forgotpassword -->
-					<div class="flex justify-center">
-						<button
-							class=" w-2/4 text-center bg-orange-50 hover:bg-orange-500 text-stone-950 hover:text-stone-800 p-1.5 font-bold"
-							type="submit">{forgotpassword.login}</button
-						>
-					</div>
+				
 				</form>
 
 				<div class="flex justify-center">
 					<button
-						class=" w-2/4 text-center bg-slate-50 hover:bg-slate-700 text-stone-700 hover:text-stone-50 p-1.5 mt-5 font-bold"
-						>{forgotpassword.createAcc}</button
+						class=" w-2/4  p-1.5 mt-5 font-bold text-center rounded-md bg-white hover:bg-pureRed text-pureRed hover:text-white  hover:shadow-lg hover:shadow-pureRed"
+						>{forgotpassword.createAccount}</button
 					>
 				</div>
 			</div>

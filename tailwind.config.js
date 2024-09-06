@@ -24,6 +24,10 @@ export default {
         'forgotpass-image': "url('./src/image/forgotpass.jpg')",
         'createacc-image' : "url('./src/image/workers.jpg')",
       },
+      colors: {
+        pureRed: '#EB1D36',
+        orange: '#E85C0D'
+      },
     },
   },
   plugins: [],

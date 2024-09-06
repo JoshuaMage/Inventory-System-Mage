@@ -23,8 +23,7 @@ export const FORGOTPASSWORD = writable([
 		id: 'Employee Id',
 		password: 'Password',
 		confirmPassword: 'Confirm Password',
-		login: 'Confirm new password',
-		createAcc: 'Create Account'
+		createAccount: 'Confirm New-password'
 	}
 ]);
 
