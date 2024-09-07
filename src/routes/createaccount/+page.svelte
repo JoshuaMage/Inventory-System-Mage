@@ -1,7 +1,7 @@
 <script>
-	import { auth, database } from '$lib/firebaseConfig.js';
+	import { auth } from '$lib/firebaseConfig.js';
 	import { createUserWithEmailAndPassword } from 'firebase/auth';
-	import { ref, set } from 'firebase/database';
+
 	import { goto } from '$app/navigation';
   
 	let employeeId = '';
@@ -20,14 +20,6 @@
 		  // Create a new user with email and password
 		  const userCredential = await createUserWithEmailAndPassword(auth, employeeId + '@example.com', password); // Use id as email for simplicity
 		  const user = userCredential.user;
-  
-		  // Store additional user information in Realtime Database
-		  await set(ref(database, 'users/' + user.uid), {
-			id: employeeId,
-			name: employeeName,
-			password: password
-		  });
-  
 		  console.log('User created and additional information stored');
 		  goto('/product'); // Redirect to product
 		} catch (error) {

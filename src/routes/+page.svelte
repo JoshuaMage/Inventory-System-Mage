@@ -1,7 +1,7 @@
 <script>
 	import "../../src/app.css";
-	import { LOGIN } from '$lib/userLogin.js'; // Importing userLogin store
-	import { signInWithEmailAndPassword } from 'firebase/auth'; // Import Firebase signIn method
+	import { LOGIN } from '$lib/userLogin.js'; // Import userLogin store
+	import { signInWithEmailAndPassword } from 'firebase/auth'; // Import Firebase Authentication method
 	import { auth } from '$lib/firebaseConfig.js'; // Import Firebase auth configuration
 	import { onMount } from 'svelte';
   
