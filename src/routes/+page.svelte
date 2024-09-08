@@ -3,7 +3,7 @@
 	import { LOGIN } from '$lib/userLogin.js'; // Import userLogin store
 	import { signInWithEmailAndPassword } from 'firebase/auth'; // Import Firebase Authentication method
 	import { auth } from '$lib/firebaseConfig.js'; // Import Firebase auth configuration
-	import { onMount } from 'svelte';
+
   
 	let errorMessage = ''; // To store and display error messages
   
@@ -105,12 +105,13 @@
 			  <li
 				class="text-center rounded-md bg-white hover:bg-pureRed text-pureRed hover:text-white p-1.5 mt-5 font-bold flex justify-center items-center hover:shadow-lg hover:shadow-pureRed"
 			  >
-				<a href="/forgotpassword">{login.forgotpass}</a>
+
+				<a href="/ForgotPassword">{login.forgotpass}</a>
 			  </li>
 			  <li
 				class="text-center rounded-md bg-orange hover:bg-orange-500 text-white hover:text-orange hover:bg-white p-1.5 mt-5 font-bold flex justify-center items-center hover:shadow-lg hover:shadow-orange"
 			  >
-				<a href="/createaccount">{login.createAcc}</a>
+				<a href="/CreateAccount">{login.createAcc}</a>
 			  </li>
 			</ul>
 		  </nav>

@@ -1,44 +1,35 @@
 <script>
-	import { database } from '$lib/firebaseConfig.js';
-	import { ref, onValue } from 'firebase/database';
+	import { auth } from '$lib/firebaseConfig.js';
+	import { sendPasswordResetEmail } from 'firebase/auth';
+	import { goto } from '$app/navigation';
+
 	import { FORGOTPASSWORD } from '$lib/userLogin.js';
 
 
-	let users = [];
+	let email = '';
 
-	const usersRef = ref(database, 'users');
+function isFormValid() {
+	return email !== '';
+}
 
-	onValue(usersRef, (snapshot) => {
-		const data = snapshot.val();
-		users = data ? Object.values(data) : [];
-	});
+async function onSubmit(event) {
+	event.preventDefault();
 
-	function isFormValid(data) {
-		return (
-			isRequiredFieldValue(data.name) &&
-			isRequiredFieldValue(data.id) &&
-			isRequiredFieldValue(data.password)
-		);
-	}
-
-	function isRequiredFieldValue(value) {
-		return value != null && value !== '';
-	}
-
-	function onSubmit(event) {
-		const formData = new FormData(event.target);
-
-		const data = {};
-		for (const [key, value] of formData.entries()) {
-			data[key] = value;
+	if (isFormValid()) {
+		try {
+			// Send password reset email
+			await sendPasswordResetEmail(auth, email);
+			console.log('Password reset email sent');
+			goto('/login'); // Redirect to login after successful reset
+		} catch (error) {
+			console.error('Error sending password reset email:', error.message);
 		}
-		if (isFormValid(data)) {
-			console.log(data);
-		} else {
-			console.log('invalid Form');
-		}
+	} else {
+		console.log('Form is invalid');
 	}
+}
 </script>
+
 
 {#each $FORGOTPASSWORD as forgotpassword}
 	<main

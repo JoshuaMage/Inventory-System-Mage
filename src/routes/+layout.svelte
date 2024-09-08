@@ -12,7 +12,7 @@
 		loading = false;
 	}
 
-	$: hideLayout = ['/', '/forgotpassword', '/createaccont'].includes($page.url.pathname);
+	$: hideLayout = ['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname);
 </script>
 
 {#if !hideLayout}
