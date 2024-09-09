@@ -47,7 +47,7 @@
 		  <p
 			class="text-3xl font-extrabold overflow-hidden whitespace-nowrap border-r-2 border-black typing-animation"
 		  >
-			<strong class="text-pureRed text-4xl">{login.description}</strong>
+			<strong class="text-orange text-4xl">{login.description}</strong>
 		  </p>
 		</div>
   

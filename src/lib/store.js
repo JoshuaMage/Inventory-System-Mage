@@ -9,7 +9,7 @@ import Pliers from "../image/productImg/Pliers.png";
 import Sandpaper from "../image/productImg/Sandpaper.webp";
 import Utilityknife from "../image/productImg/Utility Knife.png";
 import Drill from "../image/productImg/Drill Bitss.png";
-import PaintBrush from "../image/productImg/Paint Brush.jpg";
+import PaintBrush from "../image/productImg/Paint Brush.png";
 import Wrench from "../image/productImg/Wrench Set.webp";
 import Level from "../image/productImg/level-removebg-preview (1).png";
 import Screw from "../image/productImg/Screws.png";

@@ -17,7 +17,7 @@
 
 {#if !hideLayout}
 	<main class="border-b-gray-600 border-solid">
-		<nav class="border px-10 grid grid-cols-2 bg-slate-100">
+		<nav class="border px-10 grid grid-cols-2 bg-white">
 			<div class="flex justify-self-start place-self-center">
 				<h1
 					class="font-black text-3xl italic font-sans p-2 underline decoration-solid decoration-2"
