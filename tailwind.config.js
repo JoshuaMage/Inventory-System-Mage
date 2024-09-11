@@ -34,7 +34,9 @@ export default {
       },
       gridTemplateColumns: {
         // Define a custom grid template with 9 columns of different widths
-        'custom-9': '.5fr .5fr .3fr 1.2fr .5fr .5fr .5fr .5fr .5fr',
+        'custom-9': '.5fr .5fr .3fr 1.2fr .6fr .5fr .5fr .5fr .5fr',
+        'custom-12': ' .8fr .8fr .8fr .3fr .8fr .6fr .8fr .9fr 1fr .8fr .8fr 1fr .8fr',
+        'custom-15': ' 1fr 1fr .3fr 1.5fr .5fr .5fr .5fr .8fr .8fr .4fr .7fr .7fr 1fr .8fr 1fr',
       },
      
     },

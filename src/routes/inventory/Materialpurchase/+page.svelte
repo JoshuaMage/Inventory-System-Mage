@@ -1,87 +1,269 @@
 <script>
-    // Sample data and columns
-    let data = [
-      { name: 'John Doe', age: 28, email: 'john@example.com' },
-      { name: 'Jane Smith', age: 32, email: 'jane@example.com' },
-      { name: 'Michael Johnson', age: 45, email: 'michael@example.com' },
-      { name: 'Emily Davis', age: 22, email: 'emily@example.com' },
-      { name: 'Chris Lee', age: 30, email: 'chris@example.com' },
-      { name: 'Katie Brown', age: 29, email: 'katie@example.com' },
-      { name: 'Sarah Wilson', age: 35, email: 'sarah@example.com' },
-      { name: 'David White', age: 40, email: 'david@example.com' },
-      { name: 'Laura Green', age: 27, email: 'laura@example.com' },
-      { name: 'James Black', age: 33, email: 'james@example.com' },
-      { name: 'Samantha Hall', age: 31, email: 'samantha@example.com' },
-      { name: 'Daniel Scott', age: 26, email: 'daniel@example.com' },
-      { name: 'Olivia King', age: 24, email: 'olivia@example.com' },
-      { name: 'Ethan Wright', age: 37, email: 'ethan@example.com' },
-      { name: 'Ava Adams', age: 28, email: 'ava@example.com' },
-    ];
-  
-    let columns = ['Name', 'Age', 'Email'];
-    let currentPage = 1;
-    let itemsPerPage = 5;
-  
-    // Compute total pages
-    $: totalPages = Math.ceil(data.length / itemsPerPage);
-  
-    // Compute current page data
-    $: pagedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  
-    function goToPage(page) {
-      if (page >= 1 && page <= totalPages) {
-        currentPage = page;
-      }
-    }
-  </script>
-  
-  <div class="p-6">
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            {#each columns as column}
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                {column}
-              </th>
-            {/each}
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          {#each pagedData as row}
-            <tr>
-              {#each Object.values(row) as cell}
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {cell}
-                </td>
-              {/each}
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-  
-      <div class="flex justify-between mt-4">
-        <button
-          class="px-4 py-2 bg-blue-500 text-white rounded-md"
-          on:click={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span class="text-lg">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          class="px-4 py-2 bg-blue-500 text-white rounded-md"
-          on:click={() => goToPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  </div>
-  
+	import { INVENTORY as inventoryStore } from '$lib/materialStock';
+	import { onDestroy } from 'svelte';
+	import { sortData, filterData, getArrow, getPendingClass } from '$lib/sortingTable';
+
+	let INVENTORY = [];
+	let displayedInventory = [];
+	let sortBy = 'materialName';
+	let sortOrder = 'asc';
+	let searchTerm = '';
+
+	let currentPage = 1;
+	let itemsPerPage = 10;
+
+	let currentArrow = getArrow(sortOrder);
+
+	// Subscribe to the store to get the initial value
+	const unsubscribe = inventoryStore.subscribe((value) => {
+		INVENTORY = [...value];
+		filterAndSortData();
+	});
+
+	// Clean up subscription when component is destroyed
+	onDestroy(() => {
+		unsubscribe();
+	});
+
+	function sortTable(column) {
+		if (sortBy === column) {
+			sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortBy = column;
+			sortOrder = 'asc';
+		}
+
+		// Update the arrow based on the current sortOrder
+		currentArrow = getArrow(sortOrder);
+
+		filterAndSortData();
+	}
+
+	function filterAndSortData() {
+		const filteredInventory = filterData(INVENTORY, searchTerm);
+		const sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
+
+		// Compute pagination
+		const startIndex = (currentPage - 1) * itemsPerPage;
+		const endIndex = startIndex + itemsPerPage;
+		displayedInventory = sortedInventory.slice(startIndex, endIndex);
+	}
+
+	function goToPage(page) {
+		if (page >= 1 && page <= totalPages) {
+			currentPage = page;
+			filterAndSortData();
+		}
+	}
+
+	$: totalPages = Math.ceil(filterData(INVENTORY, searchTerm).length / itemsPerPage);
+
+	// Watch for changes in INVENTORY, searchTerm, sortBy, or sortOrder to update the displayed data
+	$: filterAndSortData();
+</script>
+
+<main class="bg-bgGray bg-bgdarkgrey font-patrick text-black min-h-screen">
+	<div class="flex flex-col items-center text-center min-h-screen py-10 justify-center">
+		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y">
+			<thead>
+				<div class="flex justify-center pt-3">
+					<div class="relative w-2/4 max-w-5xl">
+						<input
+							type="text"
+							placeholder="Search by date, materialCode, materialName, unit"
+							class="pl-12 pr-4 py-2 border rounded-lg w-full bg-white focus:outline-none focus:ring-2 focus:ring-black"
+							bind:value={searchTerm}
+							on:input={() => {
+								currentPage = 1;
+								filterAndSortData();
+							}}
+						/>
+						<svg
+							class="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500"
+							viewBox="0 0 24 24"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<g clip-path="url(#clip0)">
+								<rect width="24" height="24" fill="white"></rect>
+								<circle cx="10.5" cy="10.5" r="6.5" stroke="#000000" stroke-linejoin="round"
+								></circle>
+								<path
+									d="M19.6464 20.3536C19.8417 20.5488 20.1583 20.5488 20.3536 20.3536C20.5488 20.1583 20.5488 19.8417 20.3536 19.6464L19.6464 20.3536ZM20.3536 19.6464L15.3536 14.6464L14.6464 15.3536L19.6464 20.3536L20.3536 19.6464Z"
+									fill="#000000"
+								></path>
+							</g>
+							<defs>
+								<clipPath id="clip0">
+									<rect width="24" height="24" fill="white"></rect>
+								</clipPath>
+							</defs>
+						</svg>
+					</div>
+				</div>
+				<tr class="grid grid-cols-custom-12 pt-8 justify-items-center">
+					<!-- Define table headers and sort functionality -->
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('datePurchase')}
+						>
+							<span class="mr-0">Date Purchase</span>
+							<span>{@html sortBy === 'datePurchase' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('materialName')}
+						>
+							<span class="mr-0">Material Name</span>
+							<span>{@html sortBy === 'materialName' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+          <th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('materialCode')}
+						>
+							<span class="mr-0">Material Code</span>
+							<span>{@html sortBy === 'materialCode' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('unit')}
+						>
+							<span class="mr-0">Unit</span>
+							<span>{@html sortBy === 'unit' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+				
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('purchaseqty')}
+						>
+							<span class="mr-0">Purchase Qty</span>
+							<span>{@html sortBy === 'purchaseqty' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('availablematerial')}
+						>
+							<span class="mr-0">Stock-in</span>
+							<span>{@html sortBy === 'availablematerial' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('pendingQty')}
+						>
+							<span class="mr-0">Pending qty</span>
+							<span>{@html sortBy === 'pendingQty' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('purchaseNumber')}
+						>
+							<span class="mr-0">Invoice number</span>
+							<span>{@html sortBy === 'purchaseNumber' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+          <th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('vendor')}
+						>
+							<span class="mr-0">Supplier</span>
+							<span>{@html sortBy === 'vendor' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('vendorPhonenumber')}
+						>
+							<span class="mr-0">Phone#</span>
+							<span>{@html sortBy === 'vendorPhonenumber' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+          <th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('vendorEmail')}
+						>
+							<span class="mr-0">email</span>
+							<span>{@html sortBy === 'vendorEmail' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+          <th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('vendorAddress')}
+						>
+							<span class="mr-0">Address</span>
+							<span>{@html sortBy === 'vendorAddress' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+          <th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('status')}
+						>
+							<span class="mr-0">Status</span>
+							<span>{@html sortBy === 'status' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+				</tr>
+			</thead>
+
+			<tbody class="divide-y border-borderlineGrey">
+				{#each displayedInventory as { datePurchase, materialName, materialCode, unit, vendor, purchaseqty, stockin, pendingQty, purchaseNumber, vendorPhonenumber, vendorEmail, vendorAddress, status }}
+					<tr class="grid grid-cols-custom-12 text-base items-center">
+						<td class="py-4 px-1">{datePurchase}</td>
+						<td class="py-4 px-1">{materialName}</td>
+						<td class="py-4 px-1">{materialCode}</td>
+						<td class="py-4 px-1">{unit}</td>
+						<td class="py-4 px-1">{purchaseqty}</td>
+						<td class="py-4 px-1">{stockin}</td>
+						<td class="py-4 px-1">{purchaseqty - stockin }</td>
+            <td class="py-4 px-1">{purchaseNumber}</td>
+            <td class="py-4 px-1">{vendor}</td>
+            <td class="py-4 px-1">{vendorPhonenumber}</td>
+            <td class="py-4 px-1">{vendorEmail}</td>
+            <td class="py-4 px-1">{vendorAddress}</td>
+						<td class={`py-4 px-1 ${getPendingClass(status)}`}>{status}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+
+		<!-- Pagination Controls -->
+		<div class="flex justify-between mt-5 place-content-center">
+			<button
+				class="px-2 py-1 w-20 text-base  font-semibold bg-bgGrey text-black rounded-md"
+				on:click={() => goToPage(currentPage - 1)}
+				disabled={currentPage === 1}
+			>
+				Previous
+			</button>
+			<span class="text-white text-lg font-semibold px-5">
+				Page {currentPage} of {totalPages}
+			</span>
+			<button
+				class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md"
+				on:click={() => goToPage(currentPage + 1)}
+				disabled={currentPage === totalPages}
+			>
+				Next
+			</button>
+		</div>
+	</div>
+</main>

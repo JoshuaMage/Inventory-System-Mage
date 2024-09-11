@@ -45,7 +45,7 @@ export const PRODUCTS = writable([
 		img: hammer,
 		productName: 'Hammer',
 		unitOfMeasurement: 'pc',
-		description: 'Durable claw hammer with a comfortable grip.',
+		description: 'Durable Sledgehamme hammer with a comfortable grip.',
 		brand: 'HammerKing'
 	},
 	{

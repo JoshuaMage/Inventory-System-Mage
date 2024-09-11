@@ -9,6 +9,9 @@
 	let sortOrder = 'asc';
 	let searchTerm = '';
 
+	let currentPage = 1;
+	let itemsPerPage = 10;
+
 	let currentArrow = getArrow(sortOrder);
 
 	// Subscribe to the store to get the initial value
@@ -38,12 +41,29 @@
 
 	function filterAndSortData() {
 		const filteredInventory = filterData(INVENTORY, searchTerm);
-		displayedInventory = sortData(filteredInventory, sortBy, sortOrder);
+		const sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
+
+		// Compute pagination
+		const startIndex = (currentPage - 1) * itemsPerPage;
+		const endIndex = startIndex + itemsPerPage;
+		displayedInventory = sortedInventory.slice(startIndex, endIndex);
 	}
+
+	function goToPage(page) {
+		if (page >= 1 && page <= totalPages) {
+			currentPage = page;
+			filterAndSortData();
+		}
+	}
+
+	$: totalPages = Math.ceil(filterData(INVENTORY, searchTerm).length / itemsPerPage);
+
+	// Watch for changes in INVENTORY, searchTerm, sortBy, or sortOrder to update the displayed data
+	$: filterAndSortData();
 </script>
 
 <main class="bg-bgGray bg-bgdarkgrey font-patrick text-black min-h-screen">
-	<div class="flex flex-col items-center text-center min-h-screen py-10">
+	<div class="flex flex-col items-center text-center min-h-screen py-10 justify-center">
 		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y">
 			<thead>
 				<div class="flex justify-center pt-3">
@@ -53,7 +73,10 @@
 							placeholder="Search by date, materialCode, materialName, unit"
 							class="pl-12 pr-4 py-2 border rounded-lg w-full bg-white focus:outline-none focus:ring-2 focus:ring-black"
 							bind:value={searchTerm}
-							on:input={filterAndSortData}
+							on:input={() => {
+								currentPage = 1;
+								filterAndSortData();
+							}}
 						/>
 						<svg
 							class="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500"
@@ -79,12 +102,13 @@
 					</div>
 				</div>
 				<tr class="grid grid-cols-custom-9 pt-8 justify-items-center">
+					<!-- Define table headers and sort functionality -->
 					<th>
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('materialCode')}
 						>
-							<span class="mr-0">Materil Code</span>
+							<span class="mr-0">Material Code</span>
 							<span>{@html sortBy === 'materialCode' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
@@ -130,7 +154,7 @@
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorTelephone')}
 						>
-							<span class="mr-0">Supplier phone#</span>
+							<span class="mr-0">telephone#</span>
 							<span>{@html sortBy === 'vendorTelephone' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
@@ -139,7 +163,7 @@
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorEmail')}
 						>
-							<span class="mr-0">Supplier email</span>
+							<span class="mr-0"> email</span>
 							<span>{@html sortBy === 'vendorEmail' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
@@ -148,7 +172,7 @@
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorAddress')}
 						>
-							<span class="mr-0">Supplier address</span>
+							<span class="mr-0"> address</span>
 							<span>{@html sortBy === 'vendorAddress' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
@@ -164,21 +188,42 @@
 				</tr>
 			</thead>
 
-			<tbody class="divide-y border-borderlineGrey ">
-				{#each displayedInventory as { date, materialCode, materialName, unit, materialdescription, vendor, vendorTelephone, vendorEmail, vendorAddress, status }}
-					<tr class=" grid grid-cols-custom-9 text-base items-center">
-						<td class="py-1 ">{materialCode}</td>
-						<td class="py-1">{materialName}</td>
-						<td class="py-1">{unit}</td>
-						<td class="py-1">{materialdescription}</td>
-						<td class="py-1">{vendor}</td>
-						<td class="py-1">{vendorTelephone}</td>
-						<td class="py-1">{vendorEmail}</td>
-						<td class="py-1">{vendorAddress}</td>
-						<td class={`py-1 ${getPendingClass(status)}`}>{status}</td>
+			<tbody class="divide-y border-borderlineGrey">
+				{#each displayedInventory as { materialCode, materialName, unit, materialdescription, vendor, vendorTelephone, vendorEmail, vendorAddress, status }}
+					<tr class="grid grid-cols-custom-9 text-base items-center">
+						<td class="py-4 px-1">{materialCode}</td>
+						<td class="py-4 px-1">{materialName}</td>
+						<td class="py-4 px-1">{unit}</td>
+						<td class="py-4 px-1">{materialdescription}</td>
+						<td class="py-4 px-1">{vendor}</td>
+						<td class="py-4 px-1">{vendorTelephone}</td>
+						<td class="py-4 px-1">{vendorEmail}</td>
+						<td class="py-4 px-1">{vendorAddress}</td>
+						<td class={`py-4 px-1 ${getPendingClass(status)}`}>{status}</td>
 					</tr>
 				{/each}
 			</tbody>
 		</table>
+
+		<!-- Pagination Controls -->
+		<div class="flex justify-between mt-5 place-content-center">
+			<button
+				class="px-2 py-1 w-20 text-base  font-semibold bg-bgGrey text-black rounded-md"
+				on:click={() => goToPage(currentPage - 1)}
+				disabled={currentPage === 1}
+			>
+				Previous
+			</button>
+			<span class="text-white text-lg font-semibold px-5">
+				Page {currentPage} of {totalPages}
+			</span>
+			<button
+				class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md"
+				on:click={() => goToPage(currentPage + 1)}
+				disabled={currentPage === totalPages}
+			>
+				Next
+			</button>
+		</div>
 	</div>
 </main>
