@@ -1,17 +1,59 @@
 <script>
-	import { INVENTORY } from '$lib/materialStock';
+	import { INVENTORY as inventoryStore } from '$lib/materialStock';
+	import { onDestroy } from 'svelte';
+	import { sortData, filterData, getArrow, getPendingClass } from '$lib/sortingTable';
+
+	let INVENTORY = [];
+	let displayedInventory = [];
+	let sortBy = 'materialName';
+	let sortOrder = 'asc';
+	let searchTerm = '';
+
+	let currentArrow = getArrow(sortOrder);
+
+	// Subscribe to the store to get the initial value
+	const unsubscribe = inventoryStore.subscribe((value) => {
+		INVENTORY = [...value];
+		filterAndSortData();
+	});
+
+	// Clean up subscription when component is destroyed
+	onDestroy(() => {
+		unsubscribe();
+	});
+
+	function sortTable(column) {
+		if (sortBy === column) {
+			sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortBy = column;
+			sortOrder = 'asc';
+		}
+
+		// Update the arrow based on the current sortOrder
+		currentArrow = getArrow(sortOrder);
+
+		filterAndSortData();
+	}
+
+	function filterAndSortData() {
+		const filteredInventory = filterData(INVENTORY, searchTerm);
+		displayedInventory = sortData(filteredInventory, sortBy, sortOrder);
+	}
 </script>
 
 <main class="bg-bgGray bg-bgdarkgrey font-patrick text-black min-h-screen">
-	<div class="flex flex-col justify-center items-center text-center min-h-screen py-10">
+	<div class="flex flex-col items-center text-center min-h-screen py-10">
 		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y">
 			<thead>
 				<div class="flex justify-center pt-3">
-					<div class="place-items-center justify-center relative w-2/4 max-w-5xl">
+					<div class="relative w-2/4 max-w-5xl">
 						<input
 							type="text"
-							placeholder="Search by date, materialCode, MaterialName, unit"
+							placeholder="Search by date, materialCode, materialName, unit"
 							class="pl-12 pr-4 py-2 border rounded-lg w-full bg-white focus:outline-none focus:ring-2 focus:ring-black"
+							bind:value={searchTerm}
+							on:input={filterAndSortData}
 						/>
 						<svg
 							class="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500"
@@ -36,30 +78,69 @@
 						</svg>
 					</div>
 				</div>
-				<tr class="grid grid-cols-8 pt-8">
-					<th>Date</th>
-					<th>Material Code</th>
-					<th>Material Name</th>
-					<th>Unit</th>
-					<th>Stock-Out</th>
-					<th>Purchase Qty</th>
-					<th>Stock-In</th>
-					<th>Remarks</th>
+				<tr class="grid grid-cols-8 pt-8 justify-items-center">
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('date')}
+						>
+							<span class="mr-0">Date</span>
+							<span>{@html sortBy === 'date' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('materialCode')}
+						>
+							<span class="mr-0">Material Code</span>
+							<span>{@html sortBy === 'materialCode' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('materialName')}
+						>
+							<span class="mr-0">Material Name</span>
+							<span>{@html sortBy === 'materialName' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('unit')}
+						>
+							<span class="mr-0">Unit</span>
+							<span>{@html sortBy === 'unit' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th> Stock-Out </th>
+					<th> Purchase Qty </th>
+					<th> Stock-In </th>
+					<th>
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('status')}
+						>
+							<span class="mr-0">Remarks</span>
+							<span>{@html sortBy === 'status' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
 				</tr>
 			</thead>
+
 			<tbody class="divide-y border-borderlineGrey">
-				{#each $INVENTORY as Inventory}
+				{#each displayedInventory as { date, materialCode, materialName, unit, stockout, purchaseqty, stockin, status }}
 					<tr class="grid grid-cols-8 text-base">
-						<td class="py-1">{Inventory.date}</td>
-						<td class="py-1">{Inventory.materialCode}</td>
-						<td class="py-1">{Inventory.materialName}</td>
-						<td class="py-1">{Inventory.unit}</td>
-						<td class="py-1">{Inventory.stockout}</td>
-						<td class="py-1">{Inventory.purchaseqty}</td>
-						<td class="py-1">
-							{Inventory.purchaseqty - Inventory.stockout}
-						</td>
-						<td class="py-1">{Inventory.status}</td>
+						<td class="py-1">{date}</td>
+						<td class="py-1">{materialCode}</td>
+						<td class="py-1">{materialName}</td>
+						<td class="py-1">{unit}</td>
+						<td class="py-1">{stockout}</td>
+						<td class="py-1">{purchaseqty}</td>
+						<td class="py-1">{purchaseqty - stockout}</td>
+						<td class={`py-1 ${getPendingClass(status)}`}>{status}</td>
 					</tr>
 				{/each}
 			</tbody>

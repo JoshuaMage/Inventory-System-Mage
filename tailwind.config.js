@@ -28,13 +28,15 @@ export default {
         pureRed: '#EB1D36',
         orange: '#C2452D',
         bgGrey: '#C7C8CC',
-        bgdarkgrey: '#686D76',
+        bgdarkgrey: '#434343',
         bgBlack: '#191717',
         borderlineGrey: "#F5F7F8"
-
-        // bgGray: '#454A52',
-        // bgLightGray: '#EBF4F6'
       },
+      gridTemplateColumns: {
+        // Define a custom grid template with 9 columns of different widths
+        'custom-9': '.5fr .5fr .3fr 1.2fr .5fr .5fr .5fr .5fr .5fr',
+      },
+     
     },
   },
   plugins: [],
