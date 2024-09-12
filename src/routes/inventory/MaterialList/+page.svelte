@@ -62,10 +62,10 @@
 	$: filterAndSortData();
 </script>
 
-<main class="bg-bgGray bg-bgdarkgrey font-patrick text-black min-h-screen">
-	<div class="flex flex-col items-center text-center min-h-screen py-10 justify-center">
-		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y">
-			<thead>
+<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
+	<div class="overflow-auto rounded-lg shadow hidden md:block bg-bgdarkgrey mt-10">
+		<table class="w-full ">
+			<thead class="bg-bgGrey border-b-2 border-gray-100">
 				<div class="flex justify-center pt-3">
 					<div class="relative w-2/4 max-w-5xl">
 						<input
@@ -101,105 +101,88 @@
 						</svg>
 					</div>
 				</div>
-				<tr class="grid grid-cols-custom-9 pt-8 justify-items-center">
+				<tr>
 					<!-- Define table headers and sort functionality -->
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+						class="flex "
 							on:click={() => sortTable('materialCode')}
 						>
 							<span class="mr-0">Material Code</span>
 							<span>{@html sortBy === 'materialCode' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('materialName')}
-						>
-							<span class="mr-0">Material Name</span>
+						class="flex "on:click={() => sortTable('materialName')}>
+							<span >Material Name</span>
 							<span>{@html sortBy === 'materialName' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
-						<button
-							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('unit')}
-						>
-							<span class="mr-0">Unit</span>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
+						<button on:click={() => sortTable('unit')}>
+							<span >Unit</span>
 							<span>{@html sortBy === 'unit' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('materialdescription')}
-						>
-							<span class="mr-0">Material Description</span>
+						class="flex " on:click={() => sortTable('materialdescription')}>
+							<span >Material Description</span>
 							<span>{@html sortBy === 'materialdescription' ? currentArrow : getArrow('desc')}</span
 							>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendor')}
-						>
-							<span class="mr-0">Supplier</span>
+						class="flex " on:click={() => sortTable('vendor')}>
+							<span >Supplier</span>
 							<span>{@html sortBy === 'vendor' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendorTelephone')}
-						>
-							<span class="mr-0">telephone#</span>
+						class="flex " on:click={() => sortTable('vendorTelephone')}>
+							<span >telephone#</span>
 							<span>{@html sortBy === 'vendorTelephone' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendorEmail')}
-						>
-							<span class="mr-0"> email</span>
+						class="flex " on:click={() => sortTable('vendorEmail')}>
+							<span > email</span>
 							<span>{@html sortBy === 'vendorEmail' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendorAddress')}
-						>
-							<span class="mr-0"> address</span>
+						class="flex" on:click={() => sortTable('vendorAddress')}>
+							<span > address</span>
 							<span>{@html sortBy === 'vendorAddress' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 					<th>
 						<button
-							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('status')}
-						>
-							<span class="mr-0">Remarks</span>
+						class="flex "on:click={() => sortTable('status')}>
+							<span >Remarks</span>
 							<span>{@html sortBy === 'status' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 				</tr>
 			</thead>
 
-			<tbody class="divide-y border-borderlineGrey">
+			<tbody class="bg-white">
 				{#each displayedInventory as { materialCode, materialName, unit, materialdescription, vendor, vendorTelephone, vendorEmail, vendorAddress, status }}
-					<tr class="grid grid-cols-custom-9 text-base items-center">
-						<td class="py-4 px-1">{materialCode}</td>
-						<td class="py-4 px-1">{materialName}</td>
-						<td class="py-4 px-1">{unit}</td>
-						<td class="py-4 px-1">{materialdescription}</td>
-						<td class="py-4 px-1">{vendor}</td>
-						<td class="py-4 px-1">{vendorTelephone}</td>
-						<td class="py-4 px-1">{vendorEmail}</td>
-						<td class="py-4 px-1">{vendorAddress}</td>
-						<td class={`py-4 px-1 ${getPendingClass(status)}`}>{status}</td>
+					<tr class="bg-white">
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{materialCode}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{materialName}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{unit}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{materialdescription}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{vendor}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{vendorTelephone}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{vendorEmail}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{vendorAddress}</td>
+						<td class={`p-3 text-sm text-gray-700 whitespace-nowrap ${getPendingClass(status)}`}>{status}</td>
 					</tr>
 				{/each}
 			</tbody>
@@ -208,7 +191,7 @@
 		<!-- Pagination Controls -->
 		<div class="flex justify-between mt-5 place-content-center">
 			<button
-				class="px-2 py-1 w-20 text-base  font-semibold bg-bgGrey text-black rounded-md"
+				class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md"
 				on:click={() => goToPage(currentPage - 1)}
 				disabled={currentPage === 1}
 			>

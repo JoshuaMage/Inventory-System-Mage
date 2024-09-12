@@ -108,7 +108,7 @@
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('datePurchase')}
 						>
-							<span class="mr-0">Date Purchase</span>
+							<span class="mr-0">Date</span>
 							<span>{@html sortBy === 'datePurchase' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
@@ -117,16 +117,16 @@
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('materialName')}
 						>
-							<span class="mr-0">Material Name</span>
+							<span class="mr-0">Mtrl Name</span>
 							<span>{@html sortBy === 'materialName' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-          <th>
+					<th>
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('materialCode')}
 						>
-							<span class="mr-0">Material Code</span>
+							<span class="mr-0">Mtrl Code</span>
 							<span>{@html sortBy === 'materialCode' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
@@ -139,13 +139,13 @@
 							<span>{@html sortBy === 'unit' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-				
+
 					<th>
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('purchaseqty')}
 						>
-							<span class="mr-0">Purchase Qty</span>
+							<span class="mr-0">Qty</span>
 							<span>{@html sortBy === 'purchaseqty' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
@@ -176,7 +176,7 @@
 							<span>{@html sortBy === 'purchaseNumber' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-          <th>
+					<th>
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendor')}
@@ -194,7 +194,7 @@
 							<span>{@html sortBy === 'vendorPhonenumber' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-          <th>
+					<th>
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorEmail')}
@@ -203,7 +203,7 @@
 							<span>{@html sortBy === 'vendorEmail' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-          <th>
+					<th>
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorAddress')}
@@ -212,7 +212,7 @@
 							<span>{@html sortBy === 'vendorAddress' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-          <th>
+					<th>
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('status')}
@@ -233,12 +233,12 @@
 						<td class="py-4 px-1">{unit}</td>
 						<td class="py-4 px-1">{purchaseqty}</td>
 						<td class="py-4 px-1">{stockin}</td>
-						<td class="py-4 px-1">{purchaseqty - stockin }</td>
-            <td class="py-4 px-1">{purchaseNumber}</td>
-            <td class="py-4 px-1">{vendor}</td>
-            <td class="py-4 px-1">{vendorPhonenumber}</td>
-            <td class="py-4 px-1">{vendorEmail}</td>
-            <td class="py-4 px-1">{vendorAddress}</td>
+						<td class="py-4 px-1">{purchaseqty - stockin}</td>
+						<td class="py-4 px-1">{purchaseNumber}</td>
+						<td class="py-4 px-1">{vendor}</td>
+						<td class="py-4 px-1">{vendorPhonenumber}</td>
+						<td class="py-4 px-1">{vendorEmail}</td>
+						<td class="py-4 px-1">{vendorAddress}</td>
 						<td class={`py-4 px-1 ${getPendingClass(status)}`}>{status}</td>
 					</tr>
 				{/each}
@@ -248,7 +248,7 @@
 		<!-- Pagination Controls -->
 		<div class="flex justify-between mt-5 place-content-center">
 			<button
-				class="px-2 py-1 w-20 text-base  font-semibold bg-bgGrey text-black rounded-md"
+				class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md"
 				on:click={() => goToPage(currentPage - 1)}
 				disabled={currentPage === 1}
 			>

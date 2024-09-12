@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 export const INVENTORY = writable([
 	{
+		id: 1,
 		materialName: 'Nails',
 		unit: 'kg',
 		materialdescription: 'High-quality steel nails for construction.',
@@ -26,9 +27,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/05/2024',
 		arrivalDate: '08/01/2024',
-		status: 'pending'
+		status: 'Pending'
 	},
 	{
+		id: 2,
 		materialName: 'Hammer',
 		unit: 'pc',
 		materialdescription: 'Durable claw hammer with a comfortable grip.',
@@ -55,9 +57,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/05/2024',
 		arrivalDate: '08/01/2024',
-		status: 'pending'
+		status: 'Pending'
 	},
 	{
+		id: 3,
 		materialName: 'Measuring Tape',
 		unit: 'meter',
 		materialdescription: 'Retractable measuring tape with a lock feature.',
@@ -84,9 +87,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/05/2024',
 		arrivalDate: '08/01/2024',
-		status: 'pending'
+		status: 'Pending'
 	},
 	{
+		id: 4,
 		materialName: 'Screwdriver',
 		unit: 'pc',
 		materialdescription: 'Multi-bit screwdriver for various screws.',
@@ -113,9 +117,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/05/2024',
 		arrivalDate: '08/01/2024',
-		status: 'pending'
+		status: 'Pending'
 	},
 	{
+		id: 5,
 		materialName: 'Wood Glue',
 		unit: 'liters',
 		materialdescription: 'Strong adhesive for woodworking projects.',
@@ -142,9 +147,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/08/2024',
 		arrivalDate: '08/01/2024',
-		status: 'pending'
+		status: 'Pending'
 	},
 	{
+		id: 6,
 		materialName: 'Pliers',
 		unit: 'pc',
 		materialdescription: 'Heavy-duty pliers for gripping and cutting.',
@@ -171,9 +177,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/08/2024',
 		arrivalDate: '08/01/2024',
-		status: 'pending'
+		status: 'Pending'
 	},
 	{
+		id: 7,
 		materialName: 'Sandpaper',
 		unit: 'pc',
 		materialdescription: 'Assorted grit sandpaper for smoothing surfaces.',
@@ -200,9 +207,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/08/2024',
 		arrivalDate: '08/01/2024',
-		status: 'pending'
+		status: 'Pending'
 	},
 	{
+		id: 8,
 		materialName: 'Drill Bits',
 		unit: 'pc',
 		materialdescription: 'Set of high-speed steel drill bits.',
@@ -229,9 +237,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/08/2024',
 		arrivalDate: '08/01/2024',
-		status: 'pending'
+		status: 'Pending'
 	},
 	{
+		id: 9,
 		materialName: 'Paint Brush',
 		unit: 'pc',
 		materialdescription: 'High-quality paint brush for smooth application.',
@@ -258,9 +267,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/08/2024',
 		arrivalDate: '08/01/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 10,
 		materialName: 'Wrench Set',
 		unit: 'pc',
 		materialdescription: 'Set of adjustable wrenches for various sizes.',
@@ -287,9 +297,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/24/2024',
 		etaDate: '07/12/2024',
 		arrivalDate: '08/14/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 11,
 		materialName: 'Utility Knife',
 		unit: 'pc',
 		materialdescription: 'Sharp utility knife with retractable blade.',
@@ -316,9 +327,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/24/2024',
 		etaDate: '07/12/2024',
 		arrivalDate: '08/14/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 12,
 		materialName: 'Level',
 		unit: 'pc',
 		materialdescription: 'Precision level for accurate measurements.',
@@ -345,9 +357,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/24/2024',
 		etaDate: '07/12/2024',
 		arrivalDate: '08/14/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 13,
 		materialName: 'Screws',
 		unit: 'kg',
 		materialdescription: 'Assorted screws for various applications.',
@@ -374,9 +387,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/24/2024',
 		etaDate: '07/12/2024',
 		arrivalDate: '08/14/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 14,
 		materialName: 'Caulking Gun',
 		unit: 'pc',
 		materialdescription: 'Heavy-duty caulking gun for sealants.',
@@ -403,9 +417,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/24/2024',
 		etaDate: '07/12/2024',
 		arrivalDate: '08/14/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 15,
 		materialName: 'Tape Measure',
 		unit: 'meter',
 		materialdescription: 'Durable tape measure with easy-read markings.',
@@ -432,9 +447,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/27/2024',
 		etaDate: '07/18/2024',
 		arrivalDate: '08/16/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 16,
 		materialName: 'Saw',
 		unit: 'pc',
 		materialdescription: 'Sharp hand saw for cutting wood.',
@@ -461,9 +477,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/27/2024',
 		etaDate: '07/18/2024',
 		arrivalDate: '08/16/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 17,
 		materialName: 'Bolt Cutter',
 		unit: 'pc',
 		materialdescription: 'Powerful bolt cutter for tough materials.',
@@ -490,9 +507,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/27/2024',
 		etaDate: '07/18/2024',
 		arrivalDate: '08/16/2024',
-		status: 'for checking'
+		status: 'Delay'
 	},
 	{
+		id: 18,
 		materialName: 'Chisel Set',
 		unit: 'pc',
 		materialdescription: 'Set of wood chisels for carving and shaping.',
@@ -519,9 +537,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/27/2024',
 		etaDate: '07/18/2024',
 		arrivalDate: '08/16/2024',
-		status: 'ok'
+		status: 'Arrive'
 	},
 	{
+		id: 19,
 		materialName: 'Workbench',
 		unit: 'pc',
 		materialdescription: 'Sturdy workbench with storage shelves.',
@@ -548,9 +567,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/27/2024',
 		etaDate: '07/18/2024',
 		arrivalDate: '08/16/2024',
-		status: 'ok'
+		status: 'Arrive'
 	},
 	{
+		id: 20,
 		materialName: 'Safety Glasses',
 		unit: 'pc',
 		materialdescription: 'Protective eyewear for workshop safety.',
@@ -577,9 +597,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/05/2024',
 		etaDate: '07/20/2024',
 		arrivalDate: '08/20/2024',
-		status: 'ok'
+		status: 'Arrive'
 	},
 	{
+		id: 21,
 		materialName: 'Socket Set',
 		unit: 'pc',
 		materialdescription: 'Complete set of sockets for various bolts.',
@@ -606,9 +627,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/05/2024',
 		etaDate: '07/20/2024',
 		arrivalDate: '08/20/2024',
-		status: 'ok'
+		status: 'Pending'
 	},
 	{
+		id: 22,
 		materialName: 'Tool Box',
 		unit: 'pc',
 		materialdescription: 'Portable tool box with multiple compartments.',
@@ -635,9 +657,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/05/2024',
 		etaDate: '07/20/2024',
 		arrivalDate: '08/20/2024',
-		status: 'ok'
+		status: 'Pending'
 	},
 	{
+		id: 23,
 		materialName: 'Work Gloves',
 		unit: 'pc',
 		materialdescription: 'Durable gloves for hand protection.',
@@ -664,9 +687,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/05/2024',
 		etaDate: '07/20/2024',
 		arrivalDate: '08/20/2024',
-		status: 'ok'
+		status: 'Arrive'
 	},
 	{
+		id: 24,
 		materialName: 'Drill',
 		unit: 'pc',
 		materialdescription: 'Cordless drill with variable speed settings.',
@@ -693,9 +717,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/05/2024',
 		etaDate: '07/20/2024',
 		arrivalDate: '08/20/2024',
-		status: 'ok'
+		status: 'Arrive'
 	},
 	{
+		id: 25,
 		materialName: 'Tape',
 		unit: 'meter',
 		materialdescription: 'Strong adhesive tape for various uses.',
@@ -722,9 +747,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/10/2024',
 		etaDate: '07/23/2024',
 		arrivalDate: '08/14/2024',
-		status: 'arrive'
+		status: 'Arrive'
 	},
 	{
+		id: 26,
 		materialName: 'Ladder',
 		unit: 'pc',
 		materialdescription: 'Foldable ladder for reaching high places.',
@@ -751,9 +777,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/10/2024',
 		etaDate: '07/23/2024',
 		arrivalDate: '08/14/2024',
-		status: 'arrive'
+		status: 'Arrive'
 	},
 	{
+		id: 27,
 		materialName: 'Flashlight',
 		unit: 'pc',
 		materialdescription: 'High-intensity flashlight for dark areas.',
@@ -780,9 +807,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/10/2024',
 		etaDate: '07/23/2024',
 		arrivalDate: '08/14/2024',
-		status: 'arrive'
+		status: 'Arrive'
 	},
 	{
+		id: 28,
 		materialName: 'Hex Keys',
 		unit: 'pc',
 		materialdescription: 'Set of hex keys for hexagonal bolts.',
@@ -809,9 +837,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/10/2024',
 		etaDate: '07/23/2024',
 		arrivalDate: '08/14/2024',
-		status: 'arrive'
+		status: 'Arrive'
 	},
 	{
+		id: 29,
 		materialName: 'Wire Cutter',
 		unit: 'pc',
 		materialdescription: 'Sharp wire cutter for clean cuts.',
@@ -838,9 +867,10 @@ export const INVENTORY = writable([
 		deliverDate: '06/10/2024',
 		etaDate: '07/23/2024',
 		arrivalDate: '08/14/2024',
-		status: 'arrive'
+		status: 'Arrive'
 	},
 	{
+		id: 30,
 		materialName: 'Hammer',
 		unit: 'pc',
 		datePurchase: '05/29/24',
@@ -866,6 +896,6 @@ export const INVENTORY = writable([
 		deliverDate: '06/15/2024',
 		etaDate: '07/05/2024',
 		arrivalDate: '08/01/2024',
-		status: 'arrive'
+		status: 'Arrive'
 	}
 ]);

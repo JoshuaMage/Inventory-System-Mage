@@ -26,8 +26,8 @@
 				</h1>
 			</div>
 
-			<div class="w-6/12 place-content-center justify-self-end">
-				<div class="grid grid-cols-4 text-center">
+			<div class="  place-content-center justify-self-end">
+				<div class="grid grid-cols-4 gap-2 text-center">
 					<!-- Products Dropdown -->
 					<div class="relative group flex justify-center">
 						<a href="/product" class="font-bold text-lg font-sans text-center">products</a>

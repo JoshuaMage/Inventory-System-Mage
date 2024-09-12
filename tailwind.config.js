@@ -12,6 +12,12 @@ export default {
       fontWeight: {
         normal: 400, // Replace with the desired weight
       },
+      width: {
+        tableWidth: "90vw"
+      },
+      height: {
+        tableHeight: "90vh"
+      },
       fontStyle: {
         normal: 'normal',
       },
@@ -38,7 +44,7 @@ export default {
         'custom-12': ' .8fr .8fr .8fr .3fr .8fr .6fr .8fr .9fr 1fr .8fr .8fr 1fr .8fr',
         'custom-15': ' 1fr 1fr .3fr 1.5fr .5fr .5fr .5fr .8fr .8fr .4fr .7fr .7fr 1fr .8fr 1fr',
       },
-     
+      
     },
   },
   plugins: [],

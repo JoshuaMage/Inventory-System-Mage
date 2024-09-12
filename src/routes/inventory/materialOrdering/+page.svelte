@@ -1,125 +1,65 @@
-<!-- 
+<script>
+	import { INVENTORY } from '$lib/materialStock';
+</script>
 
-   <script>
-	// Initial product list with quantities
-	let products = [
-	  { id: 1, name: 'Burger', quantity: 0 },
-	  { id: 2, name: 'Fries', quantity: 0 },
-	  { id: 3, name: 'Chicken', quantity: 0 },
-	  { id: 4, name: 'Pizza', quantity: 0 }
-	];
-	
-	let selectedProductId = null;
-	let quantityToAdd = 1;
-	
-	function selectProduct(event) {
-	  selectedProductId = Number(event.target.value);
-	}
-  
-	function addQuantity() {
-	  if (selectedProductId !== null) {
-		products = products.map(product =>
-		  product.id === selectedProductId
-			? { ...product, quantity: product.quantity + quantityToAdd }
-			: product
-		);
-	  }
-	}
-  </script>
-  
-  <style>
-	@tailwind base;
-	@tailwind components;
-	@tailwind utilities;
-  </style>
-  
-  <div class="p-4 max-w-md mx-auto">
-	<h1 class="text-2xl font-bold mb-4">Product Management</h1>
-  
-	<div class="mb-4">
-	  <select
-		on:change={selectProduct}
-		class="border p-2 w-full"
-	  >
-		<option value="" disabled selected>Select a product</option>
-		{#each products as product (product.id)}
-		  <option value={product.id} selected={product.id === selectedProductId}>
-			{product.name}
-		  </option>
-		{/each}
-	  </select>
+<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
+	<div class="overflow-auto rounded-lg shadow hidden md:block bg-bgdarkgrey mt-10">
+		<table class="w-full ">
+			<thead class="bg-bgGrey border-b-2 border-gray-100">
+				<tr>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">No.</th>
+					<th class=" p-3 text-sm font-semibold tracking-wide text-left">Mtrl Code</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Mtrl Name</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Unit</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Amount</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Order Qty</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Total Amount</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Date Purchase</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">ETD</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">ETA</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">ARR DATE</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Supplier</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Email</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each $INVENTORY as inventory}
+					<tr class="bg-white">
+						<td
+							class="p-3 text-sm text-gray-700 whitespace-nowraphover:underline hover:text-red-900"
+							>{inventory.id}</td
+						>
+						<td class=" p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.materialCode}</td>
+						<td class=" p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.materialName}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.unit}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.unitprice}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.purchaseqty}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap"
+							>{inventory.unitprice * inventory.purchaseqty}</td
+						>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.datePurchase}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.deliverDate}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.etaDate}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.arrivalDate}</td>
+						<td class=" p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.vendor}</td>
+						<td class="p-3 text-sm text-gray-700 whitespace-nowrap">{inventory.vendorEmail}</td>
+						<td
+							class="p-3 text-sm
+					"
+							><span
+								class={inventory.status === 'Pending'
+									? ' p-1.5 text-xs font-medium uppercase tracking-wider text-gray-800 bg-gray-200 rounded-lg bg-opacity-50'
+									: inventory.status === 'Delay'
+										? ' p-1.5 text-xs font-medium uppercase tracking-wider text-red-800 bg-red-200 rounded-lg bg-opacity-50'
+										: inventory.status === 'Arrive'
+											? ' p-1.5 text-xs font-medium uppercase tracking-wider text-green-800 bg-green-200 rounded-lg bg-opacity-50'
+											: ''}>{inventory.status}</span
+							></td
+						>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	</div>
-  
-	{#if selectedProductId !== null}
-	  <div class="mb-4">
-		<p class="mb-2">
-		  <span class="font-bold">Quantity:</span>
-		  {#each products as product (product.id)}
-			{#if product.id === selectedProductId}
-			  {product.quantity}
-			{/if}
-		  {/each}
-		</p>
-  
-		<input
-		  type="number"
-		  bind:value={quantityToAdd}
-		  min="1"
-		  class="border p-2 w-full mb-2"
-		/>
-		<button
-		  on:click={addQuantity}
-		  class="bg-blue-500 text-white p-2 w-full"
-		>
-		  Add Quantity
-		</button>
-	  </div>
-	{/if}
-  
-	<ul class="list-disc pl-5">
-	  {#each products as product (product.id)}
-		<li class="mb-2 flex items-center">
-		  <span class="flex-1">{product.name}: {product.quantity}</span>
-		</li>
-	  {/each}
-	</ul>
-  </div>
-   -->
-   <script>
-	// Options for the dropdowns
-	import {INVENTORY} from "$lib/materialStock"
-
-	// Number of dropdowns
-	const numberOfDropdowns = 14;
-
-  
-  
-	// Array to store selected values for each dropdown
-	let selectedValues = Array(numberOfDropdowns).fill('');
-  
-	// Function to handle change in dropdown
-	function handleChange(index, event) {
-	  selectedValues[index] = event.target.value;
-	}
-  </script>
-
-  
-  <div class="flex flex-wrap gap-1">
-	{#each Array(numberOfDropdowns).fill(0) as _, index}
-	  <div>
-		<label for={`dropdown${index + 1}`}>Item {index + 1}:</label>
-		<select 
-		  id={`dropdown${index + 1}`} 
-		  name={`item${index + 1}`} 
-		  bind:value={selectedValues[index]} 
-		  on:change={event => handleChange(index, event)}
-		  
-		>
-		  {#each INVENTORY as inventory}
-			<option value={option.value}>{option.text}</option>
-		  {/each}
-		</select>
-	  </div>
-	{/each}
-  </div>
-  
+</main>
