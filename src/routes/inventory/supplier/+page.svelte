@@ -63,7 +63,10 @@
 
 <main class="bg-bgGray bg-bgdarkgrey font-patrick text-black min-h-screen">
 	<div class="flex flex-col items-center text-center min-h-screen py-10 justify-center">
-		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y">
+		<table
+			class="bg-bgLightGray bg-bgGrey rounded-lg divide-y overflow-x-auto"
+			style="width: 1200px; height:auto;"
+		>
 			<thead>
 				<div class="flex justify-center pt-3">
 					<div class="relative w-2/4 max-w-5xl">
@@ -100,7 +103,7 @@
 						</svg>
 					</div>
 				</div>
-				<tr class="grid grid-cols-6 pt-8 justify-items-center">
+				<tr class="grid grid-cols-6 pt-8 justify-items-center ">
 					<th>
 						<button
 							class="flex items-center justify-center h-full"
@@ -163,12 +166,12 @@
 			<tbody class="divide-y border-borderlineGrey">
 				{#each displayedInventory as { vendor, vendorPhonenumber, vendorTelephone, vendorEmail, vendorAddress, vendeorBankAcc}}
 					<tr class="grid grid-cols-6 text-base">
-						<td class="py-4 px-1">{vendor}</td>
-						<td class="py-4 px-1">{vendorPhonenumber}</td>
-						<td class="py-4 px-1">{vendorTelephone}</td>
-						<td class="py-4 px-1">{vendorEmail}</td>
-						<td class="py-4 px-1">{vendorAddress}</td>
-						<td class="py-4 px-1">{vendeorBankAcc}</td>
+						<td class="py-4 px-2">{vendor}</td>
+						<td class="py-4 px-2">{vendorPhonenumber}</td>
+						<td class="py-4 px-2">{vendorTelephone}</td>
+						<td class="py-4 px-2">{vendorEmail}</td>
+						<td class="py-4 px-2">{vendorAddress}</td>
+						<td class="py-4 px-2">{vendeorBankAcc}</td>
 
 						
 					</tr>

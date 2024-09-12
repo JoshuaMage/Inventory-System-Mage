@@ -44,11 +44,11 @@
 			<p class="text-5xl text-white font-extrabold">Sign up to start using the app.</p>
 		</div>
 		<div
-			class="flex flex-col text-black w-3/5 border-4 border-white py-10 px-5 rounded hover:shadow-lg hover:shadow-white"
+			class="flex flex-col text-white w-3/5 border-4 border-white py-10 px-5 rounded hover:shadow-lg hover:shadow-white"
 		>
 			<h2 class="text-6xl font-bold mb-5 text-center text-white">Sign Up</h2>
 			<form class="flex flex-col justify-center" on:submit|preventDefault={onSubmit}>
-				<label for="id" class="text-black text-1.5xl font-bold">Employee-ID</label>
+				<label for="id" class="text-white text-1.5xl font-bold">Employee-ID</label>
 				<input
 					type="number"
 					name="id"
@@ -57,7 +57,7 @@
 					bind:value={employeeId}
 					required
 				/>
-				<label for="name" class="text-black text-1.5xl font-bold">Employee-Name</label>
+				<label for="name" class="text-white text-1.5xl font-bold">Employee-Name</label>
 				<input
 					type="text"
 					name="name"
@@ -66,7 +66,7 @@
 					bind:value={employeeName}
 					required
 				/>
-				<label for="password" class="text-black text-1.5xl font-bold">Password</label>
+				<label for="password" class="text-white text-1.5xl font-bold">Password</label>
 				<input
 					type="password"
 					name="password"
