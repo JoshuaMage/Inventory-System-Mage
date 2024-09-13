@@ -5,7 +5,7 @@
 
 	let INVENTORY = [];
 	let displayedInventory = [];
-	let sortBy = 'materialName';
+	let sortBy = 'vendor';
 	let sortOrder = 'asc';
 	let searchTerm = '';
 
@@ -61,50 +61,61 @@
 	$: filterAndSortData();
 </script>
 
-<main class="bg-bgGray bg-bgdarkgrey font-patrick text-black min-h-screen">
-	<div class="flex flex-col items-center text-center min-h-screen py-10 justify-center">
-		<table
-			class="bg-bgLightGray bg-bgGrey rounded-lg divide-y overflow-x-auto"
-			style="width: 1200px; height:auto;"
-		>
-			<thead>
-				<div class="flex justify-center pt-3">
-					<div class="relative w-2/4 max-w-5xl">
-						<input
-							type="text"
-							placeholder="Search by date, materialCode, materialName, unit"
-							class="pl-12 pr-4 py-2 border rounded-lg w-full bg-white focus:outline-none focus:ring-2 focus:ring-black"
-							bind:value={searchTerm}
-							on:input={() => {
-								currentPage = 1;
-								filterAndSortData();
-							}}
-						/>
-						<svg
-							class="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500"
-							viewBox="0 0 24 24"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
+<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
+	<div class=" overflow-auto md:block bg-bgdarkgrey absolute mt-24">
+		<table class=" bg-bgLightGray bg-bgGrey divide-y">
+			<thead class=" bg-bgGrey border-b-2 border-gray-100">
+				<tr>
+					<th colspan="12" class="text-center py-2">
+						<div class="flex justify-center">
+							<div class="relative w-full max-w-md">
+								<input
+									type="text"
+									placeholder="Search by vendor, PhoneNumber, email, Bank Account"
+									class="pl-12 pr-4 py-2 border rounded-lg w-full bg-white focus:outline-none focus:ring-2 focus:ring-black"
+									bind:value={searchTerm}
+									on:input={() => {
+										currentPage = 1;
+										filterAndSortData();
+									}}
+								/>
+								<svg
+									class="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500"
+									viewBox="0 0 24 24"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<g clip-path="url(#clip0)">
+										<rect width="24" height="24" fill="white"></rect>
+										<circle cx="10.5" cy="10.5" r="6.5" stroke="#000000" stroke-linejoin="round"
+										></circle>
+										<path
+											d="M19.6464 20.3536C19.8417 20.5488 20.1583 20.5488 20.3536 20.3536C20.5488 20.1583 20.5488 19.8417 20.3536 19.6464L19.6464 20.3536ZM20.3536 19.6464L15.3536 14.6464L14.6464 15.3536L19.6464 20.3536L20.3536 19.6464Z"
+											fill="#000000"
+										></path>
+									</g>
+									<defs>
+										<clipPath id="clip0">
+											<rect width="24" height="24" fill="white"></rect>
+										</clipPath>
+									</defs>
+								</svg>
+							</div>
+						</div>
+					</th>
+				</tr>
+
+				<tr>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
+						<button
+							class="flex items-center justify-center h-full"
+							on:click={() => sortTable('id')}
 						>
-							<g clip-path="url(#clip0)">
-								<rect width="24" height="24" fill="white"></rect>
-								<circle cx="10.5" cy="10.5" r="6.5" stroke="#000000" stroke-linejoin="round"
-								></circle>
-								<path
-									d="M19.6464 20.3536C19.8417 20.5488 20.1583 20.5488 20.3536 20.3536C20.5488 20.1583 20.5488 19.8417 20.3536 19.6464L19.6464 20.3536ZM20.3536 19.6464L15.3536 14.6464L14.6464 15.3536L19.6464 20.3536L20.3536 19.6464Z"
-									fill="#000000"
-								></path>
-							</g>
-							<defs>
-								<clipPath id="clip0">
-									<rect width="24" height="24" fill="white"></rect>
-								</clipPath>
-							</defs>
-						</svg>
-					</div>
-				</div>
-				<tr class="grid grid-cols-6 pt-8 justify-items-center ">
-					<th>
+							<span class="mr-0">ID</span>
+							<span>{@html sortBy === 'id' ? currentArrow : getArrow('desc')}</span>
+						</button>
+					</th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendor')}
@@ -113,7 +124,7 @@
 							<span>{@html sortBy === 'vendor' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorPhonenumber')}
@@ -122,7 +133,7 @@
 							<span>{@html sortBy === 'vendorPhonenumber' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorTelephone')}
@@ -131,7 +142,7 @@
 							<span>{@html sortBy === 'vendorTelephone' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorEmail')}
@@ -140,7 +151,7 @@
 							<span>{@html sortBy === 'vendorEmail' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorAddress')}
@@ -149,7 +160,7 @@
 							<span>{@html sortBy === 'vendorAddress' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th>
+					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
 						<button
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendeorBankAcc')}
@@ -158,22 +169,19 @@
 							<span>{@html sortBy === 'univendeorBankAcct' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-
-				
 				</tr>
 			</thead>
 
 			<tbody class="divide-y border-borderlineGrey">
-				{#each displayedInventory as { vendor, vendorPhonenumber, vendorTelephone, vendorEmail, vendorAddress, vendeorBankAcc}}
-					<tr class="grid grid-cols-6 text-base">
-						<td class="py-4 px-2">{vendor}</td>
-						<td class="py-4 px-2">{vendorPhonenumber}</td>
-						<td class="py-4 px-2">{vendorTelephone}</td>
-						<td class="py-4 px-2">{vendorEmail}</td>
-						<td class="py-4 px-2">{vendorAddress}</td>
-						<td class="py-4 px-2">{vendeorBankAcc}</td>
-
-						
+				{#each displayedInventory as { id, vendor, vendorPhonenumber, vendorTelephone, vendorEmail, vendorAddress, vendeorBankAcc }}
+				<tr class="bg-white hover:underline hover:font-semibold">
+					<td class=" p-4 text-sm text-gray-700 whitespace-nowrap w-24 pl-3">{id}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendor}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorPhonenumber}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorTelephone}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorEmail}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorAddress}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendeorBankAcc}</td>
 					</tr>
 				{/each}
 			</tbody>
@@ -181,7 +189,7 @@
 
 		<!-- Pagination Controls -->
 
-		<div class="flex justify-between mt-5 place-content-center">
+		<div class="flex justify-center mt-5 place-content-center">
 			<button
 				class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md"
 				on:click={() => goToPage(currentPage - 1)}
