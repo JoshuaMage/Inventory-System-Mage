@@ -62,8 +62,8 @@
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
-	<div class=" overflow-auto md:block bg-bgdarkgrey absolute mt-24">
-		<table class=" bg-bgLightGray bg-bgGrey divide-y">
+	<div class="overflow-auto rounded-lg shadow hidden md:block bg-bgdarkgrey mt-24">
+		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y">
 			<thead class=" bg-bgGrey border-b-2 border-gray-100">
 				<tr>
 					<th colspan="12" class="text-center py-2">
@@ -187,8 +187,11 @@
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-24">{unit}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32">{purchaseqty}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32">{stockout}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32">{purchaseqty - stockout}</td>
-						<td class={`p-4 text-sm text-gray-700 whitespace-nowrap w-24 ${getPendingClass(status)}`}
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32"
+							>{purchaseqty - stockout}</td
+						>
+						<td
+							class={`p-4 text-sm text-gray-700 whitespace-nowrap w-24 ${getPendingClass(status)}`}
 							>{status}</td
 						>
 					</tr>

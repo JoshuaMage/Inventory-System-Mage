@@ -63,11 +63,11 @@
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
-	<div class="overflow-auto rounded-lg md:block bg-bgdarkgrey absolute mt-24">
+	<div class="overflow-auto rounded-lg shadow hidden md:block bg-bgdarkgrey mt-24">
 		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y">
 			<thead class=" bg-bgGrey border-b-2 border-gray-100">
 				<tr>
-					<th  colspan="14" class="text-center py-2">
+					<th colspan="14" class="text-center py-2">
 						<div class="flex justify-center">
 							<div class="relative w-full max-w-md">
 								<input
@@ -241,7 +241,7 @@
 			<tbody class="divide-y border-borderlineGrey">
 				{#each displayedInventory as { id, datePurchase, materialName, materialCode, unit, vendor, purchaseqty, stockin, pendingQty, purchaseNumber, vendorPhonenumber, vendorEmail, vendorAddress, status }}
 					<tr class="bg-white hover:underline hover:font-semibold">
-						<td class=" p-4 text-sm   text-gray-700 whitespace-nowrap w-20 pl-3">{id}</td>
+						<td class=" p-4 text-sm text-gray-700 whitespace-nowrap w-20 pl-3">{id}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{datePurchase}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{materialName}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{materialCode}</td>
@@ -254,7 +254,9 @@
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-28">{vendorPhonenumber}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-28">{vendorEmail}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-28">{vendorAddress}</td>
-						<td class={`p-4 text-sm text-gray-700 whitespace-nowrap ${getPendingClass(status)}`}>{status}</td>
+						<td class={`p-4 text-sm text-gray-700 whitespace-nowrap ${getPendingClass(status)}`}
+							>{status}</td
+						>
 					</tr>
 				{/each}
 			</tbody>

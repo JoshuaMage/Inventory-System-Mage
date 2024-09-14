@@ -37,8 +37,21 @@ export default {
 				bgdarkgrey: '#434343',
 				bgBlack: '#191717',
 				borderlineGrey: '#F5F7F8'
-			}
+			},
 		}
 	},
-	plugins: []
+	plugins: [
+		function ({ addUtilities }) {
+			addUtilities({
+				'.scrollbar-hide': {
+					overflow: 'auto',
+					'-ms-overflow-style': 'none', /* IE and Edge */
+					'scrollbar-width': 'none', /* Firefox */
+				},
+				'.scrollbar-hide::-webkit-scrollbar': {
+					display: 'none', /* Safari and Chrome */
+				},
+			}, ['responsive', 'hover']);
+		}
+	]
 };

@@ -63,8 +63,8 @@
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
-	<div class=" overflow-auto rounded-lg md:block bg-bgdarkgrey absolute mt-24">
-		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y">
+	<div class="overflow-auto rounded-lg shadow hidden md:block bg-bgdarkgrey mt-24">
+		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y ">
 			<thead class=" bg-bgGrey border-b-2 border-gray-100">
 				<tr>
 					<th colspan="12" class="text-center py-2">
