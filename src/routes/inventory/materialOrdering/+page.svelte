@@ -243,7 +243,7 @@
 								{/each}
 								<div class="w-36 flex flex-col">Order Qty: <span> {item.orderQty}</span></div>
 								<div class="w-36 flex flex-col">Total Amount: <span>{computeTotal(item)}</span></div>
-								<div class="w-36 flex flex-col">Date Purchase: <span></span> {item.datePurchase}</div>
+								<div class="w-36 flex flex-col">Date Purchase:  {item.datePurchase}</div>
 								<div class="w-36 flex flex-col">ETD: {item.etd}</div>
 								<div class="w-36 flex flex-col">ETA: {item.eta}</div>
 								<div class="w-36 flex flex-col">ARR Date: {item.arrivalDate}</div>
