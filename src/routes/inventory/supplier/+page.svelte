@@ -127,10 +127,10 @@
 					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendorPhonenumber')}
+							on:click={() => sortTable('vendorPhoneNumber')}
 						>
 							<span class="mr-0">Phone Number</span>
-							<span>{@html sortBy === 'vendorPhonenumber' ? currentArrow : getArrow('desc')}</span>
+							<span>{@html sortBy === 'vendorPhoneNumber' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
@@ -163,25 +163,25 @@
 					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendeorBankAcc')}
+							on:click={() => sortTable('vendorBankAcc')}
 						>
 							<span class="mr-0">Banck Account</span>
-							<span>{@html sortBy === 'univendeorBankAcct' ? currentArrow : getArrow('desc')}</span>
+							<span>{@html sortBy === 'univendorBankAcct' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 				</tr>
 			</thead>
 
 			<tbody class="divide-y border-borderlineGrey">
-				{#each displayedInventory as { id, vendor, vendorPhonenumber, vendorTelephone, vendorEmail, vendorAddress, vendeorBankAcc }}
+				{#each displayedInventory as { id, vendor, vendorPhoneNumber, vendorTelephone, vendorEmail, vendorAddress, vendorBankAcc }}
 				<tr class="bg-white hover:underline hover:font-semibold">
 					<td class=" p-4 text-sm text-gray-700 whitespace-nowrap w-24 pl-3">{id}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendor}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorPhonenumber}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorPhoneNumber}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorTelephone}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorEmail}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorAddress}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendeorBankAcc}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorBankAcc}</td>
 					</tr>
 				{/each}
 			</tbody>

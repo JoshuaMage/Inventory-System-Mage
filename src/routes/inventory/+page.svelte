@@ -63,7 +63,7 @@
 
 <main class="bg-bgGray bg-bgdarkgrey font-patrick text-black min-h-screen">
 	<div class="flex flex-col items-center text-center min-h-screen py-10 justify-center">
-		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y  w-3/4 overflow-auto">
+		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y w-3/4 overflow-auto">
 			<thead>
 				<div class="flex justify-center pt-3">
 					<div class="relative w-2/4 max-w-5xl">

@@ -147,10 +147,10 @@
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('materialdescription')}
+							on:click={() => sortTable('materialDescription')}
 						>
 							<span class="mr-0">Material Description</span>
-							<span>{@html sortBy === 'materialdescription' ? currentArrow : getArrow('desc')}</span
+							<span>{@html sortBy === 'materialDescription' ? currentArrow : getArrow('desc')}</span
 							>
 						</button>
 					</th>
@@ -203,13 +203,13 @@
 			</thead>
 
 			<tbody class="divide-y border-borderlineGrey">
-				{#each displayedInventory as { id, materialCode, materialName, unit, materialdescription, vendor, vendorTelephone, vendorEmail, vendorAddress, status }}
+				{#each displayedInventory as { id, materialCode, materialName, unit, materialDescription, vendor, vendorTelephone, vendorEmail, vendorAddress, status }}
 					<tr class="bg-white hover:underline hover:font-semibold">
 						<td class=" p-4 text-sm text-gray-700 whitespace-nowrap w-20 pl-3">{id}</td>
 						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{materialCode}</td>
 						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{materialName}</td>
 						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{unit}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{materialdescription}</td>
+						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{materialDescription}</td>
 						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap w-32">{vendor}</td>
 						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap w-32">{vendorTelephone}</td>
 						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap w-32">{vendorEmail}</td>

@@ -157,19 +157,19 @@
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('purchaseqty')}
+							on:click={() => sortTable('purchaseQty')}
 						>
 							<span class="mr-0">Qty</span>
-							<span>{@html sortBy === 'purchaseqty' ? currentArrow : getArrow('desc')}</span>
+							<span>{@html sortBy === 'purchaseQty' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('availablematerial')}
+							on:click={() => sortTable('availableMaterial')}
 						>
 							<span class="mr-0">Stock-in</span>
-							<span>{@html sortBy === 'availablematerial' ? currentArrow : getArrow('desc')}</span>
+							<span>{@html sortBy === 'availableMaterial' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
@@ -202,10 +202,10 @@
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendorPhonenumber')}
+							on:click={() => sortTable('vendorPhoneNumber')}
 						>
 							<span class="mr-0">Phone#</span>
-							<span>{@html sortBy === 'vendorPhonenumber' ? currentArrow : getArrow('desc')}</span>
+							<span>{@html sortBy === 'vendorPhoneNumber' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
@@ -239,19 +239,19 @@
 			</thead>
 
 			<tbody class="divide-y border-borderlineGrey">
-				{#each displayedInventory as { id, datePurchase, materialName, materialCode, unit, vendor, purchaseqty, stockin, pendingQty, purchaseNumber, vendorPhonenumber, vendorEmail, vendorAddress, status }}
+				{#each displayedInventory as { id, datePurchase, materialName, materialCode, unit, vendor, purchaseQty, stockIn, pendingQty, purchaseNumber, vendorPhoneNumber, vendorEmail, vendorAddress, status }}
 					<tr class="bg-white hover:underline hover:font-semibold">
 						<td class=" p-4 text-sm text-gray-700 whitespace-nowrap w-20 pl-3">{id}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{datePurchase}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{materialName}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{materialCode}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-20">{unit}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-20">{purchaseqty}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{stockin}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{purchaseqty - stockin}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-20">{purchaseQty}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{stockIn}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{purchaseQty - stockIn}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{purchaseNumber}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{vendor}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-28">{vendorPhonenumber}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-28">{vendorPhoneNumber}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-28">{vendorEmail}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-28">{vendorAddress}</td>
 						<td class={`p-4 text-sm text-gray-700 whitespace-nowrap ${getPendingClass(status)}`}

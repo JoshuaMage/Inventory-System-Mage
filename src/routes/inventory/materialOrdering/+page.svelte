@@ -26,10 +26,10 @@
 					materialName: '',
 					unit: '',
 					vendor: '',
-					vendorPhonenumber: '',
+					vendorPhoneNumber: '',
 					vendorEmail: '',
 					vendorAddress: '',
-					unitprice: '',
+					uniPrice: '',
 					status: ''
 				},
 				text: '',
@@ -60,10 +60,10 @@
 
 					if (selectedMaterial) {
 						updatedSelections.materialCode = selectedMaterial.materialCode;
-						updatedSelections.unitprice = selectedMaterial.unitprice;
+						updatedSelections.uniPrice = selectedMaterial.uniPrice;
 						updatedSelections.unit = selectedMaterial.unit;
 						updatedSelections.vendor = selectedMaterial.vendor;
-						updatedSelections.vendorPhonenumber = selectedMaterial.vendorPhonenumber;
+						updatedSelections.vendorPhoneNumber = selectedMaterial.vendorPhoneNumber;
 						updatedSelections.vendorEmail = selectedMaterial.vendorEmail;
 						updatedSelections.vendorAddress = selectedMaterial.vendorAddress;
 					}
@@ -122,7 +122,7 @@
 				text: column.text,
 				selections: column.selections,
 				orderQty: column.orderQty,
-				unitprice: column.selections.unitprice,
+				uniPrice: column.selections.uniPrice,
 				datePurchase: column.datePurchase,
 				etd: column.etd,
 				eta: column.eta,
@@ -131,37 +131,34 @@
 		}
 	}
 
-	// Compute the total based on unitprice and orderQty
+	// Compute the total based on uniPrice and orderQty
 	function computeTotal(column) {
-		const unitprice = parseFloat(column.selections.unitprice) || 0;
+		const uniPrice = parseFloat(column.selections.uniPrice) || 0;
 		const orderQty = parseFloat(column.orderQty) || 0;
-		return unitprice * orderQty;
+		return uniPrice * orderQty;
 	}
 </script>
 
-<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
-	<div class="w-full min-w-fit max-w-fit px-4">
-		<div class="overflow-auto rounded-lg shadow hidden md:block mt-24">
-			<div class="flex flex-col items-center bg-bgLightGray">
-				<div class="flex gap-0">
-					{#each ['Mtrl Code', 'Mtrl Name', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
+<main class="grid grid-rows-2 w-screen overflow-hidden min-h-screen bg-bgdarkgrey font-patrick text-black m-0 p-0">
+	<div class="flex flex-wrap justify-center">
+		<div class="overflow-hidden rounded-lg shadow hidden md:block mt-24">
+			<div class="flex flex-col justify-between items-center bg-bgLightGray">
+				<div class="flex flex-wrap">
+					{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
 						<div
-							class=" h-14 px-4 py-2 border border-gray-300 bg-bgGrey border-none m-0 place-content-center w-32"
+							class="border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
 						>
 							{header}
 						</div>
 					{/each}
 				</div>
-			</div>
-
-			<div class="bg-white my-4">
-				<!-- Dynamic Columns -->
-				{#each columns as column (column.id)}
-					<div class="flex justify-center">
-						<div class="flex gap-0 items-center" id={column.id}>
-							{#each ['materialCode', 'materialName', 'unit', 'vendor', 'vendorPhonenumber', 'vendorEmail', 'vendorAddress', 'unitprice', 'status'] as field}
+				<div class=" bg-white py-2">
+					<!-- Dynamic Columns -->
+					{#each columns as column (column.id)}
+						<div class="flex gap-0" id={column.id}>
+							{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}
 								<select
-									class="border-none border-gray-300 h-12 w-32"
+									class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 									value={column.selections[field]}
 									on:change={(event) => handleSelectChange(event, column.id, field)}
 								>
@@ -173,110 +170,125 @@
 							<input
 								type="number"
 								placeholder="Order Qty"
-								class="w-32 border-gray-300 p-2 border-none h-12"
+								class=" border-gray-300 border-none sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 								value={column.orderQty}
 								on:input={(event) => handleInputChange(event, column.id, 'orderQty')}
 							/>
 							<div
-								class="border bg-white w-32 border-gray-300 p-2 border-none h-12 place-content-center"
+								class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 							>
 								{computeTotal(column)}
 							</div>
 							<input
 								type="date"
 								placeholder="Date Purchase"
-								class="w-32 border-gray-300 p-2 border-none h-12"
+								class=" border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 								value={column.datePurchase}
 								on:input={(event) => handleInputChange(event, column.id, 'datePurchase')}
 							/>
 							<input
 								type="date"
 								placeholder="ETD"
-								class="w-32 border-gray-300 p-2 border-none h-12"
+								class=" border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 								value={column.etd}
 								on:input={(event) => handleInputChange(event, column.id, 'etd')}
 							/>
 							<input
 								type="date"
 								placeholder="ETA"
-								class="w-32 border-gray-300 p-2 border-none h-12"
+								class=" border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 								value={column.eta}
 								on:input={(event) => handleInputChange(event, column.id, 'eta')}
 							/>
 							<input
 								type="date"
 								placeholder="ARR Date"
-								class="w-32 border-gray-300 p-2 border-none h-12"
+								class=" border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 								value={column.arrivalDate}
 								on:input={(event) => handleInputChange(event, column.id, 'arrivalDate')}
 							/>
 						</div>
+					{/each}
+				</div>
+
+				<div class="overflow-hidden">
+					{#if formError}
+						<div class="text-red-500 mt-2 w-errorwidth bg-white">
+							{formError}
+						</div>
+					{/if}
+				</div>
+
+				<div class="w-full flex flex-col justify-end gap-2 bg-white overflow-hidden">
+					<div class="flex gap-2 py-2 justify-end">
+						<button
+							on:click={addColumn}
+							class=" w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-blue-200 hover:bg-blue-700"
+						>
+							Add Column
+						</button>
+
+						<button
+							on:click={handleSubmit}
+							class=" w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700"
+						>
+							Submit
+						</button>
+
+						<button
+							on:click={() => (columns = [])}
+							class="  w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700"
+						>
+							Remove All
+						</button>
 					</div>
-				{/each}
-
-				<!-- Remove All Button -->
-
-				<!-- Single Error Message -->
-				{#if formError}
-					<div class="text-red-500 mt-2">
-						{formError}
-					</div>
-				{/if}
-				<!-- Add Column Button -->
-
-				<!-- Output Section -->
+				</div>
 			</div>
+		</div>
+	</div>
 
-			<div class="flex justify-start mt-4">
-				<button
-					on:click={() => (columns = [])}
-					class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-				>
-					Remove All
-				</button>
-			</div>
-
-			<div class="flex justify-end">
-				<button
-					on:click={addColumn}
-					class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-				>
-					Add Column
-				</button>
-
-				<!-- Submit Button -->
-				<button
-					on:click={handleSubmit}
-					class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-4"
-				>
-					Submit
-				</button>
-			</div>
-
-			<div class="mt-6 bg-white">
-				{#if output.length > 0}
-					<h2 class="text-2xl font-bold mb-2">Form Output:</h2>
-					<div class="flex flex-col">
-						{#each output as item, index}
-							<div key={index} class="flex mb-2 items-center">
-								{#each ['materialCode', 'materialName', 'unit', 'vendor', 'vendorPhonenumber', 'vendorEmail', 'vendorAddress', 'unitprice', 'status'] as field}
-									<div class=" flex flex-col w-32">{field}: {item.selections[field]}</div>
-								{/each}
-								<div class=" flex flex-col w-32">Order Qty: <span> {item.orderQty}</span></div>
-								<div class=" flex flex-col w-32">
-									Total Amount: <span>{computeTotal(item)}</span>
+	<div class="flex flex-wrap justify-center">
+		<div class="overflow-hidden rounded-lg shadow hidden md:block bg-white">
+			{#if output.length > 0}
+				<div class="flex flex-wrap">
+					{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
+						<div
+							class="border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+						>
+							{header}
+						</div>
+					{/each}
+				</div>
+				<div class="flex flex-col">
+					{#each output as item, index}
+						<div key={index} class="flex mb-2 items-center">
+							{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}
+								<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+									{item.selections[field]}
 								</div>
-								<div class=" flex flex-col w-32">
-									Date Purchase: <span> {item.datePurchase}</span>
-								</div>
-								<div class=" flex flex-col w-32">ETD: <span>{item.etd}</span></div>
-								<div class=" flex flex-col w-32">ETA: <span>{item.eta}</span></div>
-								<div class=" flex flex-col w-32">ARR Date: <span>{item.arrivalDate}</span></div>
+							{/each}
+							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+								{item.orderQty}
 							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
+							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+								{computeTotal(item)}
+							</div>
+							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+								{item.datePurchase}
+							</div>
+							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+								{item.etd}
+							</div>
+							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+								{item.eta}
+							</div>
+							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+								{item.arrivalDate}
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		</div>
 	</div>
 </main>

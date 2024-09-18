@@ -1,5 +1,9 @@
 {
-  "projects": {
-    "default": "inventory-system-mage"
-  }
+	"projects": {
+		"default": "inventory-system-mage",
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"[javascript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		}
+	}
 }

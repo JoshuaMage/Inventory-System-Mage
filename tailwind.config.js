@@ -2,6 +2,22 @@
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
+		screens: {
+			'sm': '640px',
+			// => @media (min-width: 640px) { ... }
+	  
+			'md': '768px',
+			// => @media (min-width: 768px) { ... }
+	  
+			'lg': '1024px',
+			// => @media (min-width: 1024px) { ... }
+	  
+			'xl': '1280px',
+			// => @media (min-width: 1280px) { ... }
+	  
+			'2xl': '1536px',
+			// => @media (min-width: 1536px) { ... }
+		  },
 		extend: {
 			fontFamily: {
 				patrick: ['"Lekton"', 'monospace'] // Add this line
@@ -13,7 +29,8 @@ export default {
 				normal: 400 // Replace with the desired weight
 			},
 			width: {
-				tableWidth: '90vw'
+				tableWidth: '90vw',
+				errorwidth: '1680px',
 			},
 			height: {
 				tableHeight: '90vh'

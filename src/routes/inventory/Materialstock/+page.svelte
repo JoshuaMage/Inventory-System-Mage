@@ -145,10 +145,10 @@
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('materialdescription')}
+							on:click={() => sortTable('materialDescription')}
 						>
 							<span class="mr-0">Material Description</span>
-							<span>{@html sortBy === 'materialdescription' ? currentArrow : getArrow('desc')}</span
+							<span>{@html sortBy === 'materialDescription' ? currentArrow : getArrow('desc')}</span
 							>
 						</button>
 					</th>
@@ -177,18 +177,18 @@
 			</thead>
 
 			<tbody class="divide-y border-borderlineGrey">
-				{#each displayedInventory as { id, date, materialCode, materialName, materialdescription, unit, stockout, purchaseqty, status }}
+				{#each displayedInventory as { id, date, materialCode, materialName, materialDescription, unit, stockOut, purchaseQty, status }}
 					<tr class="bg-white hover:underline hover:font-semibold">
 						<td class=" p-4 text-sm text-gray-700 whitespace-nowrap w-20 pl-3">{id}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{date}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{materialCode}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{materialName}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{materialdescription}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap">{materialDescription}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-24">{unit}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32">{purchaseqty}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32">{stockout}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32">{purchaseQty}</td>
+						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32">{stockOut}</td>
 						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-32"
-							>{purchaseqty - stockout}</td
+							>{purchaseQty - stockOut}</td
 						>
 						<td
 							class={`p-4 text-sm text-gray-700 whitespace-nowrap w-24 ${getPendingClass(status)}`}
