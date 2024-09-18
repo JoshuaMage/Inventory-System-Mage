@@ -1,6 +1,8 @@
 <script>
+	import { db } from '$lib/firebaseConfig';
+	import { ref, set, onValue } from 'firebase/database';
 	import { INVENTORY } from '$lib/materialStock';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	let columns = [];
 	let output = [];
@@ -14,6 +16,14 @@
 	onDestroy(() => {
 		unsubscribe();
 	});
+
+	onMount(() => {
+		const outputRef = ref (db, 'outputs');
+		onValue(outputRef, (snapshot) => {
+			const data = snapshot.val();
+			
+		})
+	})
 
 	// Function to add a new column
 	function addColumn() {
@@ -116,7 +126,7 @@
 	}
 
 	// Function to submit the form
-	function handleSubmit() {
+	async function handleSubmit() {
 		if (validateColumns()) {
 			output = columns.map((column) => ({
 				text: column.text,
@@ -128,6 +138,9 @@
 				eta: column.eta,
 				arrivalDate: column.arrivalDate
 			}));
+			const outputRef = ref(db, 'outputs');
+			const newOutputRef = ref(db, 'outputs' + Date.now());
+			await set(newOutputRef, output);
 		}
 	}
 
@@ -139,11 +152,13 @@
 	}
 </script>
 
-<main class="grid grid-rows-2 w-screen overflow-hidden min-h-screen bg-bgdarkgrey font-patrick text-black m-0 p-0">
-	<div class="flex flex-wrap justify-center">
+<main
+	class="flex flex-col gap-8 w-screen overflow-hidden min-h-screen bg-bgdarkgrey font-patrick text-black m-0 p-0"
+>
+	<div class="flex justify-center">
 		<div class="overflow-hidden rounded-lg shadow hidden md:block mt-24">
 			<div class="flex flex-col justify-between items-center bg-bgLightGray">
-				<div class="flex flex-wrap">
+				<div class="flex font-bold">
 					{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
 						<div
 							class="border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
@@ -247,13 +262,13 @@
 		</div>
 	</div>
 
-	<div class="flex flex-wrap justify-center">
-		<div class="overflow-hidden rounded-lg shadow hidden md:block bg-white">
+	<div class="flex justify-center">
+		<div class="overflow-hidden rounded-lg shadow hidden md:block font-bold bg-white">
 			{#if output.length > 0}
-				<div class="flex flex-wrap">
+				<div class="flex">
 					{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
 						<div
-							class="border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class="border border-gray-300 bg-gray-700 text-white border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
 						>
 							{header}
 						</div>
@@ -263,26 +278,40 @@
 					{#each output as item, index}
 						<div key={index} class="flex mb-2 items-center">
 							{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}
-								<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+								<div
+									class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
 									{item.selections[field]}
 								</div>
 							{/each}
-							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+							<div
+								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+							>
 								{item.orderQty}
 							</div>
-							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+							<div
+								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+							>
 								{computeTotal(item)}
 							</div>
-							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+							<div
+								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+							>
 								{item.datePurchase}
 							</div>
-							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+							<div
+								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+							>
 								{item.etd}
 							</div>
-							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+							<div
+								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+							>
 								{item.eta}
 							</div>
-							<div class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center">
+							<div
+								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+							>
 								{item.arrivalDate}
 							</div>
 						</div>
