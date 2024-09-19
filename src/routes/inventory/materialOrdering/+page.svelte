@@ -18,12 +18,11 @@
 	});
 
 	onMount(() => {
-		const outputRef = ref (db, 'outputs');
+		const outputRef = ref(db, 'outputs');
 		onValue(outputRef, (snapshot) => {
 			const data = snapshot.val();
-			
-		})
-	})
+		});
+	});
 
 	// Function to add a new column
 	function addColumn() {
@@ -126,9 +125,12 @@
 	}
 
 	// Function to submit the form
+	
+	// Function to submit the form
 	async function handleSubmit() {
 		if (validateColumns()) {
-			output = columns.map((column) => ({
+			const newEntries = columns.map((column) => ({
+				id: Date.now() + Math.random(), // Unique ID for each entry
 				text: column.text,
 				selections: column.selections,
 				orderQty: column.orderQty,
@@ -138,10 +140,14 @@
 				eta: column.eta,
 				arrivalDate: column.arrivalDate
 			}));
-			const outputRef = ref(db, 'outputs');
-			const newOutputRef = ref(db, 'outputs' + Date.now());
-			await set(newOutputRef, output);
+			output = [...output, ...newEntries]; // Append new entries to the output
+			// Clear columns if needed after submission
 		}
+	}
+
+	// Function to delete an output entry
+	function handleDelete(id) {
+		output = output.filter(item => item.id !== id); // Remove the item with the matching id
 	}
 
 	// Compute the total based on uniPrice and orderQty
@@ -276,44 +282,36 @@
 				</div>
 				<div class="flex flex-col">
 					{#each output as item, index}
-						<div key={index} class="flex mb-2 items-center">
+						<div key={item.id} class="flex mb-2 items-center">
 							{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}
-								<div
-									class=" flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
+								<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
 									{item.selections[field]}
 								</div>
 							{/each}
-							<div
-								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-							>
+							<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
 								{item.orderQty}
 							</div>
-							<div
-								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-							>
+							<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
 								{computeTotal(item)}
 							</div>
-							<div
-								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-							>
+							<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
 								{item.datePurchase}
 							</div>
-							<div
-								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-							>
+							<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
 								{item.etd}
 							</div>
-							<div
-								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-							>
+							<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
 								{item.eta}
 							</div>
-							<div
-								class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-							>
+							<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
 								{item.arrivalDate}
 							</div>
+							<button
+								on:click={() => handleDelete(item.id)}
+								class="bg-red-500 text-white px-2 py-1 rounded"
+							>
+								Delete
+							</button>
 						</div>
 					{/each}
 				</div>
