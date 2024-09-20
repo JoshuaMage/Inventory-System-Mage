@@ -63,8 +63,8 @@
 
 <main class="bg-bgGray bg-bgdarkgrey font-patrick text-black min-h-screen">
 	<div class="flex flex-col items-center text-center min-h-screen py-10 justify-center">
-		<table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y w-3/4 overflow-auto">
-			<thead>
+		<table class="bg-bgLightGray bg-white rounded-lg divide-y w-3/4 overflow-auto">
+			<thead class="bg-bgGrey">
 				<div class="flex justify-center pt-3">
 					<div class="relative w-2/4 max-w-5xl">
 						<input
@@ -113,10 +113,10 @@
 					<th>
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendorPhonenumber')}
+							on:click={() => sortTable('vendorPhoneNumber')}
 						>
 							<span class="mr-0">Phone Number</span>
-							<span>{@html sortBy === 'vendorPhonenumber' ? currentArrow : getArrow('desc')}</span>
+							<span>{@html sortBy === 'vendorPhoneNumber' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 					<th>
@@ -149,10 +149,10 @@
 					<th>
 						<button
 							class="flex items-center justify-center h-full"
-							on:click={() => sortTable('vendeorBankAcc')}
+							on:click={() => sortTable('vendorBankAcc')}
 						>
-							<span class="mr-0">Banck Account</span>
-							<span>{@html sortBy === 'univendeorBankAcct' ? currentArrow : getArrow('desc')}</span>
+							<span class="mr-0">Bank Account</span>
+							<span>{@html sortBy === 'vendorBankAcc' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
 
@@ -169,14 +169,14 @@
 			</thead>
 
 			<tbody class="divide-y border-borderlineGrey">
-				{#each displayedInventory as { vendor, vendorPhonenumber, vendorTelephone, vendorEmail, vendorAddress, vendeorBankAcc, status }}
+				{#each displayedInventory as { vendor, vendorPhoneNumber, vendorTelephone, vendorEmail, vendorAddress, vendorBankAcc, status }}
 					<tr class="grid grid-cols-7 text-base">
 						<td class="py-4 px-1">{vendor}</td>
-						<td class="py-4 px-1">{vendorPhonenumber}</td>
+						<td class="py-4 px-1">{vendorPhoneNumber}</td>
 						<td class="py-4 px-1">{vendorTelephone}</td>
 						<td class="py-4 px-1">{vendorEmail}</td>
 						<td class="py-4 px-1">{vendorAddress}</td>
-						<td class="py-4 px-1">{vendeorBankAcc}</td>
+						<td class="py-4 px-1">{vendorBankAcc}</td>
 
 						<td class={`py-4 px-1 ${getPendingClass(status)}`}>{status}</td>
 					</tr>
