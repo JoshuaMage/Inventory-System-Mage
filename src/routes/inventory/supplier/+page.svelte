@@ -165,7 +165,7 @@
 							class="flex items-center justify-center h-full"
 							on:click={() => sortTable('vendorBankAcc')}
 						>
-							<span class="mr-0">Banck Account</span>
+							<span class="mr-0">Bank Account</span>
 							<span>{@html sortBy === 'univendorBankAcct' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
