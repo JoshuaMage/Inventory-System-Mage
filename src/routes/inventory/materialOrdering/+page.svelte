@@ -1,15 +1,18 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { db } from '$lib/firebaseConfig'; // Ensure this imports your Firebase config
-	import { ref, set, onValue, remove } from 'firebase/database';
+	import { db } from '$lib/firebaseConfig';
+	import { ref, set, onValue } from 'firebase/database';
 	import { INVENTORY } from '$lib/materialStock';
 	import { materialStore } from '$lib/materialOrder';
 
 	let columns = [];
 	let output = [];
-	let submittedItems = [];
 	let formError = '';
 	let inventoryData = [];
+	let status = ['Arrive', 'Pending', 'Delay'];
+	let editingId = null;
+	let tempStatus = '';
+
 	const unsubscribe = INVENTORY.subscribe((value) => {
 		inventoryData = value;
 	});
@@ -34,6 +37,11 @@
 				console.error('Error fetching data: ', error);
 			}
 		);
+
+		const storedItems = localStorage.getItem('submittedItems');
+		if (storedItems) {
+			output = JSON.parse(storedItems);
+		}
 	});
 
 	function addColumn() {
@@ -52,7 +60,6 @@
 					uniPrice: '',
 					status: ''
 				},
-				text: '',
 				orderQty: '',
 				datePurchase: '',
 				etd: '',
@@ -65,6 +72,8 @@
 	function handleInputChange(event, id, field) {
 		const value = event.target.value;
 		columns = columns.map((column) => (column.id === id ? { ...column, [field]: value } : column));
+		saveToLocalStorage();
+		saveToFirebase();
 	}
 
 	function handleSelectChange(event, id, field) {
@@ -76,13 +85,15 @@
 				if (field === 'materialName') {
 					const selectedMaterial = inventoryData.find((item) => item.materialName === value);
 					if (selectedMaterial) {
-						updatedSelections.materialCode = selectedMaterial.materialCode;
-						updatedSelections.uniPrice = selectedMaterial.uniPrice;
-						updatedSelections.unit = selectedMaterial.unit;
-						updatedSelections.vendor = selectedMaterial.vendor;
-						updatedSelections.vendorPhoneNumber = selectedMaterial.vendorPhoneNumber;
-						updatedSelections.vendorEmail = selectedMaterial.vendorEmail;
-						updatedSelections.vendorAddress = selectedMaterial.vendorAddress;
+						Object.assign(updatedSelections, {
+							materialCode: selectedMaterial.materialCode,
+							uniPrice: selectedMaterial.uniPrice,
+							unit: selectedMaterial.unit,
+							vendor: selectedMaterial.vendor,
+							vendorPhoneNumber: selectedMaterial.vendorPhoneNumber,
+							vendorEmail: selectedMaterial.vendorEmail,
+							vendorAddress: selectedMaterial.vendorAddress
+						});
 					}
 				}
 
@@ -90,6 +101,8 @@
 			}
 			return column;
 		});
+		saveToLocalStorage();
+		saveToFirebase();
 	}
 
 	function validateColumns() {
@@ -121,16 +134,11 @@
 
 	async function handleDelete(id) {
 		const newOutput = output.filter((item) => item.id !== id);
-
-		const outputRef = ref(db, 'outputs');
-		await set(outputRef, newOutput);
-
-		localStorage.setItem('submittedItems', JSON.stringify(newOutput));
+		await saveToFirebase(newOutput);
+		saveToLocalStorage(newOutput);
 
 		output = newOutput;
 		materialStore.set(newOutput);
-
-		console.log('DELETED ITEM');
 	}
 
 	function computeTotal(column) {
@@ -139,18 +147,18 @@
 		return uniPrice * orderQty;
 	}
 
-	onMount(() => {
-		const storedItems = localStorage.getItem('submittedItems');
-		if (storedItems) {
-			output = JSON.parse(storedItems);
-		}
-	});
+	async function saveToFirebase() {
+		await set(ref(db, 'outputs'), output);
+	}
+
+	function saveToLocalStorage(data = output) {
+		localStorage.setItem('submittedItems', JSON.stringify(data));
+	}
 
 	async function handleSubmit() {
 		if (validateColumns()) {
 			const newEntries = columns.map((column) => ({
 				id: Date.now() + Math.random(),
-				text: column.text,
 				selections: column.selections,
 				orderQty: column.orderQty,
 				uniPrice: column.selections.uniPrice,
@@ -161,13 +169,27 @@
 			}));
 
 			output = [...output, ...newEntries];
-			localStorage.setItem('submittedItems', JSON.stringify(output));
+			saveToLocalStorage();
 			materialStore.set(output);
 			columns = [];
-
-			// Save to Firebase
-			await set(ref(db, 'outputs'), output);
+			await saveToFirebase();
 		}
+	}
+
+	function handleEdit(id, selectedStatus) {
+		const itemToUpdate = output.find((item) => item.id === id);
+
+		if (itemToUpdate) {
+			itemToUpdate.selections.status = selectedStatus; // Set to the selected status
+			console.log('Updated item:', itemToUpdate);
+			saveToFirebase();
+		}
+		editingId = null; // Reset editing state
+	}
+
+	function startEdit(id, currentStatus) {
+		editingId = id; // Set the current item ID to edit
+		tempStatus = currentStatus; // Set the temporary status
 	}
 </script>
 
@@ -196,6 +218,7 @@
 										value={column.selections[field]}
 										on:change={(event) => handleSelectChange(event, column.id, field)}
 									>
+										<option value="">Select</option>
 										{#each inventoryData as item}
 											<option value={item[field]}>{item[field]}</option>
 										{/each}
@@ -280,8 +303,10 @@
 			<div class="overflow-hidden rounded-lg shadow hidden md:block font-bold bg-gray-700">
 				{#if output.length > 0}
 					<div class="flex">
-						{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Delete'] as header}
-							<div class="border border-gray-300 text-white border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
+						{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit', 'Delete'] as header}
+							<div
+								class="border border-gray-300 text-white border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+							>
 								{header}
 							</div>
 						{/each}
@@ -289,44 +314,83 @@
 					<div class="flex flex-col bg-white">
 						{#each output as item, index}
 							<div key={item.id} class="flex mb-2 items-center">
-								<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
-									{index + 1} 
+								<div
+									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
+									{index + 1}
 								</div>
-								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}
-									<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
-										{item.selections[field]}
+								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}
+									<div
+										class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+									>
+										<h4>{item.selections[field]}</h4>
 									</div>
 								{/each}
-								<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
-									{item.orderQty}
+
+								<div
+									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
+									{#if editingId === item.id}
+										<select
+											class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+											value={item.selections.status}
+											on:change={(event) => handleEdit(item.id, event.target.value)}
+										>
+											{#each status as status}
+												<option value={status}>{status}</option>
+											{/each}
+										</select>
+									{:else}
+										<h4>{item.selections.status}</h4>
+									{/if}
 								</div>
-								<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
-									{computeTotal(item)}
+								<div
+									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
+									<h4>{item.orderQty}</h4>
 								</div>
-								<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
-									{item.datePurchase}
+								<div
+									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
+									<h4>{computeTotal(item)}</h4>
 								</div>
-								<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
-									{item.etd}
+								<div
+									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
+									<h4>{item.datePurchase}</h4>
 								</div>
-								<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
-									{item.eta}
+								<div
+									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
+									<h4>{item.etd}</h4>
 								</div>
-								<div class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center">
-									{item.arrivalDate}
+								<div
+									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
+									<h4>{item.eta}</h4>
+								</div>
+								<div
+									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								>
+									<h4>{item.arrivalDate}</h4>
 								</div>
 								<div class="flex-1 text-center">
 									<button
+										on:click={() => startEdit(item.id, item.selections.status)}
+										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700 w-20"
+										>Edit</button
+									>
+									<button
 										on:click={() => handleDelete(item.id)}
-										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700 px-4"
-									>Delete</button>
+										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700 w-20"
+										>Delete</button
+									>
 								</div>
 							</div>
 						{/each}
 					</div>
 				{/if}
 			</div>
-			
 		</div>
 	</div>
 </main>
