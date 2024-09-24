@@ -1,20 +1,23 @@
 <script>
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { materialStore } from '$lib/materialOrder';
 	import { sortData, filterData, getArrow } from '$lib/sortingTable';
+	
 
 	let summaryOutput = [];
 	let displayedInventory = [];
 	let sortBy = 'materialCode';
 	let sortOrder = 'asc';
 	let searchTerm = '';
-	let stockOut = [];
-	
-
 	let currentPage = 1;
 	let itemsPerPage = 10;
-
 	let currentArrow = getArrow(sortOrder);
+
+	let stockOut = [];
+	export function updateStockOut(index, value) {
+		stockOut[index] = value;
+		localStorage.setItem('stockOut', JSON.stringify(stockOut));
+	}
 
 	const unsubscribe = materialStore.subscribe((value) => {
 		summaryOutput = value;
@@ -24,6 +27,15 @@
 	onDestroy(() => {
 		unsubscribe();
 	});
+
+	onMount(() => {
+		const storeStockOut = localStorage.getItem('stockOut');
+
+		if (storeStockOut) {
+			stockOut = JSON.parse(storeStockOut);
+		}
+	});
+	$: totalPages = Math.ceil(filterData(summaryOutput, searchTerm).length / itemsPerPage);
 
 	function sortTable(column) {
 		if (sortBy === column) {
@@ -52,8 +64,6 @@
 			filterAndSortData();
 		}
 	}
-
-	$: totalPages = Math.ceil(filterData(summaryOutput, searchTerm).length / itemsPerPage);
 
 	$: filterAndSortData();
 
@@ -104,22 +114,135 @@
 							</svg>
 						</div>
 					</div>
+
 					<div class="flex">
-						{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Address', 'Unit Price', 'Status', 'Purchase-Qty', 'For Stock-in', 'Stock-out', 'Stock', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
-							<div
-								class="border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-							>
-								{header}
-							</div>
-						{/each}
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('id')}
+						>
+							<span class="mr-0">ID</span>
+							<span>{@html sortBy === 'id' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('materialName')}
+						>
+							<span class="mr-0">Mtrl Name</span>
+							<span>{@html sortBy === 'materialName' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('materialCode')}
+						>
+							<span class="mr-0">Mtrl code</span>
+							<span>{@html sortBy === 'materialCode' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('unit')}
+						>
+							<span class="mr-0">Unit</span>
+							<span>{@html sortBy === 'unit' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('uniPrice')}
+						>
+							<span class="mr-0">Amount</span>
+							<span>{@html sortBy === 'uniPrice' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('status')}
+						>
+							<span class="mr-0">Status</span>
+							<span>{@html sortBy === 'status' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('orderQty')}
+						>
+							<span class="mr-0">Purchase-qty</span>
+							<span>{@html sortBy === 'orderQty' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('orderQty')}
+						>
+							<span class="mr-0">For stock-in</span>
+							<span>{@html sortBy === 'orderQty' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('')}
+						>
+							<span class="mr-0">Stock-out</span>
+							<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('')}
+						>
+							<span class="mr-0">Whs-stock</span>
+							<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('')}
+						>
+							<span class="mr-0">Total-amount</span>
+							<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('datePurchase')}
+						>
+							<span class="mr-0">Date purch</span>
+							<span>{@html sortBy === 'datePurchase' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('etd')}
+						>
+							<span class="mr-0">ETD</span>
+							<span>{@html sortBy === 'etd' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('eta')}
+						>
+							<span class="mr-0">ETA</span>
+							<span>{@html sortBy === 'eta' ? currentArrow : getArrow('desc')}</span>
+						</button>
+
+						<button
+							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							on:click={() => sortTable('arrivalDate')}
+						>
+							<span class="mr-0">Arrival date</span>
+							<span>{@html sortBy === 'arrivalDate' ? currentArrow : getArrow('desc')}</span>
+						</button>
 					</div>
 				</div>
 
-				<div class="flex flex-col bg-white divide-y">
+				<div class="flex flex-col bg-white divide-y text-sm">
 					{#each displayedInventory as item, index}
-						<div key={item.id} class="flex mb-2 items-center">
+						<div key={item.id} class="flex mb-2 items-center hover:underline hover:font-semibold">
 							<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-								{index + 1}
+								<h4>{index + 1}</h4>
 							</div>
 							{#each ['materialName', 'materialCode', 'unit', 'uniPrice', 'status'] as field}
 								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
@@ -144,14 +267,21 @@
 							{/if}
 
 							<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-								<input type="number" class="w-9/12" bind:value={stockOut[index]} />
+								<input
+									type="number"
+									class="w-10/12 text-center"
+									bind:value={stockOut[index]}
+									on:input={(e) => updateStockOut(index, parseFloat(e.target.value) || 0)}
+								/>
 							</div>
 							<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-								{#if item.selections.status === 'Arrive' ? item.orderQty : 0 }
-							
-								<h4>{(item.selections.status === 'Arrive' ? item.orderQty : 0) - (stockOut[index] || 0) }</h4>
+								{#if item.selections.status === 'Arrive' ? item.orderQty : 0}
+									<h4>
+										{(item.selections.status === 'Arrive' ? item.orderQty : 0) -
+											(stockOut[index] || 0)}
+									</h4>
 								{:else}
-								<h4 class="text-red-500">No Materials</h4>
+									<h4 class="text-red-500">No Materials</h4>
 								{/if}
 							</div>
 							<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">

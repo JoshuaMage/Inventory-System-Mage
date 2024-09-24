@@ -205,17 +205,17 @@
 			<tbody class="divide-y border-borderlineGrey">
 				{#each displayedInventory as { id, materialCode, materialName, unit, materialDescription, vendor, vendorTelephone, vendorEmail, vendorAddress, status }}
 					<tr class="bg-white hover:underline hover:font-semibold">
-						<td class=" p-4 text-sm text-gray-700 whitespace-nowrap w-20 pl-3">{id}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{materialCode}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{materialName}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{unit}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">{materialDescription}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap w-32">{vendor}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap w-32">{vendorTelephone}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap w-32">{vendorEmail}</td>
-						<td class=" p-4  text-sm text-gray-700 whitespace-nowrap w-32">{vendorAddress}</td>
+						<td class=" p-3 text-sm text-gray-700 whitespace-nowrap w-20 pl-3">{id}</td>
+						<td class=" p-3  text-sm text-gray-700 whitespace-nowrap">{materialCode}</td>
+						<td class=" p-3  text-sm text-gray-700 whitespace-nowrap">{materialName}</td>
+						<td class=" p-3  text-sm text-gray-700 whitespace-nowrap">{unit}</td>
+						<td class=" p-3  text-sm text-gray-700 whitespace-nowrap">{materialDescription}</td>
+						<td class=" p-3  text-sm text-gray-700 whitespace-nowrap w-32">{vendor}</td>
+						<td class=" p-3  text-sm text-gray-700 whitespace-nowrap w-32">{vendorTelephone}</td>
+						<td class=" p-3  text-sm text-gray-700 whitespace-nowrap w-32">{vendorEmail}</td>
+						<td class=" p-3  text-sm text-gray-700 whitespace-nowrap w-32">{vendorAddress}</td>
 						<td
-							class={`<td class=" p-4  text-sm text-gray-700 whitespace-nowrap">${getPendingClass(status)}`}
+							class={`<td class=" p-3  text-sm text-gray-700 whitespace-nowrap">${getPendingClass(status)}`}
 							>{status}</td
 						>
 					</tr>

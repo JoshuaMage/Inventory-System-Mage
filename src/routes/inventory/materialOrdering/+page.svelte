@@ -311,9 +311,9 @@
 							</div>
 						{/each}
 					</div>
-					<div class="flex flex-col bg-white">
+					<div class="flex flex-col bg-white text-sm">
 						{#each output as item, index}
-							<div key={item.id} class="flex mb-2 items-center">
+							<div key={item.id} class="flex mb-2 items-center hover:underline hover:font-semibold">
 								<div
 									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
 								>
