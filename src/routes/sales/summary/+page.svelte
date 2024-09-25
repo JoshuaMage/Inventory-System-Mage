@@ -1,10 +1,7 @@
 <script>
-	import { onDestroy } from 'svelte';
-
+	import { onDestroy, onMount } from 'svelte';
 	import { materialStore } from '$lib/materialOrder';
-
 	import { sortData, filterData, getArrow } from '$lib/sortingTable';
-
 	import { stockOutStore } from '$lib/sale';
 
 	let summaryOutput = [];
@@ -16,6 +13,9 @@
 	let itemsPerPage = 10;
 	let currentArrow = getArrow(sortOrder);
 	let stockOut = [];
+	let persistedQuantities = [];
+	let persistedRevenues = [];
+	let persistedArrivedQuantities = [];
 
 	const unsubscribeStore = stockOutStore.subscribe((value) => {
 		stockOut = value;
@@ -27,9 +27,47 @@
 
 	onDestroy(() => {
 		unsubscribe();
-
 		unsubscribeStore();
 	});
+
+	// Load state from localStorage on mount
+	onMount(() => {
+		loadFromLocalStorage();
+		filterAndSortData();
+	});
+
+	function saveToLocalStorage() {
+		localStorage.setItem('currentPage', currentPage);
+		localStorage.setItem('searchTerm', searchTerm);
+		localStorage.setItem('persistedQuantities', JSON.stringify(persistedQuantities));
+		localStorage.setItem('persistedRevenues', JSON.stringify(persistedRevenues));
+		localStorage.setItem('persistedArrivedQuantities', JSON.stringify(persistedArrivedQuantities));
+	}
+
+	function loadFromLocalStorage() {
+		const storedPage = localStorage.getItem('currentPage');
+		const storedSearchTerm = localStorage.getItem('searchTerm');
+		const storedQuantities = localStorage.getItem('persistedQuantities');
+		const storedRevenues = localStorage.getItem('persistedRevenues');
+		const storedArrivedQuantities = localStorage.getItem('persistedArrivedQuantities');
+
+		if (storedPage) {
+			currentPage = parseInt(storedPage, 10);
+		}
+		if (storedSearchTerm) {
+			searchTerm = storedSearchTerm;
+		}
+		if (storedQuantities) {
+			persistedQuantities = JSON.parse(storedQuantities);
+		}
+		if (storedRevenues) {
+			persistedRevenues = JSON.parse(storedRevenues);
+		}
+
+		if (storedArrivedQuantities) {
+			persistedArrivedQuantities = JSON.parse(storedArrivedQuantities);
+		}
+	}
 
 	function sortTable(column) {
 		if (sortBy === column) {
@@ -40,6 +78,7 @@
 		}
 		currentArrow = getArrow(sortOrder);
 		filterAndSortData();
+		saveToLocalStorage(); // Save after sorting
 	}
 
 	function filterAndSortData() {
@@ -47,11 +86,34 @@
 		const sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
 		const startIndex = (currentPage - 1) * itemsPerPage;
 		displayedInventory = sortedInventory.slice(startIndex, startIndex + itemsPerPage);
+
+		// Calculate persisted quantities and revenues
+		persistedQuantities = displayedInventory.map(
+			(item, index) => item.orderQty - (stockOut[index] || 0)
+		);
+        
+persistedArrivedQuantities = displayedInventory.map((item, index) => {
+
+if (item.selections.status === 'Arrive') {
+
+return item.orderQty - (stockOut[index] || 0);
+
+}
+
+return 0;
+
+});
+		persistedRevenues = displayedInventory.map(
+			(item, index) => (persistedQuantities[index] || 0) * item.uniPrice * 1.5
+		);
+        
+		saveToLocalStorage(); // Save quantities and revenues
 	}
 
 	function goToPage(page) {
 		if (page >= 1 && page <= totalPages) {
 			currentPage = page;
+			saveToLocalStorage(); // Save on page change
 			filterAndSortData();
 		}
 	}
@@ -223,11 +285,10 @@
 								</div>
 
 								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-									{#if item.selections.status === 'Arrive'}
-										<h4>{item.orderQty - (stockOut[index] || 0)}</h4>
-									{:else}
-										<h4 class="text-red-500">0</h4>
-									{/if}
+									{persistedArrivedQuantities[index] || 
+                                        (item.selections.status === 'Arrive' ? 
+                                        item.orderQty - (item.orderQty - (stockOut[index] || 0)) : 
+                                        0)}
 								</div>
 
 								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
@@ -246,8 +307,11 @@
 									{item.arrivalDate}
 								</div>
 
-                                <div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-									<h4>{(item.orderQty - (item.orderQty - (stockOut[index] || 0))) *  item.uniPrice * 1.5}</h4>
+								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+									<h4>
+										{persistedRevenues[index] ||
+											(item.orderQty - (stockOut[index] || 0)) * item.uniPrice * 1.5}
+									</h4>
 								</div>
 
 								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
