@@ -1,27 +1,34 @@
 <script>
 	import { onDestroy } from 'svelte';
+
 	import { materialStore } from '$lib/materialOrder';
+
 	import { sortData, filterData, getArrow } from '$lib/sortingTable';
+
+	import { stockOutStore } from '$lib/sale';
 
 	let summaryOutput = [];
 	let displayedInventory = [];
 	let sortBy = 'materialCode';
 	let sortOrder = 'asc';
 	let searchTerm = '';
-	let stockOut = [0, 0, 0];
-
 	let currentPage = 1;
 	let itemsPerPage = 10;
-
 	let currentArrow = getArrow(sortOrder);
+	let stockOut = [];
+
+	const unsubscribeStore = stockOutStore.subscribe((value) => {
+		stockOut = value;
+	});
 
 	const unsubscribe = materialStore.subscribe((value) => {
 		summaryOutput = value;
-		filterAndSortData();
 	});
 
 	onDestroy(() => {
 		unsubscribe();
+
+		unsubscribeStore();
 	});
 
 	function sortTable(column) {
@@ -32,17 +39,14 @@
 			sortOrder = 'asc';
 		}
 		currentArrow = getArrow(sortOrder);
-
 		filterAndSortData();
 	}
 
 	function filterAndSortData() {
 		const filteredInventory = filterData(summaryOutput, searchTerm);
 		const sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
-
 		const startIndex = (currentPage - 1) * itemsPerPage;
-		const endIndex = startIndex + itemsPerPage;
-		displayedInventory = sortedInventory.slice(startIndex, endIndex);
+		displayedInventory = sortedInventory.slice(startIndex, startIndex + itemsPerPage);
 	}
 
 	function goToPage(page) {
@@ -52,9 +56,13 @@
 		}
 	}
 
-	$: totalPages = Math.ceil(filterData(summaryOutput, searchTerm).length / itemsPerPage);
-
-	$: filterAndSortData();
+	$: filteredInventory = filterData(summaryOutput, searchTerm);
+	$: sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
+	$: totalPages = Math.ceil(filteredInventory.length / itemsPerPage);
+	$: displayedInventory = sortedInventory.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
@@ -134,10 +142,10 @@
 
 							<button
 								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('')}
+								on:click={() => sortTable('orderQty')}
 							>
 								<span class="mr-0">Purchase-qty</span>
-								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+								<span>{@html sortBy === 'orderQty' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
 							<button
@@ -176,7 +184,15 @@
 								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
 								on:click={() => sortTable('')}
 							>
-								<span class="mr-0">Month Sale</span>
+								<span class="mr-0">Material arrive</span>
+								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+							</button>
+
+							<button
+								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+								on:click={() => sortTable('')}
+							>
+								<span class="mr-0">Revenue</span>
 								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
@@ -206,23 +222,32 @@
 									<h4>{item.orderQty}</h4>
 								</div>
 
-                                <div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-                                    {#if item.selections.status === 'Arrive' ? item.orderQty : 0}
-                                        <h4>
-                                            {(item.selections.status === 'Arrive' ? item.orderQty : 0) -
-                                                (stockOut[index] || 0)}
-                                        </h4>
-                                    {:else}
-                                        <h4 class="text-red-500">Pending/delay mtrls</h4>
-                                    {/if}
-                                </div>
+								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+									{#if item.selections.status === 'Arrive'}
+										<h4>{item.orderQty - (stockOut[index] || 0)}</h4>
+									{:else}
+										<h4 class="text-red-500">0</h4>
+									{/if}
+								</div>
 
 								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-									<h4>1</h4>
+									<h4>{item.orderQty - (item.orderQty - (stockOut[index] || 0))}</h4>
 								</div>
 
 								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
 									<h4>{item.uniPrice}</h4>
+								</div>
+
+								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+									<h4>{item.uniPrice * 1.5}</h4>
+								</div>
+
+								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+									{item.arrivalDate}
+								</div>
+
+                                <div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+									<h4>{(item.orderQty - (item.orderQty - (stockOut[index] || 0))) *  item.uniPrice * 1.5}</h4>
 								</div>
 
 								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">

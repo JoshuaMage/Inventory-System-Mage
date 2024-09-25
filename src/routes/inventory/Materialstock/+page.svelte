@@ -2,7 +2,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { materialStore } from '$lib/materialOrder';
 	import { sortData, filterData, getArrow } from '$lib/sortingTable';
-	
+	import { stockOutStore } from '$lib/sale';
 
 	let summaryOutput = [];
 	let displayedInventory = [];
@@ -12,29 +12,42 @@
 	let currentPage = 1;
 	let itemsPerPage = 10;
 	let currentArrow = getArrow(sortOrder);
-
 	let stockOut = [];
-	export function updateStockOut(index, value) {
-		stockOut[index] = value;
-		localStorage.setItem('stockOut', JSON.stringify(stockOut));
-	}
 
-	const unsubscribe = materialStore.subscribe((value) => {
+	const unsubscribeMaterialStore = materialStore.subscribe((value) => {
 		summaryOutput = value;
+
 		filterAndSortData();
 	});
 
-	onDestroy(() => {
-		unsubscribe();
+	const unsubscribeStockOutStore = stockOutStore.subscribe((value) => {
+		stockOut = value;
 	});
 
 	onMount(() => {
-		const storeStockOut = localStorage.getItem('stockOut');
+		const storedStockOut = localStorage.getItem('stockOut');
 
-		if (storeStockOut) {
-			stockOut = JSON.parse(storeStockOut);
+		if (storedStockOut) {
+			const parsedStockOut = JSON.parse(storedStockOut);
+
+			stockOutStore.set(parsedStockOut); // Set store value from localStorage
 		}
 	});
+
+	export function updateStockOut(index, value) {
+		stockOut[index] = value;
+
+		stockOutStore.set([...stockOut]); // Use spread operator to create a new array
+
+		localStorage.setItem('stockOut', JSON.stringify(stockOut));
+	}
+
+	onDestroy(() => {
+		unsubscribeMaterialStore();
+
+		unsubscribeStockOutStore();
+	});
+
 	$: totalPages = Math.ceil(filterData(summaryOutput, searchTerm).length / itemsPerPage);
 
 	function sortTable(column) {
@@ -45,14 +58,12 @@
 			sortOrder = 'asc';
 		}
 		currentArrow = getArrow(sortOrder);
-
 		filterAndSortData();
 	}
 
 	function filterAndSortData() {
 		const filteredInventory = filterData(summaryOutput, searchTerm);
 		const sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
-
 		const startIndex = (currentPage - 1) * itemsPerPage;
 		const endIndex = startIndex + itemsPerPage;
 		displayedInventory = sortedInventory.slice(startIndex, endIndex);
@@ -66,7 +77,6 @@
 	}
 
 	$: filterAndSortData();
-
 	function computeTotal(item) {
 		const uniPrice = parseFloat(item.selections.uniPrice) || 0;
 		const orderQty = parseFloat(item.orderQty) || 0;
@@ -281,7 +291,7 @@
 											(stockOut[index] || 0)}
 									</h4>
 								{:else}
-									<h4 class="text-red-500">No Materials</h4>
+									<h4 class="text-red-500">0</h4>
 								{/if}
 							</div>
 							<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
