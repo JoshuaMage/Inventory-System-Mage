@@ -110,6 +110,11 @@
 								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
 								>Income Statement</a
 							>
+							<a
+								href="/sales/manpower"
+								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								>Man power</a
+							>
 						</div>
 					</div>
 

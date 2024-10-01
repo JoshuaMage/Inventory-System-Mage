@@ -1,7 +1,7 @@
 <script>
 	import { onDestroy } from 'svelte';
 	import { materialStore } from '$lib/materialOrder';
-	import { sortData, filterData, getArrow } from '$lib/sortingTable';
+	import { sortData, getArrow } from '$lib/sortingTable';
 
 	let summaryOutput = [];
 	let displayedInventory = [];
@@ -60,6 +60,15 @@
 		const uniPrice = parseFloat(item.selections.uniPrice) || 0;
 		const orderQty = parseFloat(item.orderQty) || 0;
 		return uniPrice * orderQty;
+	}
+
+	function filterData(data, term) {
+		if (!term) return data;
+		return data.filter((item) => {
+			return Object.values(item.selections).some((value) =>
+				String(value).toLocaleLowerCase().includes(term.toLocaleLowerCase())
+			);
+		});
 	}
 </script>
 

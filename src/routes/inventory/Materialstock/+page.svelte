@@ -1,7 +1,7 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
 	import { materialStore } from '$lib/materialOrder';
-	import { sortData, filterData, getArrow } from '$lib/sortingTable';
+	import { sortData, getArrow } from '$lib/sortingTable';
 	import { stockOutStore } from '$lib/sale';
 
 	let summaryOutput = [];
@@ -16,7 +16,6 @@
 
 	const unsubscribeMaterialStore = materialStore.subscribe((value) => {
 		summaryOutput = value;
-
 		filterAndSortData();
 	});
 
@@ -26,25 +25,20 @@
 
 	onMount(() => {
 		const storedStockOut = localStorage.getItem('stockOut');
-
 		if (storedStockOut) {
 			const parsedStockOut = JSON.parse(storedStockOut);
-
-			stockOutStore.set(parsedStockOut); // Set store value from localStorage
+			stockOutStore.set(parsedStockOut);
 		}
 	});
 
 	export function updateStockOut(index, value) {
 		stockOut[index] = value;
-
-		stockOutStore.set([...stockOut]); // Use spread operator to create a new array
-
+		stockOutStore.set([...stockOut]);
 		localStorage.setItem('stockOut', JSON.stringify(stockOut));
 	}
 
 	onDestroy(() => {
 		unsubscribeMaterialStore();
-
 		unsubscribeStockOutStore();
 	});
 
@@ -81,6 +75,15 @@
 		const uniPrice = parseFloat(item.selections.uniPrice) || 0;
 		const orderQty = parseFloat(item.orderQty) || 0;
 		return uniPrice * orderQty;
+	}
+
+	export function filterData(data, term) {
+		if (!term) return data;
+		return data.filter((item) => {
+			return Object.values(item.selections).some((value) =>
+				String(value).toLowerCase().includes(term.toLowerCase())
+			);
+		});
 	}
 </script>
 
@@ -178,7 +181,7 @@
 							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
 							on:click={() => sortTable('orderQty')}
 						>
-							<span class="mr-0">Purchase-qty</span>
+							<span class="mr-0">Stock-in</span>
 							<span>{@html sortBy === 'orderQty' ? currentArrow : getArrow('desc')}</span>
 						</button>
 
@@ -218,7 +221,7 @@
 							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
 							on:click={() => sortTable('datePurchase')}
 						>
-							<span class="mr-0">Date purch</span>
+							<span class="mr-0">Date purchase</span>
 							<span>{@html sortBy === 'datePurchase' ? currentArrow : getArrow('desc')}</span>
 						</button>
 

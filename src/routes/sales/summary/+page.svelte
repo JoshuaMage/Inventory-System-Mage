@@ -1,8 +1,10 @@
 <script>
 	import { onDestroy, onMount } from 'svelte';
 	import { materialStore } from '$lib/materialOrder';
-	import { sortData, filterData, getArrow } from '$lib/sortingTable';
+	import { sortData, getArrow } from '$lib/sortingTable';
 	import { stockOutStore } from '$lib/sale';
+	import { db } from '$lib/firebaseConfig';
+	import { ref, set } from 'firebase/database';
 
 	let summaryOutput = [];
 	let displayedInventory = [];
@@ -17,6 +19,10 @@
 	let persistedRevenues = [];
 	let persistedArrivedQuantities = [];
 
+	const tailWindCss = () => 'sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2';
+	const buttonCss = () =>
+		'flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center';
+
 	const unsubscribeStore = stockOutStore.subscribe((value) => {
 		stockOut = value;
 	});
@@ -30,7 +36,6 @@
 		unsubscribeStore();
 	});
 
-	// Load state from localStorage on mount
 	onMount(() => {
 		loadFromLocalStorage();
 		filterAndSortData();
@@ -42,6 +47,7 @@
 		localStorage.setItem('persistedQuantities', JSON.stringify(persistedQuantities));
 		localStorage.setItem('persistedRevenues', JSON.stringify(persistedRevenues));
 		localStorage.setItem('persistedArrivedQuantities', JSON.stringify(persistedArrivedQuantities));
+		localStorage.setItem('stockOut', JSON.stringify(stockOut));
 	}
 
 	function loadFromLocalStorage() {
@@ -50,6 +56,7 @@
 		const storedQuantities = localStorage.getItem('persistedQuantities');
 		const storedRevenues = localStorage.getItem('persistedRevenues');
 		const storedArrivedQuantities = localStorage.getItem('persistedArrivedQuantities');
+		const storedStockOut = localStorage.getItem('stockOut');
 
 		if (storedPage) {
 			currentPage = parseInt(storedPage, 10);
@@ -63,9 +70,11 @@
 		if (storedRevenues) {
 			persistedRevenues = JSON.parse(storedRevenues);
 		}
-
 		if (storedArrivedQuantities) {
 			persistedArrivedQuantities = JSON.parse(storedArrivedQuantities);
+		}
+		if (storedStockOut) {
+			stockOut = JSON.parse(storedStockOut);
 		}
 	}
 
@@ -78,7 +87,51 @@
 		}
 		currentArrow = getArrow(sortOrder);
 		filterAndSortData();
-		saveToLocalStorage(); // Save after sorting
+		saveToLocalStorage();
+	}
+
+	function filterData(data, term) {
+		if (!term) return data;
+		return data.filter((item) => {
+			return Object.keys(item.selections).some((key) => {
+				return String(item.selections[key]).toLowerCase().includes(term.toLowerCase());
+			});
+		});
+	}
+
+	async function saveToFirebase() {
+		const inventoryRef = ref(db, 'inventory/' + currentPage);
+
+		await set(inventoryRef, {
+			currentPage,
+			searchTerm,
+			persistedQuantities,
+			persistedRevenues,
+			persistedArrivedQuantities,
+			stockOut,
+			displayedInventory
+		});
+	}
+
+	function extractInventoryData(inventory) {
+		return inventory.map((item) => ({
+			id: item.id,
+			materialName: item.materialName,
+			materialCode: item.materialCode,
+			unit: item.unit,
+			orderQty: item.orderQty,
+			stock: item.stock || 0,
+			sale: item.sale || 0,
+			uniPrice: item.uniPrice,
+			marketPrice: item.marketPrice || 0,
+			materialArrive: item.materialArrive || 0,
+			revenue: item.uniPrice * item.orderQty,
+			remarks: item.remarks || '',
+			materialName: item.materialName,
+			materialCode: item.materialCode,
+			unit: item.unit,
+			status: item.status || 'Not Arrived' // Ensure you have a status
+		}));
 	}
 
 	function filterAndSortData() {
@@ -87,44 +140,37 @@
 		const startIndex = (currentPage - 1) * itemsPerPage;
 		displayedInventory = sortedInventory.slice(startIndex, startIndex + itemsPerPage);
 
-		// Calculate persisted quantities and revenues
 		persistedQuantities = displayedInventory.map(
 			(item, index) => item.orderQty - (stockOut[index] || 0)
 		);
-        
-persistedArrivedQuantities = displayedInventory.map((item, index) => {
 
-if (item.selections.status === 'Arrive') {
+		persistedArrivedQuantities = displayedInventory.map((item, index) => {
+			if (item.selections.status === 'Arrive') {
+				return item.orderQty - (stockOut[index] || 0);
+			}
+			return 0;
+		});
 
-return item.orderQty - (stockOut[index] || 0);
-
-}
-
-return 0;
-
-});
 		persistedRevenues = displayedInventory.map(
-			(item, index) => (persistedQuantities[index] || 0) * item.uniPrice * 1.5
+			(item, index) =>
+				item.uniPrice * 2 * (item.orderQty - (item.orderQty - (stockOut[index] || 0)))
 		);
-        
-		saveToLocalStorage(); // Save quantities and revenues
+
+		saveToLocalStorage();
+		saveToFirebase();
 	}
 
 	function goToPage(page) {
 		if (page >= 1 && page <= totalPages) {
 			currentPage = page;
-			saveToLocalStorage(); // Save on page change
+			saveToLocalStorage();
 			filterAndSortData();
 		}
 	}
 
 	$: filteredInventory = filterData(summaryOutput, searchTerm);
-	$: sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
+
 	$: totalPages = Math.ceil(filteredInventory.length / itemsPerPage);
-	$: displayedInventory = sortedInventory.slice(
-		(currentPage - 1) * itemsPerPage,
-		currentPage * itemsPerPage
-	);
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
@@ -169,101 +215,60 @@ return 0;
 					</div>
 
 					<div class="flex">
-						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-							on:click={() => sortTable('id')}
-						>
+						<button class={buttonCss()} on:click={() => sortTable('id')}>
 							<span class="mr-0">ID</span>
 							<span>{@html sortBy === 'id' ? currentArrow : getArrow('desc')}</span>
 						</button>
 
 						<div class="flex">
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('materialName')}
-							>
+							<button class={buttonCss()} on:click={() => sortTable('materialName')}>
 								<span class="mr-0">Mtrl Name</span>
 								<span>{@html sortBy === 'materialName' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('materialCode')}
-							>
+							<button class={buttonCss()} on:click={() => sortTable('materialCode')}>
 								<span class="mr-0">Mtrl code</span>
 								<span>{@html sortBy === 'materialCode' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('unit')}
-							>
+							<button class={buttonCss()} on:click={() => sortTable('unit')}>
 								<span class="mr-0">Unit</span>
 								<span>{@html sortBy === 'unit' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('orderQty')}
-							>
-								<span class="mr-0">Purchase-qty</span>
+							<button class={buttonCss()} on:click={() => sortTable('orderQty')}>
+								<span class="mr-0">Order Qty</span>
 								<span>{@html sortBy === 'orderQty' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('')}
-							>
+							<button class={buttonCss()} on:click={() => sortTable('stock')}>
 								<span class="mr-0">Stock</span>
-								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+								<span>{@html sortBy === 'stock' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('')}
-							>
+							<button class={buttonCss()} on:click={() => sortTable('sale')}>
 								<span class="mr-0">Sale</span>
-								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+								<span>{@html sortBy === 'sale' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('uniPrice')}
-							>
-								<span class="mr-0">Amount</span>
+							<button class={buttonCss()} on:click={() => sortTable('uniPrice')}>
+								<span class="mr-0">Unit Price</span>
 								<span>{@html sortBy === 'uniPrice' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('')}
-							>
+							<button class={buttonCss()} on:click={() => sortTable('marketPrice')}>
 								<span class="mr-0">Market Price</span>
-								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+								<span>{@html sortBy === 'marketPrice' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('')}
-							>
-								<span class="mr-0">Material arrive</span>
-								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+							<button class={buttonCss()} on:click={() => sortTable('materialArrive')}>
+								<span class="mr-0">Material Arrive</span>
+								<span>{@html sortBy === 'materialArrive' ? currentArrow : getArrow('desc')}</span>
 							</button>
 
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('')}
-							>
-								<span class="mr-0">Revenue</span>
-								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
-							</button>
-
-							<button
-								class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-								on:click={() => sortTable('')}
-							>
+							<button class={buttonCss()} on:click={() => sortTable('remarks')}>
 								<span class="mr-0">Remarks</span>
-								<span>{@html sortBy === '' ? currentArrow : getArrow('desc')}</span>
+								<span>{@html sortBy === 'remarks' ? currentArrow : getArrow('desc')}</span>
 							</button>
 						</div>
 					</div>
@@ -271,51 +276,50 @@ return 0;
 					<div class="flex flex-col bg-white divide-y text-sm">
 						{#each displayedInventory as item, index}
 							<div key={item.id} class="flex mb-2 items-center hover:underline hover:font-semibold">
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={tailWindCss()}>
 									{index + 1}
 								</div>
-								{#each ['materialName', 'materialCode', 'unit'] as field}
-									<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-										{item.selections[field]}
-									</div>
-								{/each}
+								<div class={tailWindCss()}>
+									<h4>{item.materialName}</h4>
+								</div>
+								<div class={tailWindCss()}>
+									<h4>{item.materialCode}</h4>
+								</div>
+								<div class={tailWindCss()}>
+									<h4>{item.unit}</h4>
+								</div>
 
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={tailWindCss()}>
 									<h4>{item.orderQty}</h4>
 								</div>
 
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-									{persistedArrivedQuantities[index] || 
-                                        (item.selections.status === 'Arrive' ? 
-                                        item.orderQty - (item.orderQty - (stockOut[index] || 0)) : 
-                                        0)}
+								<div class={tailWindCss()}>
+									{persistedArrivedQuantities[index] ||
+										(item.status === 'Arrive'
+											? item.orderQty - (item.orderQty - (stockOut[index] || 0))
+											: 0)}
 								</div>
 
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={tailWindCss()}>
 									<h4>{item.orderQty - (item.orderQty - (stockOut[index] || 0))}</h4>
 								</div>
 
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={tailWindCss()}>
 									<h4>{item.uniPrice}</h4>
 								</div>
 
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-									<h4>{item.uniPrice * 1.5}</h4>
+								<div class={tailWindCss()}>
+									<h4>{item.uniPrice * 2}</h4>
 								</div>
 
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-									{item.arrivalDate}
+								<div class={tailWindCss()}>
+									<h4>{item.arrivalDate}</h4>
 								</div>
 
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={tailWindCss()}>
 									<h4>
-										{persistedRevenues[index] ||
-											(item.orderQty - (stockOut[index] || 0)) * item.uniPrice * 1.5}
+										{item.uniPrice * 2 * (item.orderQty - (item.orderQty - (stockOut[index] || 0)))}
 									</h4>
-								</div>
-
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
-									<input type="text" class="w-10/12" />
 								</div>
 							</div>
 						{/each}

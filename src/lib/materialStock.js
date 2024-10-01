@@ -142,8 +142,6 @@ export const INVENTORY = writable([
 		vendorAddress: 'Mariveles Bataan',
 		vendorBankAcc: '123 456 674',
 		uniPrice: '300',
-		
-
 		deliverDate: '06/15/2024',
 		etaDate: '07/08/2024',
 		arrivalDate: '08/01/2024',
