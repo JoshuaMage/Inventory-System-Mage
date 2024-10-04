@@ -14,6 +14,8 @@
 
 	let currentArrow = getArrow(sortOrder);
 
+	const materialListButton = () => 'flex items-center justify-center h-ful';
+
 	// Subscribe to the store to get the initial value
 	const unsubscribe = inventoryStore.subscribe((value) => {
 		INVENTORY = [...value];
@@ -110,7 +112,7 @@
 					<!-- Define table headers and sort functionality -->
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('id')}
 						>
 							<span class="mr-0">ID</span>
@@ -119,7 +121,7 @@
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('materialCode')}
 						>
 							<span class="mr-0">Material Code</span>
@@ -128,7 +130,7 @@
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('materialName')}
 						>
 							<span class="mr-0">Material Name</span>
@@ -137,7 +139,7 @@
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('unit')}
 						>
 							<span class="mr-0">Unit</span>
@@ -146,7 +148,7 @@
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('materialDescription')}
 						>
 							<span class="mr-0">Material Description</span>
@@ -156,7 +158,7 @@
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('vendor')}
 						>
 							<span class="mr-0">Supplier</span>
@@ -165,7 +167,7 @@
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('vendorTelephone')}
 						>
 							<span class="mr-0">telephone#</span>
@@ -174,7 +176,7 @@
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('vendorEmail')}
 						>
 							<span class="mr-0"> email</span>
@@ -183,7 +185,7 @@
 					</th>
 					<th class="p-3 text-sm font-semibold tracking-wide text-left">
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('vendorAddress')}
 						>
 							<span class="mr-0"> address</span>
@@ -192,7 +194,7 @@
 					</th>
 					<th>
 						<button
-							class="flex items-center justify-center h-full"
+							class={materialListButton()}
 							on:click={() => sortTable('status')}
 						>
 							<span class="mr-0">Remarks</span>

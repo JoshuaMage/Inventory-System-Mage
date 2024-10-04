@@ -1,9 +1,12 @@
 {
-	"projects": {
-		"default": "inventory-system-mage",
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
-		"[javascript]": {
-			"editor.defaultFormatter": "esbenp.prettier-vscode"
-		}
-	}
+  "projects": {
+    "default": "inventory-system-mage",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    " inventory-system-mage": "inventory-system-mage"
+  },
+  "targets": {},
+  "etags": {}
 }

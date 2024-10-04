@@ -1,0 +1,1 @@
+import{w as a}from"./index.scqxoV_u.js";const e=typeof window<"u"?JSON.parse(localStorage.getItem("materialData"))||[]:[],i=a(e);typeof window<"u"&&i.subscribe(t=>{localStorage.setItem("materialData",JSON.stringify(t))});export{i as m};

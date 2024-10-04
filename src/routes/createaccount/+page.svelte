@@ -25,7 +25,7 @@
 				); // Use id as email for simplicity
 				const user = userCredential.user;
 				console.log('User created and additional information stored');
-				goto('/product'); // Redirect to product
+				goto('/'); // Redirect to product
 			} catch (error) {
 				console.error('Error creating account:', error.message);
 			}

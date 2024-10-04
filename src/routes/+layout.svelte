@@ -1,15 +1,41 @@
 <script>
-	import "../../src/app.css"
+	import '../../src/app.css';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { auth } from '$lib/firebaseConfig.js';
+	import { signOut } from 'firebase/auth';
+	import { onMount, onDestroy } from 'svelte';
+	import { isAuthenticated } from '$lib/firebaseAuth';
 
 	let loading = false;
+	let authenticated = false;
+
+	const unsubscribe = isAuthenticated.subscribe((value) => {
+		authenticated = value;
+	});
+
+	onMount(() => {
+		if (
+			!authenticated &&
+			!['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname)
+		) {
+		}
+	});
+
+	onDestroy(() => {
+		unsubscribe();
+	});
 
 	async function handleLogout() {
 		loading = true;
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		await goto('/');
-		loading = false;
+		try {
+			await signOut(auth);
+			await goto('/');
+		} catch (error) {
+			console.error('Logout failed:', error.message);
+		} finally {
+			loading = false;
+		}
 	}
 
 	$: hideLayout = ['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname);
@@ -63,7 +89,7 @@
 						<a href="/inventory" class="font-bold text-lg font-sans text-center">inventory</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white  rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
 						>
 							<a
 								href="/inventory/materialStock"
@@ -123,7 +149,7 @@
 						<a href="/user" class="font-bold text-lg font-sans text-center">user</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white  rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
 						>
 							<button
 								on:click={handleLogout}
@@ -131,16 +157,11 @@
 								class="disabled:opacity-50 block w-full text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
 							>
 								{#if loading}
-									Log-out...
+									Logging out...
 								{:else}
 									Log-out
 								{/if}
 							</button>
-							<a
-								href="/user/usersetting"
-								class="block w-full text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
-								>Setting</a
-							>
 						</div>
 					</div>
 				</div>

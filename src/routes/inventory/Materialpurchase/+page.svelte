@@ -14,6 +14,10 @@
 	let itemsPerPage = 10;
 
 	let currentArrow = getArrow(sortOrder);
+	
+	// tailwindCss
+	const materialPurchaseButton = () => 'flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center';
+	const materialPurchaseList = () => "sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2";
 
 	const unsubscribe = materialStore.subscribe((value) => {
 		summaryOutput = value;
@@ -114,7 +118,7 @@
 					</div>
 					<div class="flex">
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('id')}
 						>
 							<span class="mr-0">ID</span>
@@ -122,7 +126,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('datePurchase')}
 						>
 							<span class="mr-0">Date purch</span>
@@ -130,7 +134,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('materialName')}
 						>
 							<span class="mr-0">Mtrl Name</span>
@@ -138,7 +142,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('materialCode')}
 						>
 							<span class="mr-0">Mtrl code</span>
@@ -146,7 +150,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('orderQty')}
 						>
 							<span class="mr-0">Purchase-qty</span>
@@ -154,7 +158,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('')}
 						>
 							<span class="mr-0">Whs-stock</span>
@@ -162,7 +166,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('orderQty')}
 						>
 							<span class="mr-0">For stock-in</span>
@@ -170,7 +174,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('vendor')}
 						>
 							<span class="mr-0">Supplier</span>
@@ -178,7 +182,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('vendor')}
 						>
 							<span class="mr-0">Supplier</span>
@@ -186,7 +190,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('vendorEmail')}
 						>
 							<span class="mr-0">Supplier</span>
@@ -194,7 +198,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('vendorAddress')}
 						>
 							<span class="mr-0">Supplier</span>
@@ -202,7 +206,7 @@
 						</button>
 
 						<button
-							class="flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+							class={materialPurchaseButton()}
 							on:click={() => sortTable('status')}
 						>
 							<span class="mr-0">Status</span>
@@ -214,38 +218,38 @@
 				<div class="flex flex-col bg-white divide-y text-sm">
 					{#each displayedInventory as item, index}
 						<div key={item.id} class="flex mb-2 items-center hover:underline hover:font-semibold">
-							<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+							<div class={materialPurchaseList()}>
 								<h4>{index + 1}</h4>
 							</div>
-							<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+							<div class={materialPurchaseList()}>
 								<h4>{item.datePurchase}</h4>
 							</div>
 							{#each ['materialName', 'materialCode'] as field}
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={materialPurchaseList()}>
 									{item.selections[field]}
 								</div>
 							{/each}
 
-							<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+							<div class={materialPurchaseList()}>
 								<h4>{item.orderQty}</h4>
 							</div>
 							{#if item.selections.status === 'Pending' || item.selections.status === 'Delay'}
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={materialPurchaseList()}>
 									<h4>0</h4>
 								</div>
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={materialPurchaseList()}>
 									<h4>{item.orderQty}</h4>
 								</div>
 							{:else}
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={materialPurchaseList()}>
 									<h4>{item.selections.status === 'Arrive' ? item.orderQty : 0}</h4>
 								</div>
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={materialPurchaseList()}>
 									<h4>0</h4>
 								</div>
 							{/if}
 							{#each ['vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'status'] as field}
-								<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+								<div class={materialPurchaseList()}>
 									{item.selections[field]}
 								</div>
 							{/each}

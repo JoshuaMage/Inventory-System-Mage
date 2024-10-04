@@ -14,6 +14,11 @@
 
 	let currentArrow = getArrow(sortOrder);
 
+	//tailwindCss
+	const supplierButton = () => 'flex items-center justify-center h-full';
+	const supplierList = () => "p-4 text-sm text-gray-700 whitespace-nowrap w-44";
+	const supplierTh = () => 'p-3 text-sm font-semibold tracking-wide text-left';
+
 	// Subscribe to the store to get the initial value
 	const unsubscribe = inventoryStore.subscribe((value) => {
 		INVENTORY = [...value];
@@ -106,63 +111,63 @@
 				</tr>
 
 				<tr>
-					<th class="p-3 text-sm font-semibold tracking-wide text-left">
+					<th class={supplierTh()}>
 						<button
-							class="flex items-center justify-center h-full"
+							class={supplierButton()}
 							on:click={() => sortTable('id')}
 						>
 							<span class="mr-0">ID</span>
 							<span>{@html sortBy === 'id' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th class="p-3 text-sm font-semibold tracking-wide text-left">
+					<th class={supplierTh()}>
 						<button
-							class="flex items-center justify-center h-full"
+							class={supplierButton()}
 							on:click={() => sortTable('vendor')}
 						>
 							<span class="mr-0">Supplier</span>
 							<span>{@html sortBy === 'vendor' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
+					<th class={supplierTh()} >
 						<button
-							class="flex items-center justify-center h-full"
+							class={supplierButton()}
 							on:click={() => sortTable('vendorPhoneNumber')}
 						>
 							<span class="mr-0">Phone Number</span>
 							<span>{@html sortBy === 'vendorPhoneNumber' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
+					<th class={supplierTh()} >
 						<button
-							class="flex items-center justify-center h-full"
+							class={supplierButton()}
 							on:click={() => sortTable('vendorTelephone')}
 						>
 							<span class="mr-0">Telephone Number</span>
 							<span>{@html sortBy === 'vendorTelephone' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
+					<th class={supplierTh()} >
 						<button
-							class="flex items-center justify-center h-full"
+							class={supplierButton()}
 							on:click={() => sortTable('vendorEmail')}
 						>
 							<span class="mr-0">Email</span>
 							<span>{@html sortBy === 'vendorEmail' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
+					<th class={supplierTh()} >
 						<button
-							class="flex items-center justify-center h-full"
+							class={supplierButton()}
 							on:click={() => sortTable('vendorAddress')}
 						>
 							<span class="mr-0">Address</span>
 							<span>{@html sortBy === 'vendorAddress' ? currentArrow : getArrow('desc')}</span>
 						</button>
 					</th>
-					<th class="p-3 text-sm font-semibold tracking-wide text-left" >
+					<th class={supplierTh()} >
 						<button
-							class="flex items-center justify-center h-full"
+							class={supplierButton()}
 							on:click={() => sortTable('vendorBankAcc')}
 						>
 							<span class="mr-0">Bank Account</span>
@@ -176,12 +181,12 @@
 				{#each displayedInventory as { id, vendor, vendorPhoneNumber, vendorTelephone, vendorEmail, vendorAddress, vendorBankAcc }}
 				<tr class="bg-white hover:underline hover:font-semibold">
 					<td class=" p-4 text-sm text-gray-700 whitespace-nowrap w-24 pl-3">{id}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendor}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorPhoneNumber}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorTelephone}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorEmail}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorAddress}</td>
-						<td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">{vendorBankAcc}</td>
+						<td class={supplierList()}>{vendor}</td>
+						<td class={supplierList()}>{vendorPhoneNumber}</td>
+						<td class={supplierList()}>{vendorTelephone}</td>
+						<td class={supplierList()}>{vendorEmail}</td>
+						<td class={supplierList()}>{vendorAddress}</td>
+						<td class={supplierList()}>{vendorBankAcc}</td>
 					</tr>
 				{/each}
 			</tbody>

@@ -79,14 +79,16 @@
 	}
 
 	function sortTable(column) {
+		console.log(`Sorting by: ${column}`); // Debug line
 		if (sortBy === column) {
 			sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
 		} else {
 			sortBy = column;
 			sortOrder = 'asc';
 		}
+		console.log(`Current sort order: ${sortOrder}`);
 		currentArrow = getArrow(sortOrder);
-		filterAndSortData();
+		filterAndSortData(); // Ensure this is updating displayed inventory
 		saveToLocalStorage();
 	}
 
@@ -113,36 +115,14 @@
 		});
 	}
 
-	function extractInventoryData(inventory) {
-		return inventory.map((item) => ({
-			id: item.id,
-			materialName: item.materialName,
-			materialCode: item.materialCode,
-			unit: item.unit,
-			orderQty: item.orderQty,
-			stock: item.stock || 0,
-			sale: item.sale || 0,
-			uniPrice: item.uniPrice,
-			marketPrice: item.marketPrice || 0,
-			materialArrive: item.materialArrive || 0,
-			revenue: item.uniPrice * item.orderQty,
-			remarks: item.remarks || '',
-			materialName: item.materialName,
-			materialCode: item.materialCode,
-			unit: item.unit,
-			status: item.status || 'Not Arrived' // Ensure you have a status
-		}));
-	}
-
+	104490;
 	function filterAndSortData() {
 		const filteredInventory = filterData(summaryOutput, searchTerm);
 		const sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
 		const startIndex = (currentPage - 1) * itemsPerPage;
 		displayedInventory = sortedInventory.slice(startIndex, startIndex + itemsPerPage);
 
-		persistedQuantities = displayedInventory.map(
-			(item, index) => item.orderQty - (stockOut[index] || 0)
-		);
+		persistedQuantities = displayedInventory.map(item => item.orderQty * item.uniPrice);
 
 		persistedArrivedQuantities = displayedInventory.map((item, index) => {
 			if (item.selections.status === 'Arrive') {
@@ -169,6 +149,11 @@
 	}
 
 	$: filteredInventory = filterData(summaryOutput, searchTerm);
+	$: sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
+	$: displayedInventory = sortedInventory.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
 
 	$: totalPages = Math.ceil(filteredInventory.length / itemsPerPage);
 </script>
@@ -267,7 +252,7 @@
 							</button>
 
 							<button class={buttonCss()} on:click={() => sortTable('remarks')}>
-								<span class="mr-0">Remarks</span>
+								<span class="mr-0">Revenue</span>
 								<span>{@html sortBy === 'remarks' ? currentArrow : getArrow('desc')}</span>
 							</button>
 						</div>
@@ -279,25 +264,20 @@
 								<div class={tailWindCss()}>
 									{index + 1}
 								</div>
-								<div class={tailWindCss()}>
-									<h4>{item.materialName}</h4>
-								</div>
-								<div class={tailWindCss()}>
-									<h4>{item.materialCode}</h4>
-								</div>
-								<div class={tailWindCss()}>
-									<h4>{item.unit}</h4>
-								</div>
+								{#each ['materialName', 'materialCode', 'unit'] as field}
+									<div class="sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center p-2">
+										{item.selections[field]}
+									</div>
+								{/each}
 
 								<div class={tailWindCss()}>
 									<h4>{item.orderQty}</h4>
 								</div>
 
 								<div class={tailWindCss()}>
-									{persistedArrivedQuantities[index] ||
-										(item.status === 'Arrive'
-											? item.orderQty - (item.orderQty - (stockOut[index] || 0))
-											: 0)}
+									<h4>
+										{item.orderQty - (item.orderQty - (item.orderQty - (stockOut[index] || 0)))}
+									</h4>
 								</div>
 
 								<div class={tailWindCss()}>
