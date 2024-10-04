@@ -3,14 +3,19 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, set, onValue } from 'firebase/database';
 	import { INVENTORY } from '$lib/materialStock';
-	import { materialStore } from '$lib/materialOrder';
 
 	let columns = [];
+
 	let output = [];
+
 	let formError = '';
+
 	let inventoryData = [];
+
 	let status = ['Arrive', 'Pending', 'Delay'];
+
 	let editingId = null;
+
 	let tempStatus = '';
 
 	const unsubscribe = INVENTORY.subscribe((value) => {
@@ -26,44 +31,58 @@
 
 		onValue(
 			outputRef,
+
 			(snapshot) => {
 				const data = snapshot.val();
+
 				if (data) {
-					output = Object.values(data);
-					materialStore.set(output);
+					output = Object.values(data).map((item) => ({
+						...item,
+
+						...item.selections 
+					}));
 				}
 			},
+
 			(error) => {
 				console.error('Error fetching data: ', error);
 			}
 		);
-
-		const storedItems = localStorage.getItem('submittedItems');
-		if (storedItems) {
-			output = JSON.parse(storedItems);
-		}
 	});
 
 	function addColumn() {
 		columns = [
 			...columns,
+
 			{
 				id: Date.now(),
-				selections: {
-					materialCode: '',
-					materialName: '',
-					unit: '',
-					vendor: '',
-					vendorPhoneNumber: '',
-					vendorEmail: '',
-					vendorAddress: '',
-					uniPrice: '',
-					status: ''
-				},
+
+				materialName: '',
+
+				materialCode: '',
+
+				unit: '',
+
+				vendor: '',
+
+				vendorPhoneNumber: '',
+
+				vendorEmail: '',
+
+				vendorAddress: '',
+
+				uniPrice: '',
+
+				status: '',
+
 				orderQty: '',
+
 				datePurchase: '',
+
 				etd: '',
+
 				eta: '',
+
 				arrivalDate: ''
 			}
 		];
@@ -71,60 +90,77 @@
 
 	function handleInputChange(event, id, field) {
 		const value = event.target.value;
+
 		columns = columns.map((column) => (column.id === id ? { ...column, [field]: value } : column));
-		saveToLocalStorage();
+
 		saveToFirebase();
 	}
 
 	function handleSelectChange(event, id, field) {
 		const value = event.target.value;
+
 		columns = columns.map((column) => {
 			if (column.id === id) {
-				const updatedSelections = { ...column.selections, [field]: value };
-
 				if (field === 'materialName') {
 					const selectedMaterial = inventoryData.find((item) => item.materialName === value);
+
 					if (selectedMaterial) {
-						Object.assign(updatedSelections, {
+						return {
+							...column,
+
+							materialName: value,
+
 							materialCode: selectedMaterial.materialCode,
+
 							uniPrice: selectedMaterial.uniPrice,
+
 							unit: selectedMaterial.unit,
+
 							vendor: selectedMaterial.vendor,
+
 							vendorPhoneNumber: selectedMaterial.vendorPhoneNumber,
+
 							vendorEmail: selectedMaterial.vendorEmail,
+
 							vendorAddress: selectedMaterial.vendorAddress
-						});
+						};
 					}
 				}
 
-				return { ...column, selections: updatedSelections };
+				return { ...column, [field]: value };
 			}
+
 			return column;
 		});
-		saveToLocalStorage();
+
 		saveToFirebase();
 	}
 
 	function validateColumns() {
 		let valid = true;
+
 		formError = '';
 
 		for (const column of columns) {
 			const errors = [];
-			Object.keys(column.selections).forEach((field) => {
-				if (!column.selections[field]) {
-					errors.push(`Selection for ${field} is required.`);
-				}
-			});
+
+			if (!column.materialName) errors.push('Material Name is required.');
+
 			if (!column.orderQty) errors.push('Order Qty is required.');
+
 			if (!column.datePurchase) errors.push('Date Purchase is required.');
+
 			if (!column.etd) errors.push('ETD is required.');
+
 			if (!column.eta) errors.push('ETA is required.');
+
 			if (!column.arrivalDate) errors.push('Arrival Date is required.');
 
 			if (errors.length > 0) {
 				formError = errors.join(' ');
+
 				valid = false;
+
 				break; // Stop checking after the first error
 			}
 		}
@@ -134,44 +170,82 @@
 
 	async function handleDelete(id) {
 		const newOutput = output.filter((item) => item.id !== id);
-		await saveToFirebase(newOutput);
-		saveToLocalStorage(newOutput);
 
 		output = newOutput;
-		materialStore.set(newOutput);
+
+		// Update Firebase
+
+		const outputRef = ref(db, 'outputs');
+
+		await set(outputRef, newOutput); // Update entire outputs after deletion
 	}
 
 	function computeTotal(column) {
-		const uniPrice = parseFloat(column.selections.uniPrice) || 0;
+		const uniPrice = parseFloat(column.uniPrice) || 0;
+
 		const orderQty = parseFloat(column.orderQty) || 0;
+
 		return uniPrice * orderQty;
 	}
 
 	async function saveToFirebase() {
-		await set(ref(db, 'outputs'), output);
-	}
+		console.log('Saving to Firebase:', output); // Check the structure of output
 
-	function saveToLocalStorage(data = output) {
-		localStorage.setItem('submittedItems', JSON.stringify(data));
+		const flattenedOutput = output.map(
+			({ materialName, materialCode, orderQty, datePurchase, ...rest }) => ({
+				materialName,
+
+				materialCode,
+
+				orderQty,
+
+				datePurchase,
+
+				...rest
+			})
+		);
+
+		await set(ref(db, 'outputs'), flattenedOutput);
 	}
 
 	async function handleSubmit() {
 		if (validateColumns()) {
 			const newEntries = columns.map((column) => ({
 				id: Date.now() + Math.random(),
-				selections: column.selections,
+
+				materialName: column.materialName,
+
+				materialCode: column.materialCode,
+
+				unit: column.unit,
+
+				vendor: column.vendor,
+
+				vendorPhoneNumber: column.vendorPhoneNumber,
+
+				vendorEmail: column.vendorEmail,
+
+				vendorAddress: column.vendorAddress,
+
+				uniPrice: column.uniPrice,
+
+				status: column.status,
+
 				orderQty: column.orderQty,
-				uniPrice: column.selections.uniPrice,
+
 				datePurchase: column.datePurchase,
+
 				etd: column.etd,
+
 				eta: column.eta,
+
 				arrivalDate: column.arrivalDate
 			}));
 
 			output = [...output, ...newEntries];
-			saveToLocalStorage();
-			materialStore.set(output);
+
 			columns = [];
+
 			await saveToFirebase();
 		}
 	}
@@ -180,15 +254,19 @@
 		const itemToUpdate = output.find((item) => item.id === id);
 
 		if (itemToUpdate) {
-			itemToUpdate.selections.status = selectedStatus; // Set to the selected status
+			itemToUpdate.status = selectedStatus; // Set to the selected status
+
 			console.log('Updated item:', itemToUpdate);
+
 			saveToFirebase();
 		}
+
 		editingId = null; // Reset editing state
 	}
 
 	function startEdit(id, currentStatus) {
 		editingId = id; // Set the current item ID to edit
+
 		tempStatus = currentStatus; // Set the temporary status
 	}
 </script>
@@ -209,21 +287,24 @@
 							</div>
 						{/each}
 					</div>
+
 					<div class="bg-white py-2">
 						{#each columns as column (column.id)}
 							<div class="flex gap-0" id={column.id}>
 								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}
 									<select
 										class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-										value={column.selections[field]}
+										value={column[field]}
 										on:change={(event) => handleSelectChange(event, column.id, field)}
 									>
 										<option value="">Select</option>
+
 										{#each inventoryData as item}
 											<option value={item[field]}>{item[field]}</option>
 										{/each}
 									</select>
 								{/each}
+
 								<input
 									type="number"
 									placeholder="Order Qty"
@@ -231,11 +312,13 @@
 									value={column.orderQty}
 									on:input={(event) => handleInputChange(event, column.id, 'orderQty')}
 								/>
+
 								<div
 									class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 								>
 									{computeTotal(column)}
 								</div>
+
 								<input
 									type="date"
 									placeholder="Date Purchase"
@@ -243,6 +326,7 @@
 									value={column.datePurchase}
 									on:input={(event) => handleInputChange(event, column.id, 'datePurchase')}
 								/>
+
 								<input
 									type="date"
 									placeholder="ETD"
@@ -250,6 +334,7 @@
 									value={column.etd}
 									on:input={(event) => handleInputChange(event, column.id, 'etd')}
 								/>
+
 								<input
 									type="date"
 									placeholder="ETA"
@@ -257,9 +342,10 @@
 									value={column.eta}
 									on:input={(event) => handleInputChange(event, column.id, 'eta')}
 								/>
+
 								<input
 									type="date"
-									placeholder="ARR Date"
+									placeholder="Arrival Date"
 									class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 									value={column.arrivalDate}
 									on:input={(event) => handleInputChange(event, column.id, 'arrivalDate')}
@@ -323,7 +409,7 @@
 									<div
 										class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
 									>
-										<h4>{item.selections[field]}</h4>
+										<h4>{item[field]}</h4>
 									</div>
 								{/each}
 
@@ -333,7 +419,7 @@
 									{#if editingId === item.id}
 										<select
 											class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-											value={item.selections.status}
+											value={item.status}
 											on:change={(event) => handleEdit(item.id, event.target.value)}
 										>
 											{#each status as status}
@@ -341,7 +427,7 @@
 											{/each}
 										</select>
 									{:else}
-										<h4>{item.selections.status}</h4>
+										<h4>{item.status}</h4>
 									{/if}
 								</div>
 								<div
@@ -376,7 +462,7 @@
 								</div>
 								<div class="flex-1 text-center">
 									<button
-										on:click={() => startEdit(item.id, item.selections.status)}
+										on:click={() => startEdit(item.id, item.status)}
 										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700 w-20"
 										>Edit</button
 									>

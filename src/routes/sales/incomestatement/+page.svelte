@@ -4,7 +4,23 @@
 	import { ref, onValue } from 'firebase/database';
 
 	let inventory = [];
+	let date = [];
 	let loading = true;
+	onMount(() => {
+		const getDate = ref(db, 'outputs');
+
+		onValue(getDate, (snapshot) => {
+			loading = false;
+			if (snapshot.exists()) {
+				date = [];
+				snapshot.forEach((childSnapshot) => {
+					date.push(childSnapshot.val());
+				});
+			} else {
+				console.log('No Date available');
+			}
+		});
+	});
 
 	onMount(() => {
 		const inventoryRef = ref(db, 'inventory'); // Updated path
@@ -31,20 +47,24 @@
 			<div class="flex flex-col text-center">
 				<h2>Mage Hardware inc</h2>
 				<h3>Statement of Income</h3>
-
 				<form action="date">
-					<label for=""
-						>for the Month Ended:
-						{#each inventory as item}
-							<option>{item.date}</option>
+					<label for="date">For the Year/Month Ended: </label>
+					<select name="date" id="date">
+						{#each date as arrival}
+							<option value={arrival.arrivalDate}>
+								{new Date(arrival.arrivalDate).toLocaleDateString('en-US', {
+									year: 'numeric',
+									month: 'long'
+								})}
+							</option>
 						{/each}
-					</label>
+					</select>
 				</form>
 			</div>
 
-			{#each inventory as item}
-				<div class="bg-bgGrey p-3 text-sm font-semibold tracking-wide text-left">
-					<div class="flex flex-col bg-white divide-y text-sm">
+			<div class="bg-bgGrey p-3 text-sm font-semibold tracking-wide text-left">
+				<div class="flex flex-col bg-white divide-y text-sm">
+					{#each inventory as item}
 						<div class={tailWindCss()}>
 							<h2>Sale Summary:</h2>
 							<h4>
@@ -84,9 +104,9 @@
 								).toLocaleString()}
 							</h4>
 						</div>
-					</div>
+					{/each}
 				</div>
-			{/each}
+			</div>
 		</div>
 	</div>
 </main>
