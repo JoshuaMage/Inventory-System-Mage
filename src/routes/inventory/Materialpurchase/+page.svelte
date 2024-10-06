@@ -3,6 +3,7 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, onValue } from 'firebase/database';
 
+
 	let materialPurchase = [];
 	let loading = true;
 
@@ -27,12 +28,13 @@
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
-	<div class="flex flex-col ">
+	<div class="flex flex-col">
 		<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
 			<div class="flex flex-col font-patrick">
 				<ul class="flex bg-bgGrey font-extrabold">
 					<li><button class={PurchaseListCss()}>Date Purchase</button></li>
 					<li><button class={PurchaseListCss()}>Material NAME</button></li>
+					<li><button class={PurchaseListCss()}>Material Code</button></li>
 					<li><button class={PurchaseListCss()}>Unit</button></li>
 					<li><button class={PurchaseListCss()}>Purchase Qty</button></li>
 					<li><button class={PurchaseListCss()}>Stock</button></li>
@@ -48,6 +50,7 @@
 					<ul class="flex items-center hover:underline hover:font-semibold">
 						<li><h4 class={PurchaseListCss()}>{purchase.datePurchase}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.materialName}</h4></li>
+						<li><h4 class={PurchaseListCss()}>{purchase.materialCode}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.unit}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.orderQty}</h4></li>
 
@@ -57,8 +60,8 @@
 							<li><h4 class={PurchaseListCss()}>0</h4></li>
 						{/if}
 
-						{#if purchase.status === 'Pending'}
-							<li><h4 class={PurchaseListCss()}>{purchase.orderQty}</h4></li>
+						{#if purchase.status === 'Pending' || purchase.status === 'Delay'}
+							<li class={PurchaseListCss()}><h4 class="text-red-600">{purchase.orderQty}</h4></li>
 						{:else}
 							<li><h4 class={PurchaseListCss()}>0</h4></li>
 						{/if}

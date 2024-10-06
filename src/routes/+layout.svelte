@@ -116,6 +116,11 @@
 								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
 								>Ordering</a
 							>
+							<a
+							href="/inventory/materialStockout"
+							class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+							>Material Stock-out</a
+						>
 						</div>
 					</div>
 

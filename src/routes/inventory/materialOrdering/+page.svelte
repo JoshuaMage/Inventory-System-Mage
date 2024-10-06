@@ -5,17 +5,11 @@
 	import { INVENTORY } from '$lib/materialStock';
 
 	let columns = [];
-
 	let output = [];
-
 	let formError = '';
-
 	let inventoryData = [];
-
 	let status = ['Arrive', 'Pending', 'Delay'];
-
 	let editingId = null;
-
 	let tempStatus = '';
 
 	const unsubscribe = INVENTORY.subscribe((value) => {
@@ -31,15 +25,12 @@
 
 		onValue(
 			outputRef,
-
 			(snapshot) => {
 				const data = snapshot.val();
-
 				if (data) {
 					output = Object.values(data).map((item) => ({
 						...item,
-
-						...item.selections 
+						...item.selections // Flatten selections
 					}));
 				}
 			},
@@ -56,33 +47,19 @@
 
 			{
 				id: Date.now(),
-
 				materialName: '',
-
 				materialCode: '',
-
 				unit: '',
-
 				vendor: '',
-
 				vendorPhoneNumber: '',
-
 				vendorEmail: '',
-
 				vendorAddress: '',
-
 				uniPrice: '',
-
 				status: '',
-
 				orderQty: '',
-
 				datePurchase: '',
-
 				etd: '',
-
 				eta: '',
-
 				arrivalDate: ''
 			}
 		];
@@ -90,9 +67,7 @@
 
 	function handleInputChange(event, id, field) {
 		const value = event.target.value;
-
 		columns = columns.map((column) => (column.id === id ? { ...column, [field]: value } : column));
-
 		saveToFirebase();
 	}
 
@@ -106,22 +81,14 @@
 
 					if (selectedMaterial) {
 						return {
-							...column,
-
+						...column,
 							materialName: value,
-
 							materialCode: selectedMaterial.materialCode,
-
 							uniPrice: selectedMaterial.uniPrice,
-
 							unit: selectedMaterial.unit,
-
 							vendor: selectedMaterial.vendor,
-
 							vendorPhoneNumber: selectedMaterial.vendorPhoneNumber,
-
 							vendorEmail: selectedMaterial.vendorEmail,
-
 							vendorAddress: selectedMaterial.vendorAddress
 						};
 					}
@@ -212,40 +179,24 @@
 		if (validateColumns()) {
 			const newEntries = columns.map((column) => ({
 				id: Date.now() + Math.random(),
-
 				materialName: column.materialName,
-
 				materialCode: column.materialCode,
-
 				unit: column.unit,
-
 				vendor: column.vendor,
-
 				vendorPhoneNumber: column.vendorPhoneNumber,
-
 				vendorEmail: column.vendorEmail,
-
 				vendorAddress: column.vendorAddress,
-
 				uniPrice: column.uniPrice,
-
 				status: column.status,
-
 				orderQty: column.orderQty,
-
 				datePurchase: column.datePurchase,
-
 				etd: column.etd,
-
 				eta: column.eta,
-
 				arrivalDate: column.arrivalDate
 			}));
 
 			output = [...output, ...newEntries];
-
 			columns = [];
-
 			await saveToFirebase();
 		}
 	}
