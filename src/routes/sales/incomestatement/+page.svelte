@@ -3,109 +3,115 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, onValue } from 'firebase/database';
 
-	let inventory = [];
-	let date = [];
+	let materialPurchase = [];
+	let manPower = [];
 	let loading = true;
-	onMount(() => {
-		const getDate = ref(db, 'outputs');
 
-		onValue(getDate, (snapshot) => {
+	onMount(() => {
+		const purchaseRef = ref(db, 'outputs');
+
+		onValue(purchaseRef, (snapshot) => {
 			loading = false;
 			if (snapshot.exists()) {
-				date = [];
+				materialPurchase = [];
 				snapshot.forEach((childSnapshot) => {
-					date.push(childSnapshot.val());
+					const purchaseData = childSnapshot.val();
+					materialPurchase.push(purchaseData);
 				});
 			} else {
-				console.log('No Date available');
+				console.log('No Data available');
 			}
 		});
 	});
 
 	onMount(() => {
-		const inventoryRef = ref(db, 'inventory'); // Updated path
+		const operatingExpenses = ref(db, 'manPower');
 
-		onValue(inventoryRef, (snapshot) => {
+		onValue(operatingExpenses, (snapshot) => {
 			loading = false;
 			if (snapshot.exists()) {
-				inventory = []; // Clear previous data
+				manPower = [];
 				snapshot.forEach((childSnapshot) => {
-					inventory.push(childSnapshot.val()); // Push each item's data
+					const manPowerWage = childSnapshot.val();
+					manPower.push(manPowerWage);
 				});
 			} else {
-				console.log('No data available');
+				console.log('No Data available');
 			}
 		});
 	});
 
-	const tailWindCss = () => 'grid grid-cols-2 text-start p-2';
+	function saleSummary() {
+		return materialPurchase.reduce((acc, purchase) => {
+			return acc + (purchase.stockOut * (purchase.uniPrice * 2) || 0);
+		}, 0);
+	}
+
+	function purchaseSummary() {
+		return materialPurchase.reduce((acc, purchase) => {
+			return acc + purchase.orderQty * purchase.uniPrice;
+		}, 0);
+	}
+
+	function cogs() {
+		return materialPurchase.reduce((acc, purchase) => {
+			return acc + purchase.orderQty * purchase.uniPrice;
+		}, 0);
+	}
+
+	function manPowerWage() {
+		return manPower.reduce((acc, wage) => {
+			return acc + (wage.salary * 26 * 12);
+		}, 0);
+	}
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
 	<div class="flex flex-col">
 		<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
-			<div class="flex flex-col text-center">
-				<h2>Mage Hardware inc</h2>
-				<h3>Statement of Income</h3>
-				<form action="date">
-					<label for="date">For the Year/Month Ended: </label>
-					<select name="date" id="date">
-						{#each date as arrival}
-							<option value={arrival.arrivalDate}>
-								{new Date(arrival.arrivalDate).toLocaleDateString('en-US', {
-									year: 'numeric',
-									month: 'long'
-								})}
-							</option>
-						{/each}
-					</select>
-				</form>
-			</div>
-
-			<div class="bg-bgGrey p-3 text-sm font-semibold tracking-wide text-left">
-				<div class="flex flex-col bg-white divide-y text-sm">
-					{#each inventory as item}
-						<div class={tailWindCss()}>
-							<h2>Sale Summary:</h2>
+			<div class="flex font-patrick">
+				{#if loading}
+					<p>Loading please wait....</p>
+				{:else}
+					<ul class="flex flex-col items-center hover:underline hover:font-semibold">
+						<li class="flex">
+							<h3>Sale Summary:</h3>
 							<h4>
-								{item.persistedRevenues
-									.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-									.toLocaleString()}
+								{saleSummary().toLocaleString()}
 							</h4>
-						</div>
-						<div class={tailWindCss()}>
-							<h2>Purchase qty:</h2>
+						</li>
+						<li class="flex">
+							<h3>Purchase Summary:</h3>
 							<h4>
-								{item.persistedQuantities
-									.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-									.toLocaleString()}
+								{purchaseSummary().toLocaleString()}
 							</h4>
-						</div>
-						<div class={tailWindCss()}>
-							<h2>Cost of Goods Sold:</h2>
+						</li>
+						<li class="flex">
+							<h3>Cost of Good Sold:</h3>
 							<h4>
-								{item.persistedQuantities
-									.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-									.toLocaleString()}
+								{cogs().toLocaleString()}
 							</h4>
-						</div>
-						<div class={tailWindCss()}>
-							<h2>Gross Profit:</h2>
+						</li>
+						<li class="flex">
+							<h3>Gross Profit:</h3>
 							<h4>
-								{(
-									item.persistedRevenues.reduce(
-										(accumulator, currentValue) => accumulator + currentValue,
-										0
-									) -
-									item.persistedQuantities.reduce(
-										(accumulator, currentValue) => accumulator + currentValue,
-										0
-									)
-								).toLocaleString()}
+								{(saleSummary() - cogs()).toLocaleString()}
 							</h4>
-						</div>
-					{/each}
-				</div>
+						</li>
+						<li class="flex">
+							<h3>Operating Expenses</h3>
+							<h4>
+								{(manPowerWage()).toLocaleString()}
+							</h4>
+						</li>
+						<li class="flex">
+							<h3>Net Income</h3>
+							<h4>
+								{(saleSummary() - manPowerWage()).toLocaleString()}
+							</h4>
+						</li>
+					</ul>
+				{/if}
 			</div>
 		</div>
 	</div>

@@ -81,7 +81,7 @@
 
 					if (selectedMaterial) {
 						return {
-						...column,
+							...column,
 							materialName: value,
 							materialCode: selectedMaterial.materialCode,
 							uniPrice: selectedMaterial.uniPrice,
@@ -110,22 +110,14 @@
 
 		for (const column of columns) {
 			const errors = [];
-
 			if (!column.materialName) errors.push('Material Name is required.');
-
 			if (!column.orderQty) errors.push('Order Qty is required.');
-
 			if (!column.datePurchase) errors.push('Date Purchase is required.');
-
 			if (!column.etd) errors.push('ETD is required.');
-
 			if (!column.eta) errors.push('ETA is required.');
-
 			if (!column.arrivalDate) errors.push('Arrival Date is required.');
-
 			if (errors.length > 0) {
 				formError = errors.join(' ');
-
 				valid = false;
 
 				break; // Stop checking after the first error
@@ -137,21 +129,15 @@
 
 	async function handleDelete(id) {
 		const newOutput = output.filter((item) => item.id !== id);
-
 		output = newOutput;
-
 		// Update Firebase
-
 		const outputRef = ref(db, 'outputs');
-
 		await set(outputRef, newOutput); // Update entire outputs after deletion
 	}
 
 	function computeTotal(column) {
 		const uniPrice = parseFloat(column.uniPrice) || 0;
-
 		const orderQty = parseFloat(column.orderQty) || 0;
-
 		return uniPrice * orderQty;
 	}
 
@@ -161,13 +147,9 @@
 		const flattenedOutput = output.map(
 			({ materialName, materialCode, orderQty, datePurchase, ...rest }) => ({
 				materialName,
-
 				materialCode,
-
 				orderQty,
-
 				datePurchase,
-
 				...rest
 			})
 		);

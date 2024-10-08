@@ -2,6 +2,8 @@
 	import { MANPOWER as manpowerList } from '$lib/manPowerList';
 	import { onDestroy } from 'svelte';
 	import { sortData, filterData, getArrow } from '$lib/sortingTable';
+	import { db } from '$lib/firebaseConfig';
+	import { ref, set } from 'firebase/database';
 
 	let MANPOWER = [];
 	let displayedInventory = [];
@@ -56,9 +58,26 @@
 		}
 	}
 
+	function saveToFirebase() {
+		displayedInventory.forEach((item) => {
+			const newRef = ref(db, 'manPower/' + item.id);
+			set(newRef, item)
+				.then(() => {
+					console.log(`Data save for ID: $(item.id)`);
+				})
+				.catch((error) => {
+					console.log(('Error saving data', error));
+				});
+		});
+	}
+
 	$: totalPages = Math.ceil(filterData(MANPOWER, searchTerm).length / itemsPerPage);
-	// Watch for changes in INVENTORY, searchTerm, sortBy, or sortOrder to update the displayed data
 	$: filterAndSortData();
+	$: {
+		if (displayedInventory.length > 0) {
+			saveToFirebase();
+		}
+	}
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
