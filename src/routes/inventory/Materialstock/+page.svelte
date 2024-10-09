@@ -61,6 +61,7 @@
 						<li><button class={PurchaseListCss()}>Stock</button></li>
 						<li><button class={PurchaseListCss()}>Pending</button></li>
 						<li><button class={PurchaseListCss()}>Stock-out</button></li>
+						<li><button class={PurchaseListCss()}>Date Stock-out</button></li>
 						<li><button class={PurchaseListCss()}>Sale-Qty</button></li>
 						<li><button class={PurchaseListCss()}>Status</button></li>
 					</ul>
@@ -85,7 +86,7 @@
 									: 0}
 							</h4>
 						</li>
-						<li >
+						<li>
 							<input
 								type="number"
 								class="text-center w-32"
@@ -94,6 +95,7 @@
 								max={purchase.orderQty}
 							/>
 						</li>
+						<li><input type="date" /></li>
 						<li><h4 class={PurchaseListCss()}>{values[index]}</h4></li>
 
 						<li><h4 class={PurchaseListCss()}>{purchase.status}</h4></li>
