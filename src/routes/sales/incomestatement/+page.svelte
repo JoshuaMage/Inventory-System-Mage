@@ -9,6 +9,10 @@
 
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
+		const operatingExpenses = ref(db, 'manPower');
+
+		let purchaseLoaded = false;
+		let manPowerLoaded = false;
 
 		onValue(purchaseRef, (snapshot) => {
 			loading = false;
@@ -18,17 +22,11 @@
 					const purchaseData = childSnapshot.val();
 					materialPurchase.push(purchaseData);
 				});
-			} else {
-				console.log('No Data available');
 			}
+			purchaseLoaded = true;
+			loading = !(purchaseLoaded && manPowerLoaded);
 		});
-	});
-
-	onMount(() => {
-		const operatingExpenses = ref(db, 'manPower');
-
 		onValue(operatingExpenses, (snapshot) => {
-			loading = false;
 			if (snapshot.exists()) {
 				manPower = [];
 				snapshot.forEach((childSnapshot) => {
@@ -36,8 +34,10 @@
 					manPower.push(manPowerWage);
 				});
 			} else {
-				console.log('No Data available');
+				console.log('No Data available for manPower');
 			}
+			manPowerLoaded = true;
+			loading = !(purchaseLoaded && manPowerLoaded);
 		});
 	});
 
@@ -64,20 +64,29 @@
 			return acc + (wage.salary * 26 * 12 || 0);
 		}, 0);
 	}
+	$: currentSaleSummary = saleSummary();
+	$: currentManPowerWage = manPowerWage();
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
 	<div class="w-1/3 rounded-lg">
-		<div class="flex flex-col font-patrick text-center bg-white mt-6 container mx-auto " >
+		<div class="flex flex-col font-patrick text-center bg-white mt-6 container mx-auto">
 			{#if loading}
-				<p>Loading please wait....</p>
+				<div class="flex justify-center items-center h-screen bg-bgdarkgrey ">
+					<p class="bg-white text-base">Loading please wait....</p>
+				</div>
 			{:else}
 				<div class="bg-bgGrey p-2">
 					<h1 class="text-lg text-black font-black">Mage Hardware inc.</h1>
 					<h2 class="text-base text-black font-black">Income Statement</h2>
-				<h2>For the year ended: <input type="month" class=" text-black font-black bg-bgGrey text-base w-36"  ></h2>
+					<h2>
+						For the year ended: <input
+							type="month"
+							class=" text-black font-black bg-bgGrey text-base w-36"
+						/>
+					</h2>
 				</div>
-				<div class="bg-white grid grid-cols-2 text-1xl ">
+				<div class="bg-white grid grid-cols-2 text-1xl">
 					<div class="flex flex-col text-start">
 						<h2 class="text-lg p-7 font-black">Sale Summary :</h2>
 						<h2 class="text-lg p-7 font-black">Purchase Summary :</h2>

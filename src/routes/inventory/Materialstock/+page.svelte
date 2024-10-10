@@ -3,23 +3,27 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, set, onValue } from 'firebase/database';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
+	import Pagination from '../materialPurchase/Pagination.svelte';
 
 	let searchItem = '';
 	let materialPurchase = [];
-
 	let values = [];
+	let dateValues = [];
+	let currentPage = 1;
+	let itemsPerPage = 7;
 
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
-
 		onValue(purchaseRef, (snapshot) => {
 			if (snapshot.exists()) {
 				materialPurchase = [];
 				values = [];
+				dateValues = [];
 				snapshot.forEach((childSnapshot) => {
 					const purchaseData = childSnapshot.val();
 					materialPurchase.push(purchaseData);
 					values.push(purchaseData.stockOut || 0);
+					dateValues.push(localStorage.getItem(`dateStockOut_${childSnapshot.key}`) || '');
 				});
 			} else {
 				console.log('No Data available');
@@ -28,15 +32,15 @@
 	});
 
 	function updateValue(index) {
-		const value = parseFloat(values[index]) || 0; // Ensure value is a number
-		localStorage.setItem(`stockOut_${index}`, value); // Store the value
+		const value = parseFloat(values[index]) || 0;
+		localStorage.setItem(`stockOut_${index}`, value);
 
 		// Update the Firebase database
-		const purchaseRef = ref(db, `outputs/${index}/stockOut`); // Adjust the path as needed
+		const purchaseRef = ref(db, `outputs/${index}/stockOut`);
 		set(purchaseRef, value)
 			.then(() => {
 				console.log('Value updated in Firebase successfully');
-				values[index] = value; // Update the local value array
+				values[index] = value;
 			})
 			.catch((error) => {
 				console.error('Error updating value in Firebase:', error);
@@ -44,19 +48,30 @@
 	}
 
 	function updateDate(index, date) {
-    const purchaseRef = ref(db, `outputs/${index}/dateStockOut`); // Adjust the path as needed
-    set(purchaseRef, date)
-        .then(() => {
-            console.log('Date updated in Firebase successfully');
-        })
-        .catch((error) => {
-            console.error('Error updating date in Firebase:', error);
-        });
-}
+		localStorage.setItem(`dateStockOut_${index}`, date);
+		const purchaseRef = ref(db, `outputs/${materialPurchase[index].id}/dateStockOut`);
+		set(purchaseRef, date)
+			.then(() => {
+				console.log('Date updated in Firebase successfully');
+				dateValues[index] = date;
+			})
+			.catch((error) => {
+				console.error('Error updating date in Firebase:', error);
+			});
+	}
 
+	function goToPage(page) {
+		currentPage = page;
+	}
+
+	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
+	$: displayedItems = filteredItem.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
 
 	$: filteredItem = materialPurchase.filter((item) =>
-		item.materialName.toLowerCase().includes(searchItem.toLocaleLowerCase())
+		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
 	);
 
 	const PurchaseListCss = () =>
@@ -83,7 +98,7 @@
 						<li><button class={PurchaseListCss()}>Status</button></li>
 					</ul>
 				</div>
-				{#each filteredItem as purchase, index}
+				{#each displayedItems as purchase, index}
 					<ul class="flex items-center hover:underline hover:font-semibold">
 						<li><h4 class={PurchaseListCss()}>{index + 1}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.materialName}</h4></li>
@@ -112,7 +127,13 @@
 								max={purchase.orderQty}
 							/>
 						</li>
-						<li><input type="date"  on:change={(e) => updateDate(index, e.target.value)} /></li>
+						<li>
+							<input
+								type="date"
+								bind:value={dateValues[index]}
+								on:change={(e) => updateDate(index, e.target.value)}
+							/>
+						</li>
 						<li><h4 class={PurchaseListCss()}>{values[index]}</h4></li>
 
 						<li class={PurchaseListCss()}>
@@ -126,5 +147,6 @@
 				{/each}
 			</div>
 		</div>
+		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
 	</div>
 </main>

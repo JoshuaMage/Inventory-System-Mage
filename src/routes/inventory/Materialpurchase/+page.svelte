@@ -3,10 +3,13 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, onValue } from 'firebase/database';
 	import SearchInput from './SearchInput.svelte';
+	import Pagination from './Pagination.svelte';
 
 	let searchItem = '';
 	let materialPurchase = [];
 	let loading = true;
+	let currentPage = 1;
+	let itemsPerPage = 7;
 
 	onMount(() => {
 		const purchase = ref(db, 'outputs');
@@ -23,6 +26,17 @@
 			}
 		});
 	});
+
+	function goToPage(page) {
+		currentPage = page;
+	}
+
+	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
+
+	$: displayedItems = filteredItem.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
 
 	$: filteredItem = materialPurchase.filter((item) =>
 		item.materialName.toLowerCase().includes(searchItem.toLocaleLowerCase())
@@ -54,7 +68,7 @@
 					</ul>
 				</div>
 
-				{#each filteredItem as purchase}
+				{#each displayedItems as purchase}
 					<ul class="flex items-center hover:underline hover:font-semibold">
 						<li><h4 class={PurchaseListCss()}>{purchase.datePurchase}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.materialName}</h4></li>
@@ -78,7 +92,7 @@
 						<li><h4 class={PurchaseListCss()}>{purchase.vendorAddress}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.vendorEmail}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.vendorPhoneNumber}</h4></li>
-						<li class={PurchaseListCss()}>
+						<li>
 							<h4
 								class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
 							>
@@ -89,5 +103,7 @@
 				{/each}
 			</div>
 		</div>
+
+		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
 	</div>
 </main>
