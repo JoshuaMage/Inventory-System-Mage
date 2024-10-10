@@ -2,16 +2,17 @@
 	import { onMount } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
 	import { ref, set, onValue } from 'firebase/database';
+	import SearchInput from '../materialPurchase/SearchInput.svelte';
 
+	let searchItem = '';
 	let materialPurchase = [];
-	let loading = true;
+
 	let values = [];
 
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
 
 		onValue(purchaseRef, (snapshot) => {
-			loading = false;
 			if (snapshot.exists()) {
 				materialPurchase = [];
 				values = [];
@@ -42,6 +43,22 @@
 			});
 	}
 
+	function updateDate(index, date) {
+    const purchaseRef = ref(db, `outputs/${index}/dateStockOut`); // Adjust the path as needed
+    set(purchaseRef, date)
+        .then(() => {
+            console.log('Date updated in Firebase successfully');
+        })
+        .catch((error) => {
+            console.error('Error updating date in Firebase:', error);
+        });
+}
+
+
+	$: filteredItem = materialPurchase.filter((item) =>
+		item.materialName.toLowerCase().includes(searchItem.toLocaleLowerCase())
+	);
+
 	const PurchaseListCss = () =>
 		'flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-24 xl:w-28 2xl:w-32 text-center';
 </script>
@@ -50,9 +67,9 @@
 	<div class="flex flex-col">
 		<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
 			<div class="flex flex-col font-patrick">
-				{#if loading}
-					<p>Loading please wait....</p>
-				{:else}
+				<div class="bg-bgGrey">
+					<SearchInput bind:searchItem />
+
 					<ul class="flex bg-bgGrey font-extrabold">
 						<li><button class={PurchaseListCss()}>Item</button></li>
 						<li><button class={PurchaseListCss()}>Material Name</button></li>
@@ -65,8 +82,8 @@
 						<li><button class={PurchaseListCss()}>Sale-Qty</button></li>
 						<li><button class={PurchaseListCss()}>Status</button></li>
 					</ul>
-				{/if}
-				{#each materialPurchase as purchase, index}
+				</div>
+				{#each filteredItem as purchase, index}
 					<ul class="flex items-center hover:underline hover:font-semibold">
 						<li><h4 class={PurchaseListCss()}>{index + 1}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.materialName}</h4></li>
@@ -95,10 +112,16 @@
 								max={purchase.orderQty}
 							/>
 						</li>
-						<li><input type="date" /></li>
+						<li><input type="date"  on:change={(e) => updateDate(index, e.target.value)} /></li>
 						<li><h4 class={PurchaseListCss()}>{values[index]}</h4></li>
 
-						<li><h4 class={PurchaseListCss()}>{purchase.status}</h4></li>
+						<li class={PurchaseListCss()}>
+							<h4
+								class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
+							>
+								{purchase.status}
+							</h4>
+						</li>
 					</ul>
 				{/each}
 			</div>

@@ -2,8 +2,9 @@
 	import { onMount } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
 	import { ref, onValue } from 'firebase/database';
+	import SearchInput from './SearchInput.svelte';
 
-
+	let searchItem = '';
 	let materialPurchase = [];
 	let loading = true;
 
@@ -23,6 +24,10 @@
 		});
 	});
 
+	$: filteredItem = materialPurchase.filter((item) =>
+		item.materialName.toLowerCase().includes(searchItem.toLocaleLowerCase())
+	);
+
 	const PurchaseListCss = () =>
 		'flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-28 xl:w-32 2xl:w-36 text-center';
 </script>
@@ -31,22 +36,25 @@
 	<div class="flex flex-col">
 		<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
 			<div class="flex flex-col font-patrick">
-				<ul class="flex bg-bgGrey font-extrabold">
-					<li><button class={PurchaseListCss()}>Date Purchase</button></li>
-					<li><button class={PurchaseListCss()}>Material NAME</button></li>
-					<li><button class={PurchaseListCss()}>Material Code</button></li>
-					<li><button class={PurchaseListCss()}>Unit</button></li>
-					<li><button class={PurchaseListCss()}>Purchase Qty</button></li>
-					<li><button class={PurchaseListCss()}>Stock</button></li>
-					<li><button class={PurchaseListCss()}>Pending</button></li>
-					<li><button class={PurchaseListCss()}>Vendor</button></li>
-					<li><button class={PurchaseListCss()}>Address</button></li>
-					<li><button class={PurchaseListCss()}>Email</button></li>
-					<li><button class={PurchaseListCss()}>phone Number</button></li>
-					<li><button class={PurchaseListCss()}>Status</button></li>
-				</ul>
+				<div class="bg-bgGrey">
+					<SearchInput bind:searchItem />
+					<ul class="flex font-extrabold">
+						<li><button class={PurchaseListCss()}>Date Purchase</button></li>
+						<li><button class={PurchaseListCss()}>Material Name</button></li>
+						<li><button class={PurchaseListCss()}>Material Code</button></li>
+						<li><button class={PurchaseListCss()}>Unit</button></li>
+						<li><button class={PurchaseListCss()}>Purchase Qty</button></li>
+						<li><button class={PurchaseListCss()}>Stock</button></li>
+						<li><button class={PurchaseListCss()}>Pending</button></li>
+						<li><button class={PurchaseListCss()}>Vendor</button></li>
+						<li><button class={PurchaseListCss()}>Address</button></li>
+						<li><button class={PurchaseListCss()}>Email</button></li>
+						<li><button class={PurchaseListCss()}>phone Number</button></li>
+						<li><button class={PurchaseListCss()}>Status</button></li>
+					</ul>
+				</div>
 
-				{#each materialPurchase as purchase}
+				{#each filteredItem as purchase}
 					<ul class="flex items-center hover:underline hover:font-semibold">
 						<li><h4 class={PurchaseListCss()}>{purchase.datePurchase}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.materialName}</h4></li>
@@ -70,7 +78,13 @@
 						<li><h4 class={PurchaseListCss()}>{purchase.vendorAddress}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.vendorEmail}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.vendorPhoneNumber}</h4></li>
-						<li><h4 class={PurchaseListCss()}>{purchase.status}</h4></li>
+						<li class={PurchaseListCss()}>
+							<h4
+								class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
+							>
+								{purchase.status}
+							</h4>
+						</li>
 					</ul>
 				{/each}
 			</div>

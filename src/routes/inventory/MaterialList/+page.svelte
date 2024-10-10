@@ -16,12 +16,13 @@
 
 	const materialListButton = () => 'flex items-center justify-center h-ful';
 
-
+	// Subscribe to the store to get the initial value
 	const unsubscribe = inventoryStore.subscribe((value) => {
 		INVENTORY = [...value];
 		filterAndSortData();
 	});
 
+	// Clean up subscription when component is destroyed
 	onDestroy(() => {
 		unsubscribe();
 	});
@@ -34,7 +35,7 @@
 			sortOrder = 'asc';
 		}
 
-
+		// Update the arrow based on the current sortOrder
 		currentArrow = getArrow(sortOrder);
 
 		filterAndSortData();
@@ -44,6 +45,7 @@
 		const filteredInventory = filterData(INVENTORY, searchTerm);
 		const sortedInventory = sortData(filteredInventory, sortBy, sortOrder);
 
+		// Compute pagination
 		const startIndex = (currentPage - 1) * itemsPerPage;
 		const endIndex = startIndex + itemsPerPage;
 		displayedInventory = sortedInventory.slice(startIndex, endIndex);
@@ -57,6 +59,8 @@
 	}
 
 	$: totalPages = Math.ceil(filterData(INVENTORY, searchTerm).length / itemsPerPage);
+
+	// Watch for changes in INVENTORY, searchTerm, sortBy, or sortOrder to update the displayed data
 	$: filterAndSortData();
 </script>
 

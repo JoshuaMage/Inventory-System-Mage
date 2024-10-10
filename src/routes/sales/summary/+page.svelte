@@ -48,7 +48,7 @@
 				{:else}
 					<ul class="flex bg-bgGrey font-extrabold">
 						<li><button class={PurchaseListCss()}>Item</button></li>
-						<li><button class={PurchaseListCss()}>Arrival Purchase</button></li>
+
 						<li><button class={PurchaseListCss()}>Material Name</button></li>
 						<li><button class={PurchaseListCss()}>Unit</button></li>
 						<li><button class={PurchaseListCss()}>Purchase Qty</button></li>
@@ -62,7 +62,7 @@
 				{#each materialPurchase as purchase, index}
 					<ul class="flex items-center hover:underline hover:font-semibold">
 						<li><h4 class={PurchaseListCss()}>{[index + 1]}</h4></li>
-						<li><h4 class={PurchaseListCss()}>{purchase.arrivalDate}</h4></li>
+
 						<li><h4 class={PurchaseListCss()}>{purchase.materialName}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.unit}</h4></li>
 						<li><h4 class={PurchaseListCss()}>{purchase.orderQty}</h4></li>

@@ -61,7 +61,7 @@
 
 	function manPowerWage() {
 		return manPower.reduce((acc, wage) => {
-			return acc + wage.salary * 26 * 12;
+			return acc + (wage.salary * 26 * 12 || 0);
 		}, 0);
 	}
 </script>
