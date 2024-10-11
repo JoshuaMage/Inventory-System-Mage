@@ -12,6 +12,7 @@
 	let editingId = null;
 	let tempStatus = '';
 
+
 	const unsubscribe = INVENTORY.subscribe((value) => {
 		inventoryData = value;
 	});
@@ -205,12 +206,13 @@
 </script>
 
 <main
-	class="flex flex-col gap-8 w-screen overflow-hidden min-h-screen bg-bgdarkgrey font-patrick text-black m-0 p-0"
+	class="flex flex-col gap-8 w-screen overflow-hidden min-h-screen bg-bgDarkGrey font-patrick text-black m-0 p-0"
 >
 	<div class="flex flex-col gap-4">
+
 		<div class="flex justify-center">
 			<div class="overflow-hidden rounded-lg shadow hidden md:block mt-24">
-				<div class="flex flex-col justify-between items-center bg-white">
+				<div class="flex flex-col justify-between items-center bg-white text-white">
 					<div class="flex font-bold">
 						{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
 							<div
@@ -319,7 +321,7 @@
 		</div>
 
 		<div class="flex justify-center">
-			<div class="overflow-hidden rounded-lg shadow hidden md:block font-bold bg-gray-700">
+			<div class="overflow-hidden rounded-lg shadow hidden md:block font-bold bg-bgGrey">
 				{#if output.length > 0}
 					<div class="flex">
 						{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit', 'Delete'] as header}

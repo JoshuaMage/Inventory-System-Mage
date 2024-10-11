@@ -39,7 +39,7 @@
 		'flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-24 xl:w-28 2xl:w-32 text-center';
 </script>
 
-<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
+<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick text-black">
 	<div class="flex flex-col">
 		<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
 			<div class="flex flex-col font-patrick">

@@ -68,11 +68,11 @@
 	$: currentManPowerWage = manPowerWage();
 </script>
 
-<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
+<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick text-black">
 	<div class="w-1/3 rounded-lg">
 		<div class="flex flex-col font-patrick text-center bg-white mt-6 container mx-auto">
 			{#if loading}
-				<div class="flex justify-center items-center h-screen bg-bgdarkgrey ">
+				<div class="flex justify-center items-center h-screen bg-bgDarkGrey ">
 					<p class="bg-white text-base">Loading please wait....</p>
 				</div>
 			{:else}

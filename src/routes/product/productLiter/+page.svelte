@@ -7,7 +7,7 @@
 
 <img src={tools} alt="background tools" class="w-full object-cover h-96" />
 
-<div class="flex items-start justify-center min-h-screen bg-bgdarkgrey">
+<div class="flex items-start justify-center min-h-screen bg-bgDarkGrey">
 	<main class="grid grid-cols-1 gap-4 p-5 font-patrick">
 		{#each kgProducts as PRODUCT}
 			<section

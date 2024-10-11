@@ -5,11 +5,12 @@
 	import SearchInput from './SearchInput.svelte';
 	import Pagination from './Pagination.svelte';
 
-	let searchItem = '';
 	let materialPurchase = [];
 	let loading = true;
+	let searchItem = '';
 	let currentPage = 1;
 	let itemsPerPage = 7;
+
 
 	onMount(() => {
 		const purchase = ref(db, 'outputs');
@@ -43,16 +44,21 @@
 	);
 
 	const PurchaseListCss = () =>
-		'flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-28 xl:w-32 2xl:w-36 text-center';
+		'flex border border-gray-300  border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-28 xl:w-32 2xl:w-36 text-center';
 </script>
 
-<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
+<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick text-black">
 	<div class="flex flex-col">
+		{#if loading}
+			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+				<p class="bg-white text-xl font-black">Loading please wait....</p>
+			</div>
+		{:else}
 		<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
 			<div class="flex flex-col font-patrick">
 				<div class="bg-bgGrey">
 					<SearchInput bind:searchItem />
-					<ul class="flex font-extrabold">
+					<ul class="flex font-extrabold text-white">
 						<li><button class={PurchaseListCss()}>Date Purchase</button></li>
 						<li><button class={PurchaseListCss()}>Material Name</button></li>
 						<li><button class={PurchaseListCss()}>Material Code</button></li>
@@ -103,7 +109,7 @@
 				{/each}
 			</div>
 		</div>
-
+		{/if}
 		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
 	</div>
 </main>

@@ -63,22 +63,22 @@
 						>
 							<a
 								href="/product/productKg"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Kilogram</a
 							>
 							<a
 								href="/product/productPc"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Pc</a
 							>
 							<a
 								href="/product/productLiter"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Liter</a
 							>
 							<a
 								href="/product/productMeter"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Meter</a
 							>
 						</div>
@@ -93,30 +93,29 @@
 						>
 							<a
 								href="/inventory/materialStock"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Material Stock</a
 							>
 							<a
 								href="/inventory/materialList"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Material List</a
 							>
 							<a
 								href="/inventory/materialPurchase"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Purchase</a
 							>
 							<a
 								href="/inventory/supplier"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Supplier</a
 							>
 							<a
 								href="/inventory/materialOrdering"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Ordering</a
 							>
-
 						</div>
 					</div>
 
@@ -129,17 +128,17 @@
 						>
 							<a
 								href="/sales/summary"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Summary</a
 							>
 							<a
 								href="/sales/incomestatement"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Income Statement</a
 							>
 							<a
 								href="/sales/manpower"
-								class="block text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
 								>Man power</a
 							>
 						</div>
@@ -150,12 +149,12 @@
 						<a href="/user" class="font-bold text-lg font-sans text-center">user</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-40 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
 						>
 							<button
 								on:click={handleLogout}
 								disabled={loading}
-								class="disabled:opacity-50 block w-full text-start font-bold hover:font-extrabold hover:bg-bgGrey rounded p-2"
+								class="disabled:opacity-50 block w-full text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-1"
 							>
 								{#if loading}
 									Logging out...

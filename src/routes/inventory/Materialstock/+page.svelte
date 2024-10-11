@@ -11,10 +11,12 @@
 	let dateValues = [];
 	let currentPage = 1;
 	let itemsPerPage = 7;
+	let loading = true;
 
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
 		onValue(purchaseRef, (snapshot) => {
+			loading = false;
 			if (snapshot.exists()) {
 				materialPurchase = [];
 				values = [];
@@ -75,78 +77,83 @@
 	);
 
 	const PurchaseListCss = () =>
-		'flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'flex border border-gray-300  border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-24 xl:w-28 2xl:w-32 text-center';
 </script>
 
-<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black">
+<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick text-black">
 	<div class="flex flex-col">
-		<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
-			<div class="flex flex-col font-patrick">
-				<div class="bg-bgGrey">
-					<SearchInput bind:searchItem />
-
-					<ul class="flex bg-bgGrey font-extrabold">
-						<li><button class={PurchaseListCss()}>Item</button></li>
-						<li><button class={PurchaseListCss()}>Material Name</button></li>
-						<li><button class={PurchaseListCss()}>Unit</button></li>
-						<li><button class={PurchaseListCss()}>Purchase Qty</button></li>
-						<li><button class={PurchaseListCss()}>Stock</button></li>
-						<li><button class={PurchaseListCss()}>Pending</button></li>
-						<li><button class={PurchaseListCss()}>Stock-out</button></li>
-						<li><button class={PurchaseListCss()}>Date Stock-out</button></li>
-						<li><button class={PurchaseListCss()}>Sale-Qty</button></li>
-						<li><button class={PurchaseListCss()}>Status</button></li>
-					</ul>
-				</div>
-				{#each displayedItems as purchase, index}
-					<ul class="flex items-center hover:underline hover:font-semibold">
-						<li><h4 class={PurchaseListCss()}>{index + 1}</h4></li>
-						<li><h4 class={PurchaseListCss()}>{purchase.materialName}</h4></li>
-						<li><h4 class={PurchaseListCss()}>{purchase.unit}</h4></li>
-						<li><h4 class={PurchaseListCss()}>{purchase.orderQty}</h4></li>
-						<li>
-							<h4 class={PurchaseListCss()}>
-								{(purchase.status === 'Arrive' ? purchase.orderQty : 0) - values[index]}
-							</h4>
-						</li>
-						<li class={PurchaseListCss()}>
-							<h4
-								class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
-							>
-								{purchase.status === 'Pending' || purchase.status === 'Delay'
-									? purchase.orderQty
-									: 0}
-							</h4>
-						</li>
-						<li>
-							<input
-								type="number"
-								class="text-center w-32"
-								bind:value={values[index]}
-								on:input={() => updateValue(index)}
-								max={purchase.orderQty}
-							/>
-						</li>
-						<li>
-							<input
-								type="date"
-								bind:value={dateValues[index]}
-								on:change={(e) => updateDate(index, e.target.value)}
-							/>
-						</li>
-						<li><h4 class={PurchaseListCss()}>{values[index]}</h4></li>
-
-						<li class={PurchaseListCss()}>
-							<h4
-								class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
-							>
-								{purchase.status}
-							</h4>
-						</li>
-					</ul>
-				{/each}
+		{#if loading}
+			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+				<p class="bg-white text-xl font-black">Loading please wait....</p>
 			</div>
-		</div>
+		{:else}
+			<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
+				<div class="flex flex-col font-patrick">
+					<div class="bg-bgGrey">
+						<SearchInput bind:searchItem />
+						<ul class="flex bg-bgGrey font-extrabold text-white">
+							<li><button class={PurchaseListCss()}>Item</button></li>
+							<li><button class={PurchaseListCss()}>Material Name</button></li>
+							<li><button class={PurchaseListCss()}>Unit</button></li>
+							<li><button class={PurchaseListCss()}>Purchase Qty</button></li>
+							<li><button class={PurchaseListCss()}>Stock</button></li>
+							<li><button class={PurchaseListCss()}>Pending</button></li>
+							<li><button class={PurchaseListCss()}>Stock-out</button></li>
+							<li><button class={PurchaseListCss()}>Date Stock-out</button></li>
+							<li><button class={PurchaseListCss()}>Sale-Qty</button></li>
+							<li><button class={PurchaseListCss()}>Status</button></li>
+						</ul>
+					</div>
+					{#each displayedItems as purchase, index}
+						<ul class="flex items-center hover:underline hover:font-semibold">
+							<li><h4 class={PurchaseListCss()}>{index + 1}</h4></li>
+							<li><h4 class={PurchaseListCss()}>{purchase.materialName}</h4></li>
+							<li><h4 class={PurchaseListCss()}>{purchase.unit}</h4></li>
+							<li><h4 class={PurchaseListCss()}>{purchase.orderQty}</h4></li>
+							<li>
+								<h4 class={PurchaseListCss()}>
+									{(purchase.status === 'Arrive' ? purchase.orderQty : 0) - values[index]}
+								</h4>
+							</li>
+							<li class={PurchaseListCss()}>
+								<h4
+									class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
+								>
+									{purchase.status === 'Pending' || purchase.status === 'Delay'
+										? purchase.orderQty
+										: 0}
+								</h4>
+							</li>
+							<li>
+								<input
+									type="number"
+									class="text-center w-32"
+									bind:value={values[index]}
+									on:input={() => updateValue(index)}
+									max={purchase.orderQty}
+								/>
+							</li>
+							<li>
+								<input
+									type="date"
+									bind:value={dateValues[index]}
+									on:change={(e) => updateDate(index, e.target.value)}
+								/>
+							</li>
+							<li><h4 class={PurchaseListCss()}>{values[index]}</h4></li>
+
+							<li class={PurchaseListCss()}>
+								<h4
+									class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
+								>
+									{purchase.status}
+								</h4>
+							</li>
+						</ul>
+					{/each}
+				</div>
+			</div>
+		{/if}
 		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
 	</div>
 </main>

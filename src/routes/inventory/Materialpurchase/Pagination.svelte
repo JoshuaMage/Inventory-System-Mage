@@ -7,7 +7,7 @@
 <div class="flex justify-center mt-4">
     {#if currentPage > 1}
       <button
-        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+        class="bg-nextPrevButton text-white px-4 py-2 rounded-md hover:bg-paginationButton"
         on:click={() => onPageChange(currentPage - 1)}
       >
         Previous
@@ -17,7 +17,7 @@
     {#each Array(totalPages) as _, index}
       <button
         class={`mx-1 px-4 py-2 rounded-md
-          ${index + 1 === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black hover:bg-gray-300'}`}
+          ${index + 1 === currentPage ? 'bg-paginationButton text-white' : 'bg-gray-200 text-black hover:bg-gray-300'}`}
         on:click={() => onPageChange(index + 1)}
       >
         {index + 1}
@@ -26,7 +26,7 @@
 
     {#if currentPage < totalPages}
       <button
-        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+        class="bg-nextPrevButton text-white px-4 py-2 rounded-md hover:bg-paginationButton"
         on:click={() => onPageChange(currentPage + 1)}
       >
         Next

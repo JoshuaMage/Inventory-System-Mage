@@ -50,10 +50,12 @@ export default {
 			colors: {
 				pureRed: '#EB1D36',
 				orange: '#C2452D',
-				bgGrey: '#C7C8CC',
-				bgdarkgrey: '#434343',
+				bgGrey: '#000000',
+				bgDarkGrey: '#FAFAFF',
 				bgBlack: '#191717',
-				borderlineGrey: '#F5F7F8'
+				borderlineGrey: '#F5F7F8',
+				paginationButton: '#090C9B',
+				nextPrevButton: '#090C9B'
 			},
 		}
 	},
