@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte';
 	import { MANPOWER as manpowerList } from '$lib/manPowerList';
 	import { onDestroy } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
@@ -11,9 +12,23 @@
 	let searchItem = '';
 	let currentPage = 1;
 	let itemsPerPage = 7;
+	let loading = true;
 
 	const unsubscribe = manpowerList.subscribe((value) => {
 		MANPOWER = [...value];
+	});
+
+	onMount(async () => {
+		loading = true;
+		try {
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const response = await fetch('/inventory/materialList');
+			data = await response.json();
+		} catch (error) {
+			console.error('Error fetching data:', error);
+		} finally {
+			loading = false;
+		}
 	});
 
 	onDestroy(() => {
@@ -54,37 +69,43 @@
 		}
 	}
 	const manPowerCss = () =>
-		'flex border border-gray-300 text-black border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-48 xl:w-52 2xl:w-56 text-center';
+		'flex border border-gray-300  border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-48 xl:w-52 2xl:w-56 text-center';
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick text-black">
 	<div class="flex flex-col">
-		<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
-			<div class="flex flex-col font-patrick">
-				<div class="bg-bgGrey">
-					<SearchInput bind:searchItem />
-					<ul class="flex font-extrabold">
-						<li class={manPowerCss()}>ID</li>
-						<li class={manPowerCss()}>Full Name</li>
-						<li class={manPowerCss()}>Email</li>
-						<li class={manPowerCss()}>Contact Number</li>
-						<li class={manPowerCss()}>Address</li>
-						<li class={manPowerCss()}>Salary</li>
-					</ul>
-				</div>
-
-				{#each displayedItems as person}
-					<ul class="flex items-center hover:underline hover:font-semibold">
-						<li class={manPowerCss()}>{person.id}</li>
-						<li class={manPowerCss()}>{person.fullName}</li>
-						<li class={manPowerCss()}>{person.email}</li>
-						<li class={manPowerCss()}>{person.phoneNumber}</li>
-						<li class={manPowerCss()}>{person.address}</li>
-						<li class={manPowerCss()}>₱ {person.salary}</li>
-					</ul>
-				{/each}
+		{#if loading}
+			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+				<p class="bg-white text-xl font-black">Loading please wait....</p>
 			</div>
-		</div>
+		{:else}
+			<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24">
+				<div class="flex flex-col font-patrick">
+					<div class="bg-bgGrey">
+						<SearchInput bind:searchItem />
+						<ul class="flex font-extrabold text-white">
+							<li class={manPowerCss()}>ID</li>
+							<li class={manPowerCss()}>Full Name</li>
+							<li class={manPowerCss()}>Email</li>
+							<li class={manPowerCss()}>Contact Number</li>
+							<li class={manPowerCss()}>Address</li>
+							<li class={manPowerCss()}>Salary</li>
+						</ul>
+					</div>
+
+					{#each displayedItems as person}
+						<ul class="flex items-center hover:underline hover:font-semibold">
+							<li class={manPowerCss()}>{person.id}</li>
+							<li class={manPowerCss()}>{person.fullName}</li>
+							<li class={manPowerCss()}>{person.email}</li>
+							<li class={manPowerCss()}>{person.phoneNumber}</li>
+							<li class={manPowerCss()}>{person.address}</li>
+							<li class={manPowerCss()}>₱ {person.salary}</li>
+						</ul>
+					{/each}
+				</div>
+			</div>
+		{/if}
 		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
 	</div>
 </main>

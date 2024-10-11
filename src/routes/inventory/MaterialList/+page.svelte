@@ -27,7 +27,7 @@
 	});
 
 	const unsubscribe = inventoryStore.subscribe((value) => {
-		INVENTORY = [...value];
+		INVENTORY = [...value];``
 		displayedInventory = [...INVENTORY];
 		loading = false;
 	});

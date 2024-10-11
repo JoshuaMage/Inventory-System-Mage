@@ -3,6 +3,8 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, set, onValue } from 'firebase/database';
 	import { INVENTORY } from '$lib/materialStock';
+	import SearchInput from '../materialPurchase/SearchInput.svelte';
+	import Pagination from '../materialPurchase/Pagination.svelte';
 
 	let columns = [];
 	let output = [];
@@ -11,9 +13,12 @@
 	let status = ['Arrive', 'Pending', 'Delay'];
 	let editingId = null;
 	let tempStatus = '';
-
+	let searchItem = '';
+	let currentPage = 1;
+	let itemsPerPage = 7;
 
 	const unsubscribe = INVENTORY.subscribe((value) => {
+		console.log(value);
 		inventoryData = value;
 	});
 
@@ -203,13 +208,30 @@
 
 		tempStatus = currentStatus; // Set the temporary status
 	}
+
+	function goToPage(page) {
+		currentPage = page;
+	}
+
+	$: filteredItem = output.filter((item) =>
+    item.materialName.toLowerCase().includes(searchItem.toLowerCase())
+);
+
+	$: totalPages = Math.ceil(filteredItem.length / itemsPerPage);
+
+	$: displayedItems = filteredItem.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
+
+	const orderingCss = () =>
+		'flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center';
 </script>
 
 <main
 	class="flex flex-col gap-8 w-screen overflow-hidden min-h-screen bg-bgDarkGrey font-patrick text-black m-0 p-0"
 >
 	<div class="flex flex-col gap-4">
-
 		<div class="flex justify-center">
 			<div class="overflow-hidden rounded-lg shadow hidden md:block mt-24">
 				<div class="flex flex-col justify-between items-center bg-white text-white">
@@ -226,8 +248,7 @@
 					<div class="bg-white py-2">
 						{#each columns as column (column.id)}
 							<div class="flex gap-0" id={column.id}>
-								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}
-									<select
+								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}<select
 										class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 										value={column[field]}
 										on:change={(event) => handleSelectChange(event, column.id, field)}
@@ -322,6 +343,7 @@
 
 		<div class="flex justify-center">
 			<div class="overflow-hidden rounded-lg shadow hidden md:block font-bold bg-bgGrey">
+				<SearchInput bind:searchItem />
 				{#if output.length > 0}
 					<div class="flex">
 						{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit', 'Delete'] as header}
@@ -333,24 +355,18 @@
 						{/each}
 					</div>
 					<div class="flex flex-col bg-white text-sm">
-						{#each output as item, index}
-							<div key={item.id} class="flex mb-2 items-center hover:underline hover:font-semibold">
-								<div
-									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
-									{index + 1}
-								</div>
-								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}
-									<div
-										class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+
+						{#each displayedItems as item, index}
+							<ul key={item.id} class="flex mb-2 items-center hover:underline hover:font-semibold">
+								<li class={orderingCss()}>{index + 1}</li>
+								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}<li
+										class={orderingCss()}
 									>
 										<h4>{item[field]}</h4>
-									</div>
+									</li>
 								{/each}
 
-								<div
-									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
+								<li class={orderingCss()}>
 									{#if editingId === item.id}
 										<select
 											class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
@@ -360,58 +376,32 @@
 											{#each status as status}
 												<option value={status}>{status}</option>
 											{/each}
-										</select>
-									{:else}
-										<h4>{item.status}</h4>
-									{/if}
-								</div>
-								<div
-									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
-									<h4>{item.orderQty}</h4>
-								</div>
-								<div
-									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
-									<h4>{computeTotal(item)}</h4>
-								</div>
-								<div
-									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
-									<h4>{item.datePurchase}</h4>
-								</div>
-								<div
-									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
-									<h4>{item.etd}</h4>
-								</div>
-								<div
-									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
-									<h4>{item.eta}</h4>
-								</div>
-								<div
-									class="flex sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
-								>
-									<h4>{item.arrivalDate}</h4>
-								</div>
-								<div class="flex-1 text-center">
+										</select>{:else}
+										<h4>{item.status}</h4>{/if}
+								</li>
+								<li class={orderingCss()}><h4>{item.orderQty}</h4></li>
+								<li class={orderingCss()}><h4>{computeTotal(item)}</h4></li>
+								<li class={orderingCss()}><h4>{item.datePurchase}</h4></li>
+								<li class={orderingCss()}><h4>{item.etd}</h4></li>
+								<li class={orderingCss()}><h4>{item.eta}</h4></li>
+								<li class={orderingCss()}><h4>{item.arrivalDate}</h4></li>
+								<li class="flex-1 text-center">
 									<button
 										on:click={() => startEdit(item.id, item.status)}
 										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700 w-20"
 										>Edit</button
-									>
-									<button
+									><button
 										on:click={() => handleDelete(item.id)}
 										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700 w-20"
 										>Delete</button
 									>
-								</div>
-							</div>
+								</li>
+							</ul>
 						{/each}
 					</div>
 				{/if}
 			</div>
 		</div>
+		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
 	</div>
 </main>

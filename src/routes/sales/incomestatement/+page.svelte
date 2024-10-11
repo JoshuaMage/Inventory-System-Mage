@@ -68,21 +68,23 @@
 	$: currentManPowerWage = manPowerWage();
 </script>
 
-<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick text-black">
+<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick">
 	<div class="w-1/3 rounded-lg">
-		<div class="flex flex-col font-patrick text-center bg-white mt-6 container mx-auto">
+		<div
+			class={`flex flex-col font-patrick text-center bg-white mt-6 container mx-auto drop-shadow-xl ${loading ? 'border-none drop-shadow-none' : 'border border-black border-solid'}`}
+		>
 			{#if loading}
-				<div class="flex justify-center items-center h-screen bg-bgDarkGrey ">
-					<p class="bg-white text-base">Loading please wait....</p>
+				<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+					<p class="bg-white text-xl font-black">Loading please wait....</p>
 				</div>
 			{:else}
 				<div class="bg-bgGrey p-2">
-					<h1 class="text-lg text-black font-black">Mage Hardware inc.</h1>
-					<h2 class="text-base text-black font-black">Income Statement</h2>
-					<h2>
+					<h1 class="text-lg text-white font-black">Mage Hardware inc.</h1>
+					<h2 class="text-base text-white font-black">Income Statement</h2>
+					<h2 class="text-white">
 						For the year ended: <input
 							type="month"
-							class=" text-black font-black bg-bgGrey text-base w-36"
+							class=" text-white font-black bg-bgGrey text-base w-36"
 						/>
 					</h2>
 				</div>
