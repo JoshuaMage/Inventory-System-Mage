@@ -33,7 +33,7 @@ async function onSubmit(event) {
 
 {#each $FORGOTPASSWORD as forgotPassword}
 	<main
-		class="h-screen w-screen bg-forgotPassword bg-cover bg-center bg-no-repeat flex justify-center place-content-center"
+		class="h-screen w-screen bg-forgot-password bg-cover bg-center bg-no-repeat flex justify-center place-content-center"
 	>
 		<!-- First Container -->
 		<div class="container  min-h-screen grid grid-cols-2 place-items-center overflow-hidden">

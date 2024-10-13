@@ -36,7 +36,7 @@
 </script>
 
 <main
-	class="h-screen w-screen  bg-createAccount bg-red bg-cover bg-center bg-no-repeat flex justify-center place-content-center"
+	class="h-screen w-screen  bg-create-account bg-red bg-cover bg-center bg-no-repeat flex justify-center place-content-center"
 >
 	<div class="container min-h-screen grid grid-cols-2 place-items-center overflow-hidden">
 		<div class="text-white">

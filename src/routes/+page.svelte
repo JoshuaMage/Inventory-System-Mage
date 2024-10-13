@@ -5,6 +5,8 @@
 	import { auth } from '$lib/firebaseConfig.js';
 	import { goto } from '$app/navigation';
 
+
+
 	let errorMessage = '';
 
 	let loading = false;
@@ -43,7 +45,7 @@
 
 {#each $LOGIN as login}
 	<main
-		class="h-screen w-screen bg-loginImage bg-cover bg-center bg-no-repeat flex justify-center place-content-center overflow-hidden"
+		class="h-screen w-screen bg-login-image bg-cover bg-center bg-no-repeat flex justify-center place-content-center overflow-hidden"
 	>
 		<!-- First Container -->
 		<div class="container min-h-screen grid grid-cols-2 place-items-center overflow-hidden">

@@ -8,11 +8,5 @@
 				"destination": "/app.html"
 			}
 		]
-	},
-	"rewrites": [
-		{
-			"source": "**",
-			"destination": "src/app.html"
-		}
-	]
+	}
 }

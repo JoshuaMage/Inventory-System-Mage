@@ -34,9 +34,9 @@ export default {
 				TLC: '507'
 			},
 			backgroundImage: {
-				'loginImage': "url('/src/image/loginBackground.jpg')",
-				'forgotPassword': "url('/src/image/forgotPassword.jpg')",
-				'createAccount': "url('/src/image/createAccount.jpg')"
+				'login-image': "url('/src/image/loginBackground.jpg')",
+				'forgot-password': "url('/src/image/forgotPassword.jpg')",
+				'create-account': "url('/src/image/createAccount.jpg')"
 			},
 			colors: {
 				pureRed: '#EB1D36',

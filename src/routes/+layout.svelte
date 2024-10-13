@@ -7,8 +7,6 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { isAuthenticated } from '$lib/firebaseAuth';
 
-
-
 	let loading = false;
 	let authenticated = false;
 
@@ -21,7 +19,25 @@
 			!authenticated &&
 			!['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname)
 		) {
+			// Handle redirection or logic here
 		}
+
+		const domain = 'example.com'; // Example domain
+		loading = true;
+
+		fetch(`/punycode?domain=${domain}`)
+			.then((response) => {
+				if (!response.ok) throw new Error('Network response was not ok');
+				return response.json();
+			})
+			.then((data) => {
+				punyEncoded = data.punyEncoded;
+				console.log('Punycode encoded:', punyEncoded);
+			})
+			.catch((err) => console.error('Error fetching punycode:', err))
+			.finally(() => {
+				loading = false; // Reset loading state
+			});
 	});
 
 	onDestroy(() => {
