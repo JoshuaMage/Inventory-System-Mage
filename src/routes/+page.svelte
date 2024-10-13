@@ -1,12 +1,8 @@
 <script>
 	import '../../src/app.css';
-
 	import { LOGIN } from '$lib/userLogin.js';
-
 	import { signInWithEmailAndPassword } from 'firebase/auth';
-
 	import { auth } from '$lib/firebaseConfig.js';
-
 	import { goto } from '$app/navigation';
 
 	let errorMessage = '';
@@ -15,11 +11,8 @@
 
 	async function onSubmit(event) {
 		event.preventDefault();
-
 		const employeeId = event.target.id.value;
-
 		const password = event.target.password.value;
-
 		loading = true; // Set loading to true immediately
 
 		try {
@@ -50,16 +43,16 @@
 
 {#each $LOGIN as login}
 	<main
-		class="h-screen w-screen bg-login-image bg-cover bg-center bg-no-repeat flex justify-center place-content-center overflow-hidden"
+		class="h-screen w-screen bg-loginImage bg-cover bg-center bg-no-repeat flex justify-center place-content-center overflow-hidden"
 	>
 		<!-- First Container -->
 		<div class="container min-h-screen grid grid-cols-2 place-items-center overflow-hidden">
 			<div class="text-neutral-50 flex flex-col">
 				<h1 class="text-7xl font-bold mb-8">{login.title}</h1>
 				<p
-					class="text-3xl font-extrabold overflow-hidden whitespace-nowrap border-r-2 border-black typing-animation"
+					class="text-3xl font-extrabold overflow-hidden whitespace-nowrap border-black typing-animation"
 				>
-					<strong class="text-orange text-4xl">{login.description}</strong>
+					<strong class="text-white text-4xl">{login.description}</strong>
 				</p>
 			</div>
 
@@ -103,7 +96,7 @@
 					<!-- Submit Button -->
 					<div class="flex justify-center mt-5">
 						<button
-							class="w-3/6 font-bold flex rounded-md justify-center items-center bg-orange hover:bg-orange-500 text-white hover:text-orange hover:bg-white p-1.5 hover:shadow-lg hover:shadow-orange"
+							class="w-3/6 font-bold flex rounded-md justify-center items-center bg-white hover:bg-paginationButton text-black hover:text-white p-1.5 hover:shadow-lg hover:shadow-paginationButton"
 							type="submit"
 						>
 							{login.login}
@@ -115,14 +108,14 @@
 				<nav class="flex justify-center gap-3 mt-4">
 					<ul class="grid grid-cols-2 justify-center items-center w-full m-0 gap-4">
 						<li
-							class="text-center rounded-md bg-white hover:bg-pureRed text-pureRed hover:text-white p-1.5 mt-5 font-bold flex justify-center items-center hover:shadow-lg hover:shadow-pureRed"
+							class="text-center rounded-md bg-white hover:bg-paginationButton text-black hover:text-white p-1.5 mt-5 font-bold flex justify-center items-center hover:shadow-lg hover:shadow-paginationButton"
 						>
-							<a href="/ForgotPassword">{login.forgotpass}</a>
+							<a href="/ForgotPassword">{login.forgotPassword}</a>
 						</li>
 						<li
-							class="text-center rounded-md bg-orange hover:bg-orange-500 text-white hover:text-orange hover:bg-white p-1.5 mt-5 font-bold flex justify-center items-center hover:shadow-lg hover:shadow-orange"
+							class="text-center rounded-md bg-white hover:bg-paginationButton text-black hover:text-white p-1.5 mt-5 font-bold flex justify-center items-center hover:shadow-lg hover:shadow-paginationButton"
 						>
-							<a href="/CreateAccount">{login.createAcc}</a>
+							<a href="/CreateAccount">{login.createAccount}</a>
 						</li>
 					</ul>
 				</nav>

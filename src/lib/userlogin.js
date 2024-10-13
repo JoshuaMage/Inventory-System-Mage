@@ -3,14 +3,14 @@ import { writable } from 'svelte/store';
 export const LOGIN = writable([
 	{
 		title: 'Inventory System',
-		description: 'Hardware Construction Company',
+		description: 'Mage Hardware Inc.',
 		company: 'Mage Inc',
 		name: 'Employee-Name',
 		id: 'Employee-Id',
 		password: 'Password',
 		login: 'Login',
-		forgotpass: 'Forgot Password',
-		createAcc: 'Create Account'
+		forgotPassword: 'Forgot Password',
+		createAccount: 'Create Account'
 	}
 ]);
 

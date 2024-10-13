@@ -2,7 +2,7 @@ import { w as writable } from "./index.js";
 const LOGIN = writable([
   {
     title: "Inventory System",
-    description: "Hardware Construction Company",
+    description: "Mage Hardware Inc.",
     company: "Mage Inc",
     name: "Employee-Name",
     id: "Employee-Id",

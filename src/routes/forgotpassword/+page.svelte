@@ -31,24 +31,24 @@ async function onSubmit(event) {
 </script>
 
 
-{#each $FORGOTPASSWORD as forgotpassword}
+{#each $FORGOTPASSWORD as forgotPassword}
 	<main
-		class="h-screen w-screen bg-forgotpass-image bg-cover bg-center bg-no-repeat flex justify-center place-content-center"
+		class="h-screen w-screen bg-forgotPassword bg-cover bg-center bg-no-repeat flex justify-center place-content-center"
 	>
 		<!-- First Container -->
 		<div class="container  min-h-screen grid grid-cols-2 place-items-center overflow-hidden">
 			<div class="text-neutral-50">
-				<h1 class="text-8xl font-bold mb-8">{forgotpassword.title}</h1>
-				<p class="text-5xl text-red-600 font-extrabold">{forgotpassword.description}</p>
+				<h1 class="text-8xl font-bold mb-8">{forgotPassword.title}</h1>
+				<p class="text-5xl text-red-600 font-extrabold">{forgotPassword.description}</p>
 			</div>
 
 			<div class="flex flex-col text-neutral-50 w-3/5 border-4 border-red-500 py-10 px-5 rounded   hover:shadow-lg hover:shadow-red-950">
-				<h2 class="text-6xl font-bold mb-5 text-center">{forgotpassword.company}</h2>
+				<h2 class="text-6xl font-bold mb-5 text-center">{forgotPassword.company}</h2>
 
 				<!-- Form Container -->
 
 				<form action="" class="flex flex-col justify-center" on:submit|preventDefault={onSubmit}>
-					<label for="name" class="text-red-600 text-1.5xl font-bold">{forgotpassword.name}</label>
+					<label for="name" class="text-red-600 text-1.5xl font-bold">{forgotPassword.name}</label>
 					<input
 						type="text"
 						name="name"
@@ -56,7 +56,7 @@ async function onSubmit(event) {
 						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 						required
 					/>
-					<label for="id" class="text-red-600 text-1.5xl font-bold">{forgotpassword.id}</label>
+					<label for="id" class="text-red-600 text-1.5xl font-bold">{forgotPassword.id}</label>
 					<input
 						type="number"
 						name="id"
@@ -64,7 +64,7 @@ async function onSubmit(event) {
 						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 						required
 					/>
-					<label for="password" class="text-red-600 text-1.5xl font-bold ">{forgotpassword.password}</label>
+					<label for="password" class="text-red-600 text-1.5xl font-bold ">{forgotPassword.password}</label>
 					<input
 						type="password"
 						name="password"
@@ -72,7 +72,7 @@ async function onSubmit(event) {
 						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold  rounded-md hover:shadow-lg hover:shadow-black"
 						required
 					/>
-					<label for="password" class="text-red-600 text-1.5xl font-bold">{forgotpassword.confirmPassword}</label
+					<label for="password" class="text-red-600 text-1.5xl font-bold">{forgotPassword.confirmPassword}</label
 					>
 					<input
 						type="password"
@@ -88,7 +88,7 @@ async function onSubmit(event) {
 				<div class="flex justify-center">
 					<button
 						class=" w-2/4  p-1.5 mt-5 font-bold text-center rounded-md bg-white hover:bg-pureRed text-pureRed hover:text-white  hover:shadow-lg hover:shadow-pureRed"
-						>{forgotpassword.createAccount}</button
+						>{forgotPassword.createAccount}</button
 					>
 				</div>
 			</div>

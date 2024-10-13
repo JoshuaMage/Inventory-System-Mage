@@ -8,6 +8,20 @@
       "_internal.js"
     ]
   },
+  "_Pagination.js": {
+    "file": "chunks/Pagination.js",
+    "name": "Pagination",
+    "imports": [
+      "_ssr.js"
+    ]
+  },
+  "_SearchInput.js": {
+    "file": "chunks/SearchInput.js",
+    "name": "SearchInput",
+    "imports": [
+      "_ssr.js"
+    ]
+  },
   "_Store.js": {
     "file": "chunks/Store.js",
     "name": "Store",
@@ -47,7 +61,7 @@
     ]
   },
   "_app.js": {
-    "file": "_app/immutable/assets/app.DeEVTBFh.css",
+    "file": "_app/immutable/assets/app.B7JV6fKN.css",
     "src": "_app.js"
   },
   "_client.js": {
@@ -79,30 +93,12 @@
       "_ssr.js"
     ]
   },
-  "_materialOrder.js": {
-    "file": "chunks/materialOrder.js",
-    "name": "materialOrder",
-    "imports": [
-      "_index.js"
-    ]
-  },
   "_materialStock.js": {
     "file": "chunks/materialStock.js",
     "name": "materialStock",
     "imports": [
       "_index.js"
     ]
-  },
-  "_sale.js": {
-    "file": "chunks/sale.js",
-    "name": "sale",
-    "imports": [
-      "_index.js"
-    ]
-  },
-  "_sortingTable.js": {
-    "file": "chunks/sortingTable.js",
-    "name": "sortingTable"
   },
   "_ssr.js": {
     "file": "chunks/ssr.js",
@@ -296,7 +292,7 @@
       "_index.js"
     ],
     "css": [
-      "_app/immutable/assets/app.DeEVTBFh.css"
+      "_app/immutable/assets/app.B7JV6fKN.css"
     ]
   },
   "src/routes/+page.svelte": {
@@ -312,7 +308,7 @@
     ],
     "css": [
       "_app/immutable/assets/_page.Dh2lbJ-L.css",
-      "_app/immutable/assets/app.DeEVTBFh.css"
+      "_app/immutable/assets/app.B7JV6fKN.css"
     ]
   },
   "src/routes/CreateAccount/+page.svelte": {
@@ -345,8 +341,7 @@
     "isEntry": true,
     "imports": [
       "_ssr.js",
-      "_materialStock.js",
-      "_sortingTable.js"
+      "src/routes/inventory/materialOrdering/+page.svelte"
     ]
   },
   "src/routes/inventory/materialList/+page.svelte": {
@@ -357,7 +352,8 @@
     "imports": [
       "_ssr.js",
       "_materialStock.js",
-      "_sortingTable.js"
+      "_SearchInput.js",
+      "_Pagination.js"
     ]
   },
   "src/routes/inventory/materialOrdering/+page.svelte": {
@@ -369,7 +365,8 @@
       "_ssr.js",
       "_firebaseConfig.js",
       "_materialStock.js",
-      "_materialOrder.js"
+      "_SearchInput.js",
+      "_Pagination.js"
     ]
   },
   "src/routes/inventory/materialPurchase/+page.svelte": {
@@ -379,8 +376,8 @@
     "isEntry": true,
     "imports": [
       "_ssr.js",
-      "_materialOrder.js",
-      "_sortingTable.js"
+      "_firebaseConfig.js",
+      "_Pagination.js"
     ]
   },
   "src/routes/inventory/materialStock/+page.svelte": {
@@ -390,9 +387,8 @@
     "isEntry": true,
     "imports": [
       "_ssr.js",
-      "_materialOrder.js",
-      "_sortingTable.js",
-      "_sale.js"
+      "_firebaseConfig.js",
+      "_Pagination.js"
     ]
   },
   "src/routes/inventory/supplier/+page.svelte": {
@@ -403,7 +399,7 @@
     "imports": [
       "_ssr.js",
       "_materialStock.js",
-      "_sortingTable.js"
+      "_Pagination.js"
     ]
   },
   "src/routes/product/+page.svelte": {
@@ -473,7 +469,8 @@
     "src": "src/routes/sales/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_ssr.js"
+      "_ssr.js",
+      "src/routes/sales/summary/+page.svelte"
     ]
   },
   "src/routes/sales/incomestatement/+page.svelte": {
@@ -483,8 +480,7 @@
     "isEntry": true,
     "imports": [
       "_ssr.js",
-      "_firebaseConfig.js",
-      "_index.js"
+      "_firebaseConfig.js"
     ]
   },
   "src/routes/sales/manpower/+page.svelte": {
@@ -495,7 +491,8 @@
     "imports": [
       "_ssr.js",
       "_index.js",
-      "_sortingTable.js"
+      "_firebaseConfig.js",
+      "_Pagination.js"
     ]
   },
   "src/routes/sales/summary/+page.svelte": {
@@ -505,10 +502,8 @@
     "isEntry": true,
     "imports": [
       "_ssr.js",
-      "_materialOrder.js",
-      "_sortingTable.js",
-      "_sale.js",
-      "_firebaseConfig.js"
+      "_firebaseConfig.js",
+      "_Pagination.js"
     ]
   },
   "src/routes/user/+page.svelte": {
@@ -517,16 +512,8 @@
     "src": "src/routes/user/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_ssr.js"
-    ]
-  },
-  "src/routes/user/usersetting/+page.svelte": {
-    "file": "entries/pages/user/usersetting/_page.svelte.js",
-    "name": "entries/pages/user/usersetting/_page.svelte",
-    "src": "src/routes/user/usersetting/+page.svelte",
-    "isEntry": true,
-    "imports": [
-      "_ssr.js"
+      "_ssr.js",
+      "src/routes/product/+page.svelte"
     ]
   }
 }

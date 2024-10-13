@@ -1,38 +1,61 @@
-import { c as create_ssr_component, o as onDestroy, d as add_attribute, b as each, e as escape } from "../../../../chunks/ssr.js";
+import { c as create_ssr_component, o as onDestroy, v as validate_component, d as add_attribute, b as each, e as escape } from "../../../../chunks/ssr.js";
 import { I as INVENTORY } from "../../../../chunks/materialStock.js";
-import { f as filterData, s as sortData, g as getArrow, a as getPendingClass } from "../../../../chunks/sortingTable.js";
-let itemsPerPage = 10;
+import { S as SearchInput } from "../../../../chunks/SearchInput.js";
+import { P as Pagination } from "../../../../chunks/Pagination.js";
+let itemsPerPage = 7;
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let totalPages;
+  let displayedItems;
+  let filteredItem;
   let INVENTORY$1 = [];
-  let displayedInventory = [];
-  let sortBy = "materialName";
-  let sortOrder = "asc";
-  let searchTerm = "";
+  let searchItem = "";
   let currentPage = 1;
-  let currentArrow = getArrow(sortOrder);
-  const materialListButton = () => "flex items-center justify-center h-ful";
+  let loading = true;
   const unsubscribe = INVENTORY.subscribe((value) => {
     INVENTORY$1 = [...value];
-    filterAndSortData();
+    [...INVENTORY$1];
+    loading = false;
   });
   onDestroy(() => {
     unsubscribe();
   });
-  function filterAndSortData() {
-    const filteredInventory = filterData(INVENTORY$1, searchTerm);
-    const sortedInventory = sortData(filteredInventory, sortBy);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    displayedInventory = sortedInventory.slice(startIndex, endIndex);
+  function goToPage(page) {
+    currentPage = page;
   }
-  totalPages = Math.ceil(filterData(INVENTORY$1, searchTerm).length / itemsPerPage);
-  {
-    filterAndSortData();
-  }
-  return `<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black"><div class="overflow-auto rounded-lg shadow hidden md:block bg-bgdarkgrey mt-24"><table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y "><thead class="bg-bgGrey border-b-2 border-gray-100"><tr><th colspan="12" class="text-center py-2"><div class="flex justify-center"><div class="relative w-full max-w-md"><input type="text" placeholder="Search by date, materialCode, materialName, unit" class="pl-12 pr-4 py-2 border rounded-lg w-full bg-white focus:outline-none focus:ring-2 focus:ring-black"${add_attribute("value", searchTerm, 0)}> <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><rect width="24" height="24" fill="white"></rect><circle cx="10.5" cy="10.5" r="6.5" stroke="#000000" stroke-linejoin="round"></circle><path d="M19.6464 20.3536C19.8417 20.5488 20.1583 20.5488 20.3536 20.3536C20.5488 20.1583 20.5488 19.8417 20.3536 19.6464L19.6464 20.3536ZM20.3536 19.6464L15.3536 14.6464L14.6464 15.3536L19.6464 20.3536L20.3536 19.6464Z" fill="#000000"></path></g><defs><clipPath id="clip0"><rect width="24" height="24" fill="white"></rect></clipPath></defs></svg></div></div></th></tr> <tr> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-z0ihic">ID</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-2zxwlt">Material Code</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-v4nmp7">Material Name</span> <span><!-- HTML_TAG_START -->${currentArrow}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-10t4w6x">Unit</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-2pppzy">Material Description</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-1a55zxf">Supplier</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-1p4k5ok">telephone#</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-h3nr4b">email</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-8n0be7">address</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th><button${add_attribute("class", materialListButton(), 0)}><span class="mr-0" data-svelte-h="svelte-1gefe9q">Remarks</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th></tr></thead> <tbody class="divide-y border-borderlineGrey">${each(displayedInventory, ({ id, materialCode, materialName, unit, materialDescription, vendor, vendorTelephone, vendorEmail, vendorAddress, status }) => {
-    return `<tr class="bg-white hover:underline hover:font-semibold"><td class="p-3 text-sm text-gray-700 whitespace-nowrap w-20 pl-3">${escape(id)}</td> <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${escape(materialCode)}</td> <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${escape(materialName)}</td> <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${escape(unit)}</td> <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${escape(materialDescription)}</td> <td class="p-3 text-sm text-gray-700 whitespace-nowrap w-32">${escape(vendor)}</td> <td class="p-3 text-sm text-gray-700 whitespace-nowrap w-32">${escape(vendorTelephone)}</td> <td class="p-3 text-sm text-gray-700 whitespace-nowrap w-32">${escape(vendorEmail)}</td> <td class="p-3 text-sm text-gray-700 whitespace-nowrap w-32">${escape(vendorAddress)}</td> <td${add_attribute("class", `<td class=" p-3  text-sm text-gray-700 whitespace-nowrap">${getPendingClass(status)}`, 0)}>${escape(status)}</td> </tr>`;
-  })}</tbody></table>  <div class="flex justify-center mt-5 place-content-center"><button class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md" ${"disabled"}>Previous</button> <span class="text-white text-lg font-semibold px-5">Page ${escape(currentPage)} of ${escape(totalPages)}</span> <button class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md" ${currentPage === totalPages ? "disabled" : ""}>Next</button></div></div></main>`;
+  const PurchaseListCss = () => "flex border border-gray-300 border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-36 xl:w-40 2xl:w-44 text-center";
+  let $$settled;
+  let $$rendered;
+  let previous_head = $$result.head;
+  do {
+    $$settled = true;
+    $$result.head = previous_head;
+    totalPages = Math.ceil(INVENTORY$1.length / itemsPerPage);
+    filteredItem = INVENTORY$1.filter((item) => item.materialName.toLowerCase().includes(searchItem.toLocaleLowerCase()));
+    displayedItems = filteredItem.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    $$rendered = `<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick text-black"><div class="flex flex-col">${loading ? `<div class="flex justify-center items-center h-screen bg-bgDarkGrey" data-svelte-h="svelte-93be4p"><p class="bg-white text-xl font-black">Loading please wait....</p></div>` : `<div class="overflow-auto rounded-lg shadow hidden md:block bg-white mt-24"><div class="flex flex-col font-patrick"><div class="bg-bgGrey">${validate_component(SearchInput, "SearchInput").$$render(
+      $$result,
+      { searchItem },
+      {
+        searchItem: ($$value) => {
+          searchItem = $$value;
+          $$settled = false;
+        }
+      },
+      {}
+    )} <ul class="flex font-extrabold text-white"><li${add_attribute("class", PurchaseListCss(), 0)}>ID</li> <li${add_attribute("class", PurchaseListCss(), 0)}>Material Code</li> <li${add_attribute("class", PurchaseListCss(), 0)}>Material Name</li> <li${add_attribute("class", PurchaseListCss(), 0)}>Unit</li> <li${add_attribute("class", PurchaseListCss(), 0)}>Material Description</li> <li${add_attribute("class", PurchaseListCss(), 0)}>Supplier</li> <li${add_attribute("class", PurchaseListCss(), 0)}>telephone#</li> <li${add_attribute("class", PurchaseListCss(), 0)}>email</li> <li${add_attribute("class", PurchaseListCss(), 0)}>address</li> <li${add_attribute("class", PurchaseListCss(), 0)}>Remarks</li></ul></div> ${each(displayedItems, (list) => {
+      return `<ul class="flex items-center hover:underline hover:font-semibold"><li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.id)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.materialCode)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.materialName)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.unit)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.materialDescription)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.vendor)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.vendorTelephone)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.vendorEmail)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.vendorAddress)}</h4></li> <li${add_attribute("class", PurchaseListCss(), 0)}><h4>${escape(list.status)}</h4></li> </ul>`;
+    })}</div></div>`} ${validate_component(Pagination, "Pagination").$$render(
+      $$result,
+      {
+        currentPage,
+        totalPages,
+        onPageChange: goToPage
+      },
+      {},
+      {}
+    )}</div></main>`;
+  } while (!$$settled);
+  return $$rendered;
 });
 export {
   Page as default

@@ -1,6 +1,8 @@
-import { c as create_ssr_component, o as onDestroy, d as add_attribute, b as each, e as escape } from "../../../../chunks/ssr.js";
+import { c as create_ssr_component, o as onDestroy, v as validate_component } from "../../../../chunks/ssr.js";
 import { w as writable } from "../../../../chunks/index.js";
-import { f as filterData, s as sortData, g as getArrow } from "../../../../chunks/sortingTable.js";
+import { d as db } from "../../../../chunks/firebaseConfig.js";
+import { ref, set } from "firebase/database";
+import { P as Pagination } from "../../../../chunks/Pagination.js";
 const MANPOWER = writable([
   {
     "id": 1,
@@ -203,35 +205,62 @@ const MANPOWER = writable([
     "salary": 700
   }
 ]);
-let itemsPerPage = 10;
+let itemsPerPage = 7;
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let totalPages;
+  let displayedItems;
+  let filteredItem;
   let MANPOWER$1 = [];
   let displayedInventory = [];
-  let sortBy = "vendor";
-  let searchTerm = "";
+  let searchItem = "";
   let currentPage = 1;
   const unsubscribe = MANPOWER.subscribe((value) => {
     MANPOWER$1 = [...value];
-    filterAndSortData();
   });
   onDestroy(() => {
     unsubscribe();
   });
-  function filterAndSortData() {
-    const filteredInventory = filterData(MANPOWER$1, searchTerm);
-    const sortedInventory = sortData(filteredInventory, sortBy);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    displayedInventory = sortedInventory.slice(startIndex, endIndex);
+  function saveToFirebase() {
+    displayedInventory.forEach((item) => {
+      const newRef = ref(db, "manPower/" + item.id);
+      set(newRef, item).then(() => {
+        console.log(`Data saved for ID: ${item.id}`);
+      }).catch((error) => {
+        console.log("Error saving data", error);
+      });
+    });
   }
-  totalPages = Math.ceil(filterData(MANPOWER$1, searchTerm).length / itemsPerPage);
-  {
-    filterAndSortData();
+  function goToPage(page) {
+    currentPage = page;
   }
-  return `<main class="flex justify-center min-h-screen bg-bgdarkgrey font-patrick text-black"><div class="overflow-auto rounded-lg shadow hidden md:block bg-bgdarkgrey mt-24"><table class="bg-bgLightGray bg-bgGrey rounded-lg divide-y"><thead class="bg-bgGrey border-b-2 border-gray-100"><tr><th colspan="12" class="text-center py-2"><div class="flex justify-center"><div class="relative w-full max-w-md"><input type="text" placeholder="Search Employee..." class="pl-12 pr-4 py-2 border rounded-lg w-full bg-white focus:outline-none focus:ring-2 focus:ring-black"${add_attribute("value", searchTerm, 0)}> <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><rect width="24" height="24" fill="white"></rect><circle cx="10.5" cy="10.5" r="6.5" stroke="#000000" stroke-linejoin="round"></circle><path d="M19.6464 20.3536C19.8417 20.5488 20.1583 20.5488 20.3536 20.3536C20.5488 20.1583 20.5488 19.8417 20.3536 19.6464L19.6464 20.3536ZM20.3536 19.6464L15.3536 14.6464L14.6464 15.3536L19.6464 20.3536L20.3536 19.6464Z" fill="#000000"></path></g><defs><clipPath id="clip0"><rect width="24" height="24" fill="white"></rect></clipPath></defs></svg></div></div></th></tr> <tr><th class="p-3 text-sm font-semibold tracking-wide text-left"><button class="flex items-center justify-center h-full"><span class="mr-0" data-svelte-h="svelte-z0ihic">ID</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button class="flex items-center justify-center h-full"><span class="mr-0" data-svelte-h="svelte-fexwv3">Full Name</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button class="flex items-center justify-center h-full"><span class="mr-0" data-svelte-h="svelte-1nxrzur">Email</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button class="flex items-center justify-center h-full"><span class="mr-0" data-svelte-h="svelte-xtcvrg">Contact Number</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button class="flex items-center justify-center h-full"><span class="mr-0" data-svelte-h="svelte-1nyhvxb">Address</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th> <th class="p-3 text-sm font-semibold tracking-wide text-left"><button class="flex items-center justify-center h-full"><span class="mr-0" data-svelte-h="svelte-1d1ijb9">Salary</span> <span><!-- HTML_TAG_START -->${getArrow("desc")}<!-- HTML_TAG_END --></span></button></th></tr></thead> <tbody class="divide-y border-borderlineGrey">${each(displayedInventory, ({ id, fullName, email, phoneNumber, address, salary }) => {
-    return `<tr class="bg-white hover:underline hover:font-semibold"><td class="p-4 text-sm text-gray-700 whitespace-nowrap w-24 pl-3">${escape(id)}</td> <td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">${escape(fullName)}</td> <td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">${escape(email)}</td> <td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">${escape(phoneNumber)}</td> <td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">${escape(address)}</td> <td class="p-4 text-sm text-gray-700 whitespace-nowrap w-44">₱ ${escape(salary)}</td> </tr>`;
-  })}</tbody></table>  <div class="flex justify-center mt-5 place-content-center"><button class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md" ${"disabled"}>Previous</button> <span class="text-white text-lg font-semibold px-5">Page ${escape(currentPage)} of ${escape(totalPages)}</span> <button class="px-2 py-1 w-20 text-base font-semibold bg-bgGrey text-black rounded-md" ${currentPage === totalPages ? "disabled" : ""}>Next</button></div></div></main>`;
+  let $$settled;
+  let $$rendered;
+  let previous_head = $$result.head;
+  do {
+    $$settled = true;
+    $$result.head = previous_head;
+    totalPages = Math.ceil(MANPOWER$1.length / itemsPerPage);
+    filteredItem = MANPOWER$1.filter((item) => item.fullName.toLowerCase().includes(searchItem.toLocaleLowerCase()));
+    displayedItems = filteredItem.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    {
+      {
+        if (displayedItems.length > 0) {
+          saveToFirebase();
+        }
+      }
+    }
+    $$rendered = `<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick text-black"><div class="flex flex-col">${`<div class="flex justify-center items-center h-screen bg-bgDarkGrey" data-svelte-h="svelte-93be4p"><p class="bg-white text-xl font-black">Loading please wait....</p></div>`} ${validate_component(Pagination, "Pagination").$$render(
+      $$result,
+      {
+        currentPage,
+        totalPages,
+        onPageChange: goToPage
+      },
+      {},
+      {}
+    )}</div></main>`;
+  } while (!$$settled);
+  return $$rendered;
 });
 export {
   Page as default

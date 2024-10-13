@@ -7,6 +7,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { isAuthenticated } from '$lib/firebaseAuth';
 
+
+
 	let loading = false;
 	let authenticated = false;
 

@@ -1,1 +1,7 @@
-<h1>11User</h1>
+<script>
+    import Product from "../product/+page.svelte"
+</script>
+
+<div>
+<Product />
+</div>
