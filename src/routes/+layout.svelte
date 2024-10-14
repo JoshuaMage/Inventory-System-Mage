@@ -19,25 +19,9 @@
 			!authenticated &&
 			!['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname)
 		) {
-			// Handle redirection or logic here
 		}
 
-		// const domain = 'example.com'; // Example domain
 		loading = true;
-
-		// fetch(`/punycode?domain=${domain}`)
-		// 	.then((response) => {
-		// 		if (!response.ok) throw new Error('Network response was not ok');
-		// 		return response.json();
-		// 	})
-		// 	.then((data) => {
-		// 		const punyEncoded = data.punyEncoded;
-		// 		console.log('Punycode encoded:', punyEncoded);
-		// 	})
-		// 	.catch((err) => console.error('Error fetching punycode:', err))
-		// 	.finally(() => {
-		// 		loading = false; // Reset loading state
-		// 	});
 	});
 
 	onDestroy(() => {
@@ -57,24 +41,25 @@
 	}
 
 	$: hideLayout = ['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname);
+	
 </script>
 
 {#if !hideLayout}
-	<main class="border-b-gray-600 border-solid">
-		<nav class="border px-10 grid grid-cols-2 bg-white">
-			<div class="flex justify-self-start place-self-center">
+	<main class=" border-b-gray-600 border-solid">
+		<nav class="flex h-20 w-full md:px-10  bg-white">
+			<div class="justify-self-start place-self-center flex-1">
 				<h1
-					class="font-black text-3xl italic font-sans p-2 underline decoration-solid decoration-2"
+					class="font-black max-sm:text-xs md:text-3xl italic font-sans p-2 underline decoration-solid decoration-2"
 				>
 					Mage Hardware
 				</h1>
 			</div>
 
-			<div class="  place-content-center justify-self-end">
-				<div class="grid grid-cols-4 gap-2 text-center">
+			<div class=" place-content-center justify-self-end ">
+				<div class="flex md:gap-12 text-center">
 					<!-- Products Dropdown -->
-					<div class="relative group flex justify-center">
-						<a href="/product" class="font-bold text-lg font-sans text-center">products</a>
+					<div class="relative group flex justify-center hover:underline">
+						<a href="/product" class="font-bold max-sm:text-xs  md:text-lg font-sans text-center">Products</a>
 
 						<div
 							class="opacity-0 invisible absolute top-10 z-10 w-48 p-2 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
@@ -103,8 +88,8 @@
 					</div>
 
 					<!-- Inventory Dropdown -->
-					<div class="relative group flex justify-center">
-						<a href="/inventory" class="font-bold text-lg font-sans text-center">inventory</a>
+					<div class="relative group flex justify-center hover:underline">
+						<a href="/inventory" class="font-bold text-lg font-sans text-center">Inventory</a>
 
 						<div
 							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
@@ -138,8 +123,8 @@
 					</div>
 
 					<!-- Sales Dropdown -->
-					<div class="relative group flex justify-center">
-						<a href="/sales" class="font-bold text-lg font-sans text-center">sales</a>
+					<div class="relative group flex justify-center hover:underline">
+						<a href="/sales" class="font-bold text-lg font-sans text-center">Sales</a>
 
 						<div
 							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
@@ -163,8 +148,8 @@
 					</div>
 
 					<!-- User Dropdown -->
-					<div class="relative group flex justify-center">
-						<a href="/user" class="font-bold text-lg font-sans text-center">user</a>
+					<div class="relative group flex justify-center hover:underline-">
+						<a href="/user" class="font-bold text-lg font-sans text-center">User</a>
 
 						<div
 							class="opacity-0 invisible absolute top-10 z-10 p-2 w-40 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
