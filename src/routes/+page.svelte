@@ -5,8 +5,6 @@
 	import { auth } from '$lib/firebaseConfig.js';
 	import { goto } from '$app/navigation';
 
-
-
 	let errorMessage = '';
 
 	let loading = false;
@@ -41,6 +39,12 @@
 
 		return 'Login failed. Please check your credentials and try again.';
 	}
+
+	const details = () => 'sm:text-base md:text-xs 2xl:text-xl  font-bold';
+	const inputDetails = () =>
+		'sm:h-6 md:h-7 2xl:h-10 mb-3 text-stone-950 pl-3.5 font-bold rounded-md hover:shadow-lg hover:shadow-black';
+	const clickButton = () =>
+		'sm:w-9/12 2xl:w-full sm:font-semibold md:font-bold 2xl:font-extrabold sm:text-xs  2xl:text-lg sm:py-1 md:py-2 flex text-center rounded-md justify-center items-center bg-white hover:bg-paginationButton text-black hover:text-white  hover:shadow-lg hover:shadow-paginationButton';
 </script>
 
 {#each $LOGIN as login}
@@ -50,73 +54,58 @@
 		<!-- First Container -->
 		<div class="container min-h-screen grid grid-cols-2 place-items-center overflow-hidden">
 			<div class="text-neutral-50 flex flex-col">
-				<h1 class="text-7xl font-bold mb-8">{login.title}</h1>
+				<h1
+					class="2xl:text-7xl sm:text-3xl md:text-3xl sm:text-center font-bold xl:mb-8 sm:mb-1 md:mb-1"
+				>
+					{login.title}
+				</h1>
 				<p
 					class="text-3xl font-extrabold overflow-hidden whitespace-nowrap border-black typing-animation"
 				>
-					<strong class="text-white text-4xl">{login.description}</strong>
+					<strong class="text-white text-4xl sm:text-xl md:text-2xl 2xl:text-4xl"
+						>{login.description}</strong
+					>
 				</p>
 			</div>
 
 			<div
-				class="flex flex-col text-neutral-50 w-3/5 border-4 border-stone-50 py-10 px-5 rounded hover:shadow-lg hover:shadow-white"
+				class="flex flex-col text-neutral-50 w-9/12 border-4 border-stone-50 sm:py-6 md:py-6 2xl:py-20 px-5 rounded hover:shadow-lg hover:shadow-white"
 			>
-				<h2 class="text-6xl font-bold mb-5 text-center">{login.company}</h2>
+				<h2 class="sm:text-3xl md:text-3xl 2xl:text-6xl font-bold mb-5 text-center">
+					{login.company}
+				</h2>
 
-				<!-- Display error message if any -->
 				{#if errorMessage}
 					<p class="text-red-600 text-center mb-4 font-bold">{errorMessage}</p>
 				{/if}
 
-				<!-- Form Container -->
 				<form class="flex flex-col" on:submit={onSubmit}>
-					<label for="name" class="text-1.5xl font-bold">{login.name}</label>
-					<input
-						type="text"
-						name="name"
-						id="name"
-						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold rounded-md hover:shadow-lg hover:shadow-black"
-						required
-					/>
-					<label for="id" class="text-1.5xl font-bold">{login.id}</label>
-					<input
-						type="number"
-						name="id"
-						id="id"
-						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold rounded-md hover:shadow-lg hover:shadow-black"
-						required
-					/>
-					<label for="password" class="text-1.5xl font-bold">{login.password}</label>
-					<input
-						type="password"
-						name="password"
-						id="password"
-						class="h-9 mb-3 text-stone-950 pl-3.5 font-bold rounded-md hover:shadow-lg hover:shadow-black"
-						required
-					/>
-
-					<!-- Submit Button -->
-					<div class="flex justify-center mt-5">
-						<button
-							class="w-3/6 font-bold flex rounded-md justify-center items-center bg-white hover:bg-paginationButton text-black hover:text-white p-1.5 hover:shadow-lg hover:shadow-paginationButton"
-							type="submit"
-						>
-							{login.login}
-						</button>
-					</div>
+					<label for="name" class={details()}>{login.name}</label>
+					<input type="text" name="name" id="name" class={inputDetails()} required />
+					<label for="id" class={details()}>{login.id}</label>
+					<input type="number" name="id" id="id" class={inputDetails()} required />
+					<label for="password" class={details()}>{login.password}</label>
+					<input type="password" name="password" id="password" class={inputDetails()} required />
 				</form>
 
+				<div class="flex justify-center mt-5">
+					<button
+						class="sm:w-9/12 2xl:w-3/6 sm:font-semibold md:font-bold 2xl:font-extrabold sm:text-xs 2xl:text-lg sm:py-1 md:py-2 flex rounded-md justify-center items-center bg-white hover:bg-paginationButton text-black hover:text-white hover:shadow-lg hover:shadow-paginationButton"
+						type="submit"
+					>
+						{login.login}
+					</button>
+				</div>
+
 				<!-- Additional Navigation -->
-				<nav class="flex justify-center gap-3 mt-4">
-					<ul class="grid grid-cols-2 justify-center items-center w-full m-0 gap-4">
-						<li
-							class="text-center rounded-md bg-white hover:bg-paginationButton text-black hover:text-white p-1.5 mt-5 font-bold flex justify-center items-center hover:shadow-lg hover:shadow-paginationButton"
-						>
+				<nav class=" flex justify-center gap-3 mt-4">
+					<ul
+						class="sm:flex sm:flex-col 2xl:grid 2xl:grid-cols-2 justify-center items-center w-full m-0 gap-4"
+					>
+						<li class={clickButton()}>
 							<a href="/ForgotPassword">{login.forgotPassword}</a>
 						</li>
-						<li
-							class="text-center rounded-md bg-white hover:bg-paginationButton text-black hover:text-white p-1.5 mt-5 font-bold flex justify-center items-center hover:shadow-lg hover:shadow-paginationButton"
-						>
+						<li class={clickButton()}>
 							<a href="/CreateAccount">{login.createAccount}</a>
 						</li>
 					</ul>

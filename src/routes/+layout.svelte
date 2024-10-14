@@ -22,22 +22,22 @@
 			// Handle redirection or logic here
 		}
 
-		const domain = 'example.com'; // Example domain
+		// const domain = 'example.com'; // Example domain
 		loading = true;
 
-		fetch(`/punycode?domain=${domain}`)
-			.then((response) => {
-				if (!response.ok) throw new Error('Network response was not ok');
-				return response.json();
-			})
-			.then((data) => {
-				punyEncoded = data.punyEncoded;
-				console.log('Punycode encoded:', punyEncoded);
-			})
-			.catch((err) => console.error('Error fetching punycode:', err))
-			.finally(() => {
-				loading = false; // Reset loading state
-			});
+		// fetch(`/punycode?domain=${domain}`)
+		// 	.then((response) => {
+		// 		if (!response.ok) throw new Error('Network response was not ok');
+		// 		return response.json();
+		// 	})
+		// 	.then((data) => {
+		// 		const punyEncoded = data.punyEncoded;
+		// 		console.log('Punycode encoded:', punyEncoded);
+		// 	})
+		// 	.catch((err) => console.error('Error fetching punycode:', err))
+		// 	.finally(() => {
+		// 		loading = false; // Reset loading state
+		// 	});
 	});
 
 	onDestroy(() => {

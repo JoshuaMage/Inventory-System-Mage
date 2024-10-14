@@ -1,3 +1,8 @@
+/* app.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.text-global {
+  @apply text-base md:text-lg lg:text-xl; /* Responsive text sizes */
+}
