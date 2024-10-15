@@ -1,4 +1,4 @@
-<script>
+    <script>
     export let searchItem = '';
   </script>
 
@@ -6,8 +6,8 @@
     <div class="relative max-w-wd">
     <input
         type="text"
-        class="mt-4 py-2 px-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-        placeholder="Search Material Name...."
+        class="mt-4 max-sm:text-xs max-sm:text-center px-8 py-2 md:px-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+        placeholder="Material Name...."
         bind:value={searchItem}
     />
     <svg

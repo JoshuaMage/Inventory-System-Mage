@@ -214,8 +214,8 @@
 	}
 
 	$: filteredItem = output.filter((item) =>
-    item.materialName.toLowerCase().includes(searchItem.toLowerCase())
-);
+		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
+	);
 
 	$: totalPages = Math.ceil(filteredItem.length / itemsPerPage);
 
@@ -231,23 +231,23 @@
 <main
 	class="flex flex-col gap-8 w-screen overflow-hidden min-h-screen bg-bgDarkGrey font-patrick text-black m-0 p-0"
 >
-	<div class="flex flex-col gap-4">
+	<div>
 		<div class="flex justify-center">
-			<div class="overflow-hidden rounded-lg shadow hidden md:block mt-24">
-				<div class="flex flex-col justify-between items-center bg-white text-white">
-					<div class="flex font-bold">
+			<div class="overflow-hidden max-sm:px-1 md:rounded-lg shadow md:block mt-24 max-sm:w-screen">
+				<div class="flex flex-col justify-between bg-white text-white">
+					<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 md:flex md:font-bold">
 						{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
 							<div
-								class="border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+								class="max-sm:flex-1 max-sm:text-xs border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
 							>
 								{header}
 							</div>
 						{/each}
 					</div>
 
-					<div class="bg-white py-2">
+					<div class=" bg-white py-2 text-black">
 						{#each columns as column (column.id)}
-							<div class="flex gap-0" id={column.id}>
+							<div class="max-sm:grid max-sm:grid-cols-3  max-sm:px-1flex gap-0" id={column.id}>
 								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}<select
 										class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 										value={column[field]}
@@ -309,30 +309,29 @@
 							</div>
 						{/each}
 					</div>
-
 					<div class="overflow-hidden">
 						{#if formError}
-							<div class="text-red-500 mt-2 w-errorwidth bg-white">
+							<div class="max-sm:text-xs text-red-500 mt-2 w-errorwidth bg-white">
 								{formError}
 							</div>
 						{/if}
 					</div>
 
-					<div class="w-full flex flex-col justify-end gap-2 bg-white overflow-hidden">
+					<div class=" md:w-full md:flex md:flex-col justify-end gap-2 bg-white overflow-hidden">
 						<div class="flex gap-2 py-2 justify-end">
 							<button
 								on:click={addColumn}
-								class="w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-blue-200 hover:bg-blue-700"
+								class=" w-20 md:w-24 max-sm:text-xs h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-blue-200 hover:bg-blue-700"
 								>Add Column</button
 							>
 							<button
 								on:click={handleSubmit}
-								class="w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700"
+								class="w-16 max-sm:text-xs md:w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700"
 								>Submit</button
 							>
 							<button
 								on:click={() => (columns = [])}
-								class="w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700"
+								class="w-16 md:w-24 max-sm:text-xs h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700"
 								>Delete</button
 							>
 						</div>
@@ -342,7 +341,7 @@
 		</div>
 
 		<div class="flex justify-center">
-			<div class="overflow-hidden rounded-lg shadow hidden md:block font-bold bg-bgGrey">
+			<div class="overflow-hidden rounded-lg shadow md:block font-bold bg-bgGrey">
 				<SearchInput bind:searchItem />
 				{#if output.length > 0}
 					<div class="flex">
@@ -355,7 +354,6 @@
 						{/each}
 					</div>
 					<div class="flex flex-col bg-white text-sm">
-
 						{#each displayedItems as item, index}
 							<ul key={item.id} class="flex mb-2 items-center hover:underline hover:font-semibold">
 								<li class={orderingCss()}>{index + 1}</li>
