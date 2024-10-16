@@ -20,8 +20,6 @@
 			!['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname)
 		) {
 		}
-
-		loading = true;
 	});
 
 	onDestroy(() => {
@@ -41,14 +39,15 @@
 	}
 
 	$: hideLayout = ['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname);
-	const headerSelection = () => 'font-bold max-sm:text-xs  md:text-lg font-sans text-center'
-
+	const headerSelection = () => 'font-bold max-sm:text-xs  md:text-lg font-sans text-center';
 </script>
 
 {#if !hideLayout}
-	<main class=" border-b-gray-600 border-solid ">
-		<nav class="grid grid-cols-2 h-20 w-full md:px-10  bg-white  fixed top-0 left-0 right-0 z-50 shadow">
-			<div class="justify-self-start place-self-center ">
+	<main class=" border-b-gray-600 border-solid">
+		<nav
+			class="grid grid-cols-2 h-20 w-full md:px-10 fixed top-0 left-0 right-0 z-50 bg-white shadow"
+		>
+			<div class="justify-self-start place-self-center">
 				<h1
 					class="font-black max-sm:text-xs md:text-3xl italic font-sans p-2 underline decoration-solid decoration-2"
 				>
@@ -56,7 +55,7 @@
 				</h1>
 			</div>
 
-			<div class=" place-content-center justify-self-end ">
+			<div class=" place-content-center justify-self-end">
 				<div class="flex gap-3 md:gap-12 text-center">
 					<!-- Products Dropdown -->
 					<div class="relative group flex justify-center hover:underline">
@@ -151,7 +150,6 @@
 					<!-- User Dropdown -->
 					<div class="relative group flex justify-center hover:underline-">
 						<a href="/user" class={headerSelection()}>User</a>
-
 						<div
 							class="opacity-0 invisible absolute top-10 z-10 p-2 w-40 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
 						>

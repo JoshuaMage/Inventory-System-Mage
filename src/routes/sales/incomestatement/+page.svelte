@@ -68,8 +68,8 @@
 	$: currentManPowerWage = manPowerWage();
 </script>
 
-<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick">
-	<div class="w-1/3 rounded-lg">
+<main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick mt-20">
+	<div class="max-sm:w-screen max-sm:px-1 w-1/3 rounded-lg">
 		<div
 			class={`flex flex-col font-patrick text-center bg-white mt-6 container mx-auto drop-shadow-xl ${loading ? 'border-none drop-shadow-none' : 'border border-black border-solid'}`}
 		>
@@ -89,30 +89,30 @@
 					</h2>
 				</div>
 				<div class="bg-white grid grid-cols-2 text-1xl">
-					<div class="flex flex-col text-start">
-						<h2 class="text-lg p-7 font-black">Sale Summary :</h2>
-						<h2 class="text-lg p-7 font-black">Purchase Summary :</h2>
-						<h2 class="text-lg p-7 font-black">Cost of Good Sold :</h2>
-						<h2 class="text-lg p-7 font-black">Gross Profit :</h2>
-						<h2 class="text-lg p-7 font-black">Operating Expenses :</h2>
-						<h2 class="text-lg p-7 font-black">Net Income :</h2>
+					<div >
+						<h2 class="text-lg p-7 font-black max-sm:h-24">Sale Summary :</h2>
+						<h2 class="text-lg p-7 font-black max-sm:h-24">Purchase Summary :</h2>
+						<h2 class="text-lg p-7 font-black max-sm:h-24">Cost of Good Sold :</h2>
+						<h2 class="text-lg p-7 font-black max-sm:h-24">Gross Profit :</h2>
+						<h2 class="text-lg p-7 font-black max-sm:h-24">Operating Expenses :</h2>
+						<h2 class="text-lg p-7 font-black max-sm:h-24">Net Income :</h2>
 					</div>
 					<div>
-						<h4 class="text-lg p-7 font-black">{saleSummary().toLocaleString()}</h4>
-						<h4 class="text-lg p-7 font-black">{purchaseSummary().toLocaleString()}</h4>
+						<h4 class="text-lg p-7 font-black max-sm:h-24">{saleSummary().toLocaleString()}</h4>
+						<h4 class="text-lg p-7 font-black max-sm:h-24">{purchaseSummary().toLocaleString()}</h4>
 						<h4
-							class="text-lg p-7 font-black underline decoration-solid decoration-2 underline-offset-8"
+							class="text-lg p-7 font-black max-sm:h-24 underline decoration-solid decoration-2 underline-offset-8"
 						>
 							{cogs().toLocaleString()}
 						</h4>
 						<h4
-							class={`text-lg p-7 font-black ${saleSummary() - cogs() < 0 ? 'text-red-500' : 'text-black'}`}
+							class={`text-lg p-7 font-black max-sm:h-24 ${saleSummary() - cogs() < 0 ? 'text-red-500' : 'text-black'}`}
 						>
 							{(saleSummary() - cogs()).toLocaleString()}
 						</h4>
-						<h4 class="text-lg p-7 font-black">{manPowerWage().toLocaleString()}</h4>
+						<h4 class="text-lg p-7 font-black max-sm:h-24">{manPowerWage().toLocaleString()}</h4>
 						<h4
-							class={`text-lg p-7 font-black underline decoration-solid decoration-2 underline-offset-8 ${
+							class={`text-lg p-7 font-black max-sm:h-24 underline decoration-solid decoration-2 underline-offset-8 ${
 								saleSummary() - manPowerWage() < 0 ? 'text-red-500' : 'text-black'
 							}`}
 						>

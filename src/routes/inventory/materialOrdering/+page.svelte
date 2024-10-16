@@ -247,7 +247,7 @@
 
 					<div class=" bg-white py-2 text-black">
 						{#each columns as column (column.id)}
-							<div class="max-sm:grid max-sm:grid-cols-3  max-sm:px-1flex gap-0" id={column.id}>
+							<div class="max-sm:grid max-sm:grid-cols-3 max-sm:px-1flex gap-0" id={column.id}>
 								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}<select
 										class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 										value={column[field]}
@@ -341,21 +341,26 @@
 		</div>
 
 		<div class="flex justify-center">
-			<div class="overflow-hidden rounded-lg shadow md:block font-bold bg-bgGrey">
+			<div class="overflow-hidden rounded-lg shadow md:block font-bold md:bg-bgGrey">
 				<SearchInput bind:searchItem />
+
 				{#if output.length > 0}
-					<div class="flex">
+					<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 max-sm:mt-2 md:flex">
 						{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit', 'Delete'] as header}
 							<div
-								class="border border-gray-300 text-white border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center place-content-center"
+								class="max-sm:flex-1 max-sm:text-xs border text-white border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
 							>
 								{header}
 							</div>
 						{/each}
 					</div>
-					<div class="flex flex-col bg-white text-sm">
+
+					<div class="flex flex-col bg-white text-sm max-sm:mt-4">
 						{#each displayedItems as item, index}
-							<ul key={item.id} class="flex mb-2 items-center hover:underline hover:font-semibold">
+							<ul
+								key={item.id}
+								class="grid grid-cols-3 border max-sm:gap-2 md:flex max-sm:mt-1 max-sm:border-b-2 max-sm:border-black items-center py-1 hover:underline hover:font-semibold"
+							>
 								<li class={orderingCss()}>{index + 1}</li>
 								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}<li
 										class={orderingCss()}
@@ -383,7 +388,9 @@
 								<li class={orderingCss()}><h4>{item.etd}</h4></li>
 								<li class={orderingCss()}><h4>{item.eta}</h4></li>
 								<li class={orderingCss()}><h4>{item.arrivalDate}</h4></li>
-								<li class="flex-1 text-center">
+								<li
+									class="flex max-sm:gap-2 max-sm:justify-end max-sm:w-screen max-sm:mb-1 md:flex-1 text-center"
+								>
 									<button
 										on:click={() => startEdit(item.id, item.status)}
 										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700 w-20"

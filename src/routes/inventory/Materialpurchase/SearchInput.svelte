@@ -2,19 +2,20 @@
     export let searchItem = '';
   </script>
 
-<div class="flex justify-center">
-    <div class="relative max-w-wd">
+<div class=" flex justify-center ">
+    <div class="relative" >
     <input
         type="text"
-        class="mt-4 max-sm:text-xs max-sm:text-center px-8 py-2 md:px-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+        class="max-sm:mb-2 md:mt-4 max-sm:text-xs max-sm:text-center px-8 py-2 md:px-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
         placeholder="Material Name...."
         bind:value={searchItem}
     />
     <svg
-        class="absolute left-3 top-1/2 transform -translate-y-1 w-6 h-6 text-gray-500"
+        class="absolute left-3 top-1/2 transform -translate-y-4 md:-translate-y-1 w-6 h-6 text-gray-500"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+       
     >
         <g clip-path="url(#clip0)">
             <rect width="24" height="24" fill="white"></rect>
