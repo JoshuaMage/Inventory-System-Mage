@@ -78,7 +78,7 @@
 					</div>
 
 					{#each displayedItems as supplier}
-						<ul class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-black justify-center">
+						<ul class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-black justify-center">
 							<li class={h4Css()}><h4>{supplier.vendor}</h4></li>
 							<li class={h4Css()}><h4>{supplier.vendorPhoneNumber}</h4></li>
 							<li class={h4Css()}><h4>{supplier.vendorTelephone}</h4></li>

@@ -40,6 +40,7 @@
 
 	$: hideLayout = ['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname);
 	const headerSelection = () => 'font-bold max-sm:text-xs  md:text-lg font-sans text-center';
+	const headerList = () => 'block text-start max-sm:text-xs md:font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2'
 </script>
 
 {#if !hideLayout}
@@ -55,33 +56,33 @@
 				</h1>
 			</div>
 
-			<div class=" place-content-center justify-self-end">
-				<div class="flex gap-3 md:gap-12 text-center">
+			<div class="place-content-center justify-start md:justify-self-end">
+				<div class="flex  gap-3 md:gap-12 text-center">
 					<!-- Products Dropdown -->
 					<div class="relative group flex justify-center hover:underline">
 						<a href="/product" class={headerSelection()}>Products</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 w-48 p-2 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 w-22 md:w-48 p-2 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
 						>
 							<a
 								href="/product/productKg"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Kilogram</a
 							>
 							<a
 								href="/product/productPc"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Pc</a
 							>
 							<a
 								href="/product/productLiter"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Liter</a
 							>
 							<a
 								href="/product/productMeter"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Meter</a
 							>
 						</div>
@@ -92,31 +93,31 @@
 						<a href="/inventory" class={headerSelection()}>Inventory</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-28 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
 						>
 							<a
 								href="/inventory/materialStock"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Material Stock</a
 							>
 							<a
 								href="/inventory/materialList"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Material List</a
 							>
 							<a
 								href="/inventory/materialPurchase"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Purchase</a
 							>
 							<a
 								href="/inventory/supplier"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Supplier</a
 							>
 							<a
 								href="/inventory/materialOrdering"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Ordering</a
 							>
 						</div>
@@ -127,21 +128,21 @@
 						<a href="/sales" class={headerSelection()}>Sales</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-40 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
 						>
 							<a
 								href="/sales/summary"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Summary</a
 							>
 							<a
 								href="/sales/incomestatement"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Income Statement</a
 							>
 							<a
 								href="/sales/manpower"
-								class="block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2"
+								class={headerList()}
 								>Man power</a
 							>
 						</div>
@@ -151,12 +152,12 @@
 					<div class="relative group flex justify-center hover:underline-">
 						<a href="/user" class={headerSelection()}>User</a>
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-40 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-28 md:w-40 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
 						>
 							<button
 								on:click={handleLogout}
 								disabled={loading}
-								class="disabled:opacity-50 block text-start font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-1"
+								class="disabled:opacity-50 block text-start max-sm:text-xs md:font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-1"
 							>
 								{#if loading}
 									Logging out...

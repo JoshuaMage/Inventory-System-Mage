@@ -341,7 +341,7 @@
 		</div>
 
 		<div class="flex justify-center">
-			<div class="overflow-hidden rounded-lg shadow md:block font-bold md:bg-bgGrey">
+			<div class="overflow-hidden rounded-lg shadow md:block md:font-bold md:bg-bgGrey">
 				<SearchInput bind:searchItem />
 
 				{#if output.length > 0}
@@ -389,15 +389,15 @@
 								<li class={orderingCss()}><h4>{item.eta}</h4></li>
 								<li class={orderingCss()}><h4>{item.arrivalDate}</h4></li>
 								<li
-									class="flex max-sm:gap-2 max-sm:justify-end max-sm:w-screen max-sm:mb-1 md:flex-1 text-center"
+									class="flex max-sm:gap-2 max-sm:justify-end max-sm:w-screen max-sm:mb-1 md:flex-1 text-center gap-2"
 								>
 									<button
 										on:click={() => startEdit(item.id, item.status)}
-										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700 w-20"
+										class="h-6 md:h-8 max-sm:w-16 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700 w-20"
 										>Edit</button
 									><button
 										on:click={() => handleDelete(item.id)}
-										class="h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700 w-20"
+										class="h-6 md:h-8  max-sm:w-16 font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700 w-20"
 										>Delete</button
 									>
 								</li>
