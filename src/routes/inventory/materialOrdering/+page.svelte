@@ -247,7 +247,7 @@
 
 					<div class=" bg-white py-2 text-black">
 						{#each columns as column (column.id)}
-							<div class="max-sm:grid max-sm:grid-cols-3 max-sm:px-1flex gap-0" id={column.id}>
+							<div class="max-sm:grid max-sm:grid-cols-3 max-sm:px-1flex flex gap-0" id={column.id}>
 								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}<select
 										class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
 										value={column[field]}
@@ -348,7 +348,7 @@
 					<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 max-sm:mt-2 md:flex">
 						{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit', 'Delete'] as header}
 							<div
-								class="max-sm:flex-1 max-sm:text-xs border text-white border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
+								class=" max-sm:flex-1 max-sm:text-xs border text-white border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-full lg:w-20 xl:w-24 2xl:w-28 text-center"
 							>
 								{header}
 							</div>
