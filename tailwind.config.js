@@ -40,7 +40,7 @@ export default {
 		},
 		colors: {
 		  pureRed: '#EB1D36',
-		  orange: '#C2452D',
+		  orange: '#EC8305',
 		  bgGrey: '#000000',
 		  bgDarkGrey: '#FAFAFF',
 		  bgBlack: '#191717',

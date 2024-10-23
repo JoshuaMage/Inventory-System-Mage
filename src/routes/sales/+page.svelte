@@ -9,7 +9,7 @@
 	let unit = '';
 	let submissions = [];
 	let selectedDate = '';
-	let submissionMessage = ''; // New variable for submission status
+	let submissionMessage = '';
 	$: materials = $INVENTORY;
 
 	// Existing reactive statement to set material details
@@ -92,15 +92,15 @@
 		' hover:underline hover:underline-offset-4 hover:decoration-black decoration-2';
 </script>
 
-<main class="mt-24 h-full w-screen p-0 m-0 bg-bgDarkGrey">
+<main class="mt-24 h-full p-0 m-0 bg-bgDarkGrey">
 	<div class="flex md:justify-center min-h-screen">
-		<div class="flex flex-col w-9/12 gap-10">
+		<div class="flex flex-col gap-10">
 			<form action="" on:submit={handleSubmit} class="max-sm:relative max-sm:left-14">
 				<div class=" flex flex-col bg-white border border-black rounded-xl">
 					<div
 						class="text-white text-center bg-bgGrey h-14 md:h-24 content-center font-bold text-lg md:text-3xl rounded-xl"
 					>
-						<h1>Mage Sale Form</h1>
+						<h1>Mage Stock-Out History</h1>
 					</div>
 
 					<div class="overflow-hidden">
@@ -191,10 +191,11 @@
 			</form>
 
 			<div
-				class="flex flex-col text-center h-auto border md:border-black rounded-lg max-sm:w-screen max-sm:p-1 max-sm:m-0">
+				class="flex flex-col text-center border md:border-black rounded-lg max-sm:w-screen max-sm:p-1 max-sm:m-0"
+			>
 				<div class="rounded-lg bg-bgGrey">
 					<ul
-						class=" grid grid-cols-3 h-auto gap-2  max-sm:py-3 md:grid-cols-11 font-thin md:font-bold md:h-14 content-center text-white"
+						class=" grid grid-cols-3 gap-2 max-sm:py-3 md:grid-cols-11 font-thin md:font-bold md:h-14 content-center text-white"
 					>
 						<li class={secondConCss()}>Item</li>
 						<li class={secondConCss()}>Material Name</li>
@@ -210,16 +211,20 @@
 				</div>
 				{#each submissions as submission, index}
 					<div class="bg-transparent py-1 md:py-2 font-patrick">
-						<ul class="max-sm:text-sm  gap-2 max-sm:border max-sm:border-black  grid grid-cols-3 md:grid-cols-11 content-center md:gap-2">
+						<ul
+							class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 content-center md:gap-2"
+						>
 							<li class={secondOutputCss()}>
 								<h4>{index + 1}</h4>
 							</li>
 							<li class={secondOutputCss()}>
 								<h4>{submission.materialName}</h4>
 							</li>
-							<li class="flex md:grid md:col-span-3 hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-white">
+							<li
+								class="flex md:grid md:col-span-3 hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-white"
+							>
 								<h4 class="whitespace-nowrap">{submission.materialDescription}</h4>
-							</li>													
+							</li>
 							<li class={secondOutputCss()}>
 								<h4>{submission.materialCode}</h4>
 							</li>
