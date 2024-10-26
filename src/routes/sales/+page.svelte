@@ -1,5 +1,10 @@
 <script>
 	import { INVENTORY } from '$lib/materialStock';
+	// import { onMount } from 'svelte';
+	// import { db } from '$lib/firebaseConfig';
+	// import { ref, onValue } from 'firebase/database';
+
+	export let selectedMaterialName;
 
 	let saleQty = '';
 	let materials;
@@ -10,11 +15,11 @@
 	let submissions = [];
 	let selectedDate = '';
 	let submissionMessage = '';
+
 	$: materials = $INVENTORY;
 
-	// Existing reactive statement to set material details
-	$: if (selectedMaterial) {
-		const material = materials.find((m) => m.materialName === selectedMaterial);
+	$: if (selectedMaterialName) {
+		const material = materials.find((m) => m.materialName === selectedMaterialName);
 		if (material) {
 			materialDescription = material.materialDescription;
 			materialCode = material.materialCode;
@@ -32,6 +37,7 @@
 			saleQty = value;
 		}
 	}
+
 
 	function handleSubmit(event) {
 		event.preventDefault();
@@ -73,6 +79,7 @@
 		}
 	}
 
+
 	function handleDelete(index) {
 		submissions = submissions.filter((_, i) => i !== index);
 		localStorage.setItem('submissions', JSON.stringify(submissions));
@@ -106,19 +113,8 @@
 					<div class="overflow-hidden">
 						<div class=" md:grid md:grid-cols-2 px-5 py-2 md:py-10 md:px-24">
 							<div class={outputDiv()}>
-								<label for="material-name" class={labelCss()}>Material Name:</label>
-								<select
-									class={outputCss()}
-									name="material-name"
-									id="material-name"
-									bind:value={selectedMaterial}
-									required
-								>
-									<option value="" disabled selected>Select a material</option>
-									{#each materials as item}
-										<option value={item.materialName}>{item.materialName}</option>
-									{/each}
-								</select>
+								<h2 class={labelCss()}>Material Name:</h2>
+								<h3 class={outputCss()}>{selectedMaterialName}</h3>
 							</div>
 
 							<div class={outputDiv()}>
@@ -217,9 +213,11 @@
 							<li class={secondOutputCss()}>
 								<h4>{index + 1}</h4>
 							</li>
+
 							<li class={secondOutputCss()}>
 								<h4>{submission.materialName}</h4>
 							</li>
+
 							<li
 								class="flex md:grid md:col-span-3 hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-white"
 							>
