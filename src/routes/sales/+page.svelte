@@ -1,23 +1,20 @@
 <script>
+	import { db } from '$lib/firebaseConfig';
+	import { ref, set, remove } from 'firebase/database';
 	import { INVENTORY } from '$lib/materialStock';
-	// import { onMount } from 'svelte';
-	// import { db } from '$lib/firebaseConfig';
-	// import { ref, onValue } from 'firebase/database';
 
 	export let selectedMaterialName;
+	export let submissions = [];
 
 	let saleQty = '';
 	let materials;
-	let selectedMaterial = null;
 	let materialDescription = '';
 	let materialCode = '';
 	let unit = '';
-	let submissions = [];
 	let selectedDate = '';
 	let submissionMessage = '';
 
 	$: materials = $INVENTORY;
-
 	$: if (selectedMaterialName) {
 		const material = materials.find((m) => m.materialName === selectedMaterialName);
 		if (material) {
@@ -38,55 +35,64 @@
 		}
 	}
 
-
 	function handleSubmit(event) {
 		event.preventDefault();
 		const form = event.target;
 
 		if (form.checkValidity()) {
-			if (selectedMaterial && saleQty) {
-				const submission = {
-					materialName: selectedMaterial,
-					materialDescription,
-					materialCode,
-					unit,
-					saleQty,
-					date: selectedDate,
-					remarks: document.getElementById('remarks').value
-				};
+			const submission = {
+				id: Date.now(),
+				materialName: selectedMaterialName,
+				materialDescription,
+				materialCode,
+				unit,
+				saleQty,
+				date: selectedDate,
+				remarks: document.getElementById('remarks').value,
+			};
 
-				const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-				existingSubmissions.push(submission);
-				localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
+			const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+			existingSubmissions.push(submission);
+			localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
+			submissions = existingSubmissions;
 
-				submissions = existingSubmissions;
+			const submissionsRef = ref(db, 'submissions'); // Adjust your path as needed
+			set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
 
-				// Show a success message
-				submissionMessage = 'Submission successful!';
-
-				// Reset form fields
-				selectedMaterial = null;
-				saleQty = '';
-				materialDescription = '';
-				materialCode = '';
-				unit = '';
-				selectedDate = '';
-				document.getElementById('remarks').value = '';
-			}
+			submissionMessage = 'Submission successful!';
+			resetForm();
 		} else {
-			// Display a message or highlight invalid fields
 			alert('Please fill in all required fields.');
 		}
 	}
 
-
-	function handleDelete(index) {
-		submissions = submissions.filter((_, i) => i !== index);
-		localStorage.setItem('submissions', JSON.stringify(submissions));
+	function resetForm() {
+		saleQty = '';
+		selectedDate = '';
+		document.getElementById('remarks').value = '';
 	}
 
+	function handleDelete(index) {
+    const submissionToDelete = submissions[index];
+    const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`); // Use the unique ID for deletion
+
+    // Remove from Firebase
+    remove(submissionsRef)
+        .then(() => {
+            // Remove from local submissions array
+            submissions = submissions.filter((_, i) => i !== index);
+            localStorage.setItem('submissions', JSON.stringify(submissions));
+            console.log('Submission deleted successfully from Firebase and local storage.');
+        })
+        .catch((error) => {
+            console.error('Error deleting submission from Firebase: ', error);
+        });
+}
+
+
 	if (typeof window !== 'undefined') {
-		submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+		submissions = submissions.length ? submissions : storedSubmissions;
 	}
 
 	const labelCss = () =>
@@ -114,7 +120,9 @@
 						<div class=" md:grid md:grid-cols-2 px-5 py-2 md:py-10 md:px-24">
 							<div class={outputDiv()}>
 								<h2 class={labelCss()}>Material Name:</h2>
-								<h3 class={outputCss()}>{selectedMaterialName}</h3>
+								<h3 class={outputCss()}>
+									{selectedMaterialName ? selectedMaterialName : 'Select Material'}
+								</h3>
 							</div>
 
 							<div class={outputDiv()}>
@@ -205,11 +213,11 @@
 						<li class={secondConCss()}>Remarks</li>
 					</ul>
 				</div>
-				{#each submissions as submission, index}
-					<div class="bg-transparent py-1 md:py-2 font-patrick">
-						<ul
-							class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 content-center md:gap-2"
-						>
+				<div class="bg-transparent py-1 md:py-2 font-patrick">
+					<ul
+						class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 content-center md:gap-2"
+					>
+						{#each submissions.filter((sub) => sub.materialName === selectedMaterialName) as submission, index}
 							<li class={secondOutputCss()}>
 								<h4>{index + 1}</h4>
 							</li>
@@ -246,9 +254,9 @@
 							<li class={secondOutputCss()}>
 								{submission.remarks}
 							</li>
-						</ul>
-					</div>
-				{/each}
+						{/each}
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>

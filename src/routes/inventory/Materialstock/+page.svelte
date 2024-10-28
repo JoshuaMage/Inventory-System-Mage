@@ -13,8 +13,9 @@
 	let itemsPerPage = 7;
 	let loading = true;
 	let showHide = false;
-	let selectedItem = null
+	let selectedItem = null;
 	let selectedMaterialName = '';
+	let submissions = [];
 
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
@@ -49,7 +50,7 @@
 			.catch((error) => {
 				console.error('Error updating value in Firebase:', error);
 			});
-	} 
+	}
 
 	function goToPage(page) {
 		currentPage = page;
@@ -58,9 +59,12 @@
 	function ToggleStockOut(id) {
 		const purchase = materialPurchase.find((item) => item.id === id);
 		if (purchase) {
-			selectedMaterialName = purchase.materialName; // Set the selected material name
-			selectedItem = purchase;
-			showHide = !showHide; // Toggle the visibility
+			selectedMaterialName = purchase.materialName;
+
+			showHide = true; // Show the form
+
+			// Reset the form
+			resetForm();
 		}
 	}
 
@@ -101,8 +105,8 @@
 								<li class={listCss()}><button class={PurchaseListCss()}>Stock</button></li>
 								<li class={listCss()}><button class={PurchaseListCss()}>Pending</button></li>
 								<li class={listCss()}><button class={PurchaseListCss()}>Stock-out</button></li>
-								<li class={listCss()}><button class={PurchaseListCss()}>Date Stock-out</button></li>
-								<li class={listCss()}><button class={PurchaseListCss()}>Sale-Qty</button></li>
+								<li class={listCss()}><button class={PurchaseListCss()}>Select</button></li>
+
 								<li class={listCss()}><button class={PurchaseListCss()}>Status</button></li>
 							</ul>
 						</div>
@@ -111,7 +115,7 @@
 								class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-black justify-center"
 							>
 								<li><h4 class={h4Css()}>{index + 1}</h4></li>
-								<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>
+								<h4 class={h4Css()} id={`material-${purchase.id}`}>{purchase.materialName}</h4>
 								<li><h4 class={h4Css()}>{purchase.unit}</h4></li>
 								<li><h4 class={h4Css()}>{purchase.orderQty}</h4></li>
 								<li>
@@ -142,7 +146,6 @@
 										<button on:click={() => ToggleStockOut(purchase.id)}>Select</button>
 									</div>
 								</li>
-								<li><h4 class={h4Css()}>{values[index]}</h4></li>
 
 								<li class={h4Css()}>
 									<h4
@@ -163,7 +166,7 @@
 	<div>
 		{#if showHide}
 			<div class="flex flex-col items-center justify-center text-center">
-				<StockOutForm {selectedItem} {materialPurchase} {selectedMaterialName} />
+				<StockOutForm {selectedMaterialName} {submissions} />
 			</div>
 		{/if}
 	</div>
