@@ -3,7 +3,8 @@
 	import { ref, set, remove } from 'firebase/database';
 	import { INVENTORY } from '$lib/materialStock';
 
-	export let selectedMaterialName;
+
+	export let selectedIndex;
 	export let submissions = [];
 
 	let saleQty = '';
@@ -15,8 +16,8 @@
 	let submissionMessage = '';
 
 	$: materials = $INVENTORY;
-	$: if (selectedMaterialName) {
-		const material = materials.find((m) => m.materialName === selectedMaterialName);
+	$: if (selectedIndex) {
+		const material = materials.find((m) => m.materialName === selectedIndex);
 		if (material) {
 			materialDescription = material.materialDescription;
 			materialCode = material.materialCode;
@@ -26,6 +27,10 @@
 			materialCode = '';
 			unit = '';
 		}
+	}
+	if (typeof window !== 'undefined') {
+		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+		submissions = submissions.length ? submissions : storedSubmissions;
 	}
 
 	function handleInput(event) {
@@ -42,19 +47,19 @@
 		if (form.checkValidity()) {
 			const submission = {
 				id: Date.now(),
-				materialName: selectedMaterialName,
+				materialName: selectedIndex,
 				materialDescription,
 				materialCode,
 				unit,
 				saleQty,
 				date: selectedDate,
-				remarks: document.getElementById('remarks').value,
+				remarks: document.getElementById('remarks').value
 			};
 
 			const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
 			existingSubmissions.push(submission);
-			localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
-			submissions = existingSubmissions;
+			localStorage.setItem('submissions', JSON.stringify(submissions));
+			submissions.push(submission);
 
 			const submissionsRef = ref(db, 'submissions'); // Adjust your path as needed
 			set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
@@ -73,22 +78,21 @@
 	}
 
 	function handleDelete(index) {
-    const submissionToDelete = submissions[index];
-    const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`); // Use the unique ID for deletion
+		const submissionToDelete = submissions[index];
+		const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`); // Use the unique ID for deletion
 
-    // Remove from Firebase
-    remove(submissionsRef)
-        .then(() => {
-            // Remove from local submissions array
-            submissions = submissions.filter((_, i) => i !== index);
-            localStorage.setItem('submissions', JSON.stringify(submissions));
-            console.log('Submission deleted successfully from Firebase and local storage.');
-        })
-        .catch((error) => {
-            console.error('Error deleting submission from Firebase: ', error);
-        });
-}
-
+		// Remove from Firebase
+		remove(submissionsRef)
+			.then(() => {
+				// Remove from local submissions array
+				submissions = submissions.filter((_, i) => i !== index);
+				localStorage.setItem('submissions', JSON.stringify(submissions));
+				console.log('Submission deleted successfully from Firebase and local storage.');
+			})
+			.catch((error) => {
+				console.error('Error deleting submission from Firebase: ', error);
+			});
+	}
 
 	if (typeof window !== 'undefined') {
 		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
@@ -121,7 +125,7 @@
 							<div class={outputDiv()}>
 								<h2 class={labelCss()}>Material Name:</h2>
 								<h3 class={outputCss()}>
-									{selectedMaterialName ? selectedMaterialName : 'Select Material'}
+									{selectedIndex ? selectedIndex : 'Select Material'}
 								</h3>
 							</div>
 
@@ -217,7 +221,7 @@
 					<ul
 						class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 content-center md:gap-2"
 					>
-						{#each submissions.filter((sub) => sub.materialName === selectedMaterialName) as submission, index}
+						{#each submissions.filter((sub) => sub.materialName === selectedIndex) as submission, index}
 							<li class={secondOutputCss()}>
 								<h4>{index + 1}</h4>
 							</li>

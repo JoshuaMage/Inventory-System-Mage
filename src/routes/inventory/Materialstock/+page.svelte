@@ -3,7 +3,7 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, set, onValue } from 'firebase/database';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
-	import Pagination from '../materialPurchase/Pagination.svelte';
+	import Pagination from './pagination.svelte'
 	import StockOutForm from '../../sales/+page.svelte';
 
 	let searchItem = '';
@@ -12,10 +12,7 @@
 	let currentPage = 1;
 	let itemsPerPage = 7;
 	let loading = true;
-	let showHide = false;
-	let selectedItem = null;
-	let selectedMaterialName = '';
-	let submissions = [];
+	let selectedIndex = null;
 
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
@@ -36,35 +33,22 @@
 		});
 	});
 
-	function updateValue(index) {
-		const value = parseFloat(values[index]) || 0;
-		localStorage.setItem(`stockOut_${index}`, value);
-
-		// Update the Firebase database
-		const purchaseRef = ref(db, `outputs/${index}/stockOut`);
-		set(purchaseRef, value)
-			.then(() => {
-				console.log('Value updated in Firebase successfully');
-				values[index] = value;
-			})
-			.catch((error) => {
-				console.error('Error updating value in Firebase:', error);
-			});
-	}
 
 	function goToPage(page) {
 		currentPage = page;
 	}
 
-	function ToggleStockOut(id) {
-		const purchase = materialPurchase.find((item) => item.id === id);
-		if (purchase) {
-			selectedMaterialName = purchase.materialName;
+	function ToggleStockOut(localIndex) {
+		const globalIndex = (currentPage - 1) * itemsPerPage + localIndex;
+		selectedIndex = selectedIndex === globalIndex ? null : localIndex;
 
-			showHide = true; // Show the form
-
-			// Reset the form
-			resetForm();
+		if (selectedIndex !== null) {
+			const selectedItem = displayedItems[localIndex];
+			console.log('Selected Item:', selectedItem);
+			selectedIndex = selectedItem.materialName;
+		} else {
+			console.log('No item selected');
+			selectedIndex = null;
 		}
 	}
 
@@ -105,8 +89,8 @@
 								<li class={listCss()}><button class={PurchaseListCss()}>Stock</button></li>
 								<li class={listCss()}><button class={PurchaseListCss()}>Pending</button></li>
 								<li class={listCss()}><button class={PurchaseListCss()}>Stock-out</button></li>
-								<li class={listCss()}><button class={PurchaseListCss()}>Select</button></li>
-
+								<li class={listCss()}><button class={PurchaseListCss()}>Date Stock-out</button></li>
+								<li class={listCss()}><button class={PurchaseListCss()}>Sale-Qty</button></li>
 								<li class={listCss()}><button class={PurchaseListCss()}>Status</button></li>
 							</ul>
 						</div>
@@ -114,8 +98,8 @@
 							<ul
 								class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-black justify-center"
 							>
-								<li><h4 class={h4Css()}>{index + 1}</h4></li>
-								<h4 class={h4Css()} id={`material-${purchase.id}`}>{purchase.materialName}</h4>
+								<li><h4 class={h4Css()}>{(currentPage - 1) * itemsPerPage + index + 1}</h4></li>
+								<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>
 								<li><h4 class={h4Css()}>{purchase.unit}</h4></li>
 								<li><h4 class={h4Css()}>{purchase.orderQty}</h4></li>
 								<li>
@@ -133,19 +117,14 @@
 									</h4>
 								</li>
 								<li>
-									<input
-										type="number"
-										class={h4Css()}
-										bind:value={values[index]}
-										on:input={() => updateValue(index)}
-										max={purchase.orderQty}
-									/>
+									<h4 class={h4Css()}>saleQty</h4>
 								</li>
 								<li class="flex justify-center items-center">
 									<div class="bg-orange text-white py-1 px-3 rounded-full">
-										<button on:click={() => ToggleStockOut(purchase.id)}>Select</button>
+										<button on:click={() => ToggleStockOut(index)}>BUTTON</button>
 									</div>
 								</li>
+								<li><h4 class={h4Css()}>{values[index]}</h4></li>
 
 								<li class={h4Css()}>
 									<h4
@@ -164,9 +143,9 @@
 	</div>
 
 	<div>
-		{#if showHide}
+		{#if selectedIndex !== null}
 			<div class="flex flex-col items-center justify-center text-center">
-				<StockOutForm {selectedMaterialName} {submissions} />
+				<StockOutForm {selectedIndex} />
 			</div>
 		{/if}
 	</div>
