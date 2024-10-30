@@ -1,104 +1,4 @@
 <script>
-	import { db } from '$lib/firebaseConfig';
-	import { ref, set, remove } from 'firebase/database';
-	import { INVENTORY } from '$lib/materialStock';
-
-
-	export let selectedIndex;
-	export let submissions = [];
-
-	let saleQty = '';
-	let materials;
-	let materialDescription = '';
-	let materialCode = '';
-	let unit = '';
-	let selectedDate = '';
-	let submissionMessage = '';
-
-	$: materials = $INVENTORY;
-	$: if (selectedIndex) {
-		const material = materials.find((m) => m.materialName === selectedIndex);
-		if (material) {
-			materialDescription = material.materialDescription;
-			materialCode = material.materialCode;
-			unit = material.unit;
-		} else {
-			materialDescription = '';
-			materialCode = '';
-			unit = '';
-		}
-	}
-	if (typeof window !== 'undefined') {
-		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-		submissions = submissions.length ? submissions : storedSubmissions;
-	}
-
-	function handleInput(event) {
-		const value = event.target.value.replace(/[^0-9]/g, '');
-		if (value.length <= 5) {
-			saleQty = value;
-		}
-	}
-
-	function handleSubmit(event) {
-		event.preventDefault();
-		const form = event.target;
-
-		if (form.checkValidity()) {
-			const submission = {
-				id: Date.now(),
-				materialName: selectedIndex,
-				materialDescription,
-				materialCode,
-				unit,
-				saleQty,
-				date: selectedDate,
-				remarks: document.getElementById('remarks').value
-			};
-
-			const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-			existingSubmissions.push(submission);
-			localStorage.setItem('submissions', JSON.stringify(submissions));
-			submissions.push(submission);
-
-			const submissionsRef = ref(db, 'submissions'); // Adjust your path as needed
-			set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
-
-			submissionMessage = 'Submission successful!';
-			resetForm();
-		} else {
-			alert('Please fill in all required fields.');
-		}
-	}
-
-	function resetForm() {
-		saleQty = '';
-		selectedDate = '';
-		document.getElementById('remarks').value = '';
-	}
-
-	function handleDelete(index) {
-		const submissionToDelete = submissions[index];
-		const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`); // Use the unique ID for deletion
-
-		// Remove from Firebase
-		remove(submissionsRef)
-			.then(() => {
-				// Remove from local submissions array
-				submissions = submissions.filter((_, i) => i !== index);
-				localStorage.setItem('submissions', JSON.stringify(submissions));
-				console.log('Submission deleted successfully from Firebase and local storage.');
-			})
-			.catch((error) => {
-				console.error('Error deleting submission from Firebase: ', error);
-			});
-	}
-
-	if (typeof window !== 'undefined') {
-		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-		submissions = submissions.length ? submissions : storedSubmissions;
-	}
-
 	const labelCss = () =>
 		'text-sm md:text-lg font-bold font-patrick text-start hover:underline hover:underline-offset-4 hover:decoration-solid hover:decoration-2 hover:decoration-nextPrevButton md:pr-2';
 	const outputCss = () =>
@@ -109,10 +9,10 @@
 		' hover:underline hover:underline-offset-4 hover:decoration-black decoration-2';
 </script>
 
-<main class="mt-24 h-full p-0 m-0 bg-bgDarkGrey">
+<div class="mt-24 h-full p-0 m-0 bg-bgDarkGrey">
 	<div class="flex md:justify-center min-h-screen">
 		<div class="flex flex-col gap-10">
-			<form action="" on:submit={handleSubmit} class="max-sm:relative max-sm:left-14">
+			<form action="" class="max-sm:relative max-sm:left-14">
 				<div class=" flex flex-col bg-white border border-black rounded-xl">
 					<div
 						class="text-white text-center bg-bgGrey h-14 md:h-24 content-center font-bold text-lg md:text-3xl rounded-xl"
@@ -124,9 +24,7 @@
 						<div class=" md:grid md:grid-cols-2 px-5 py-2 md:py-10 md:px-24">
 							<div class={outputDiv()}>
 								<h2 class={labelCss()}>Material Name:</h2>
-								<h3 class={outputCss()}>
-									{selectedIndex ? selectedIndex : 'Select Material'}
-								</h3>
+								<h3 class={outputCss()}>1</h3>
 							</div>
 
 							<div class={outputDiv()}>
@@ -134,13 +32,13 @@
 								<p
 									class="max-sm:relative max-sm:right-9 md:translate-x-1 h-auto flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 								>
-									{materialDescription}
+									1
 								</p>
 							</div>
 
 							<div class={outputDiv()}>
 								<h2 class={labelCss()}>Material Code:</h2>
-								<p class={outputCss()}>{materialCode}</p>
+								<p class={outputCss()}>1</p>
 							</div>
 
 							<div class={outputDiv()}>
@@ -148,7 +46,7 @@
 								<p
 									class="translate-x-16 max-sm:ml-1 md:translate-x-40 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 								>
-									{unit}
+									1
 								</p>
 							</div>
 
@@ -158,8 +56,6 @@
 									class="max-sm:ml-3 translate-x-16 md:translate-x-24 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 									type="text"
 									id="qty"
-									bind:value={saleQty}
-									on:input={handleInput}
 									maxlength="5"
 									required
 								/>
@@ -170,7 +66,6 @@
 									class="max-sm:ml-1 translate-x-16 md:translate-x-40 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 									type="date"
 									id="date"
-									bind:value={selectedDate}
 									required
 								/>
 							</div>
@@ -221,47 +116,42 @@
 					<ul
 						class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 content-center md:gap-2"
 					>
-						{#each submissions.filter((sub) => sub.materialName === selectedIndex) as submission, index}
-							<li class={secondOutputCss()}>
-								<h4>{index + 1}</h4>
-							</li>
+						<li class={secondOutputCss()}>
+							<h4>1</h4>
+						</li>
 
-							<li class={secondOutputCss()}>
-								<h4>{submission.materialName}</h4>
-							</li>
+						<li class={secondOutputCss()}>
+							<h4>1</h4>
+						</li>
 
-							<li
-								class="flex md:grid md:col-span-3 hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-white"
+						<li
+							class="flex md:grid md:col-span-3 hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-white"
+						>
+							<h4 class="whitespace-nowrap">1</h4>
+						</li>
+						<li class={secondOutputCss()}>
+							<h4>1</h4>
+						</li>
+						<li class={secondOutputCss()}>
+							<h4>1</h4>
+						</li>
+						<li class={secondOutputCss()}>
+							<h4>1</h4>
+						</li>
+						<li class={secondOutputCss()}>
+							<h4>1</h4>
+						</li>
+						<li>
+							<button
+								class="max-sm:mb-2 h-5 md:h-7 w-6/12 md:w-9/12 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white hover:shadow-lg hover:shadow-red-400"
 							>
-								<h4 class="whitespace-nowrap">{submission.materialDescription}</h4>
-							</li>
-							<li class={secondOutputCss()}>
-								<h4>{submission.materialCode}</h4>
-							</li>
-							<li class={secondOutputCss()}>
-								<h4>{submission.unit}</h4>
-							</li>
-							<li class={secondOutputCss()}>
-								<h4>{submission.saleQty}</h4>
-							</li>
-							<li class={secondOutputCss()}>
-								<h4>{submission.date}</h4>
-							</li>
-							<li>
-								<button
-									class="max-sm:mb-2 h-5 md:h-7 w-6/12 md:w-9/12 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white hover:shadow-lg hover:shadow-red-400"
-									on:click={() => handleDelete(index)}
-								>
-									Delete
-								</button>
-							</li>
-							<li class={secondOutputCss()}>
-								{submission.remarks}
-							</li>
-						{/each}
+								Delete
+							</button>
+						</li>
+						<li class={secondOutputCss()}>1</li>
 					</ul>
 				</div>
 			</div>
 		</div>
 	</div>
-</main>
+</div>
