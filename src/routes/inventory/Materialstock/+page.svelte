@@ -5,7 +5,6 @@
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
 	import Pagination from './pagination.svelte';
 	import { INVENTORY } from '$lib/materialStock';
-	
 
 	let searchItem = '';
 	let materialPurchase = [];
@@ -16,27 +15,39 @@
 	let showForm = null;
 
 	let selectedItem = {
-	item: '',
-	materialName: '',
-	unit: '',
-	materialDescription: '',
-	materialCode: '',
-	purchaseId: ''
-};
+		item: '',
+		materialName: '',
+		unit: '',
+		materialDescription: '',
+		materialCode: '',
+		purchaseId: ''
+	};
 	let qty = '';
 	let date = '';
 	let remarks = '';
 	let submissions = [];
 	let submittedItems;
 	let submissionMessage = '';
-	
-
-	
+	let stockOutQty = [];
 
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
+		const stockOutRef = ref(db, 'submissions');
+
 		const storedItems = JSON.parse(localStorage.getItem('submittedItems')) || [];
 		submittedItems = storedItems;
+
+		onValue(stockOutRef, (snapshot) => {
+			stockOutQty = [];
+			if (snapshot.exists()) {
+				snapshot.forEach((childSnapshot) => {
+					const data = childSnapshot.val();
+					stockOutQty.push(data);
+				});
+			} else {
+				console.log('No Stock Out Data available');
+			}
+		});
 
 		onValue(purchaseRef, (snapshot) => {
 			loading = false;
@@ -109,18 +120,10 @@
 	}
 
 	function resetForm() {
-	selectedItem = {
-		item: '',
-		materialName: '',
-		unit: '',
-		materialDescription: '',
-		materialCode: '',
-		purchaseId: ''
-	};
-	qty = '';
-	date = '';
-	remarks = '';
-}
+		qty = '';
+		date = '';
+		remarks = '';
+	}
 
 	function handleDelete(index) {
 		const submissionToDelete = submissions.filter((sub) => sub.item === selectedItem.item)[index];
@@ -163,6 +166,15 @@
 	$: filteredItem = materialPurchase.filter((item) =>
 		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
 	);
+
+	function getQuantityForPurchase(purchase) {
+    const matchingSubmissions = submissions.filter(sub => 
+        sub.materialName === purchase.materialName && sub.purchaseId === purchase.purchaseId
+    );
+    const totalQuantity = matchingSubmissions.reduce((total, sub) => total + parseFloat(sub.qty || 0), 0);
+    return totalQuantity;
+}
+
 
 	const PurchaseListCss = () =>
 		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
@@ -225,13 +237,11 @@
 											: 0}
 									</h4>
 								</li>
+
 								<li>
-									{#each submissions.filter((sub) => sub.item === selectedItem.item) as submission}
-										<h4 class={h4Css()}>{submission.qty}</h4>
-									{:else}
-										<h4 class={h4Css()}>0</h4> <!-- Show 0 if no submission -->
-									{/each}
+									<h4 class={h4Css()}>{getQuantityForPurchase(purchase)}</h4>
 								</li>
+
 								<li class="flex justify-center items-center">
 									<div class="bg-orange text-white py-1 px-3 rounded-full">
 										<button on:click={() => toggleForm(index)}>BUTTON</button>
