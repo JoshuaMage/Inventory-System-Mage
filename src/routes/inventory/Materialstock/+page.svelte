@@ -1,10 +1,11 @@
 <script>
 	import { onMount } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
-	import { ref, onValue } from 'firebase/database';
+	import { ref, set, remove, onValue } from 'firebase/database';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
 	import Pagination from './pagination.svelte';
 	import { INVENTORY } from '$lib/materialStock';
+	
 
 	let searchItem = '';
 	let materialPurchase = [];
@@ -15,18 +16,26 @@
 	let showForm = null;
 
 	let selectedItem = {
-		item: '',
-		materialName: '',
-		unit: ''
-	};
+	item: '',
+	materialName: '',
+	unit: '',
+	materialDescription: '',
+	materialCode: '',
+	purchaseId: ''
+};
 	let qty = '';
 	let date = '';
 	let remarks = '';
-	let submittedItems = [];
+	let submissions = [];
+	let submittedItems;
+	let submissionMessage = '';
+	
+
+	
 
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
-		const storedItems = JSON.parse(localStorage.getItem('entries')) || [];
+		const storedItems = JSON.parse(localStorage.getItem('submittedItems')) || [];
 		submittedItems = storedItems;
 
 		onValue(purchaseRef, (snapshot) => {
@@ -60,51 +69,85 @@
 				unit: purchase.unit,
 				materialDescription: inventoryItem ? inventoryItem.materialDescription : '',
 				materialCode: inventoryItem ? inventoryItem.materialCode : '',
-				  purchaseId: purchase.purchaseId,
+				purchaseId: purchase.purchaseId
 			};
 		}
 	}
 
 	function handleSubmit(event) {
-    event.preventDefault();
+		event.preventDefault();
+		const form = event.target;
 
-    // Validate form fields
-    if (!qty || !date || !remarks) {
-        alert('Please fill out all fields before submitting.');
-        return;
-    }
+		if (form.checkValidity()) {
+			const submission = {
+				id: Date.now(),
+				item: selectedItem.item,
+				materialName: selectedItem.materialName,
+				materialDescription: selectedItem.materialDescription,
+				materialCode: selectedItem.materialCode,
+				unit: selectedItem.unit,
+				qty,
+				date,
+				remarks,
+				purchaseId: selectedItem.purchaseId
+			};
 
-    const newEntry = {
-        item: selectedItem.item,
-        materialName: selectedItem.materialName,
-        materialDescription: selectedItem.materialDescription,
-        materialCode: selectedItem.materialCode,
-        unit: selectedItem.unit,
-        qty,
-        date,
-        remarks,
-        purchaseId: selectedItem.purchaseId, // Unique ID for this entry
-    };
+			const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+			existingSubmissions.push(submission);
+			localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
 
-    // Use purchaseId as the key to store the entry
-    submittedItems = submittedItems.filter(item => item.purchaseId !== selectedItem.purchaseId);
-    submittedItems.push(newEntry);
+			submissions.push(submission);
+			const submissionsRef = ref(db, 'submissions'); // Adjust your path as needed
+			set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
 
-    // Update local storage
-    localStorage.setItem('submittedItems', JSON.stringify(submittedItems));
+			submissionMessage = 'Submission successful!';
+			resetForm();
+			selectedItem.item = submission.item;
+		} else {
+			alert('Please fill in all required fields.');
+		}
+	}
 
-    // Clear form fields and hide the form
-    qty = '';
-    date = '';
-    remarks = '';
-    showForm = null; // Hide the form after submission
+	function resetForm() {
+	selectedItem = {
+		item: '',
+		materialName: '',
+		unit: '',
+		materialDescription: '',
+		materialCode: '',
+		purchaseId: ''
+	};
+	qty = '';
+	date = '';
+	remarks = '';
 }
 
+	function handleDelete(index) {
+		const submissionToDelete = submissions.filter((sub) => sub.item === selectedItem.item)[index];
 
+		if (!submissionToDelete) {
+			console.error('Submission not found.');
+			return;
+		}
 
-	function deleteEntry(index) {
-		submittedItems.splice(index, 1); // Remove entry from array
-		localStorage.setItem('submittedItems', JSON.stringify(submittedItems)); // Update localStorage
+		const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`); // Adjust this path based on your Firebase structure
+
+		// Remove from Firebase
+		remove(submissionsRef)
+			.then(() => {
+				// Remove from local submissions array
+				submissions = submissions.filter((sub) => sub.id !== submissionToDelete.id);
+				localStorage.setItem('submissions', JSON.stringify(submissions));
+				console.log('Submission deleted successfully from Firebase and local storage.');
+			})
+			.catch((error) => {
+				console.error('Error deleting submission from Firebase: ', error);
+			});
+	}
+
+	if (typeof window !== 'undefined') {
+		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+		submissions = submissions.length ? submissions : storedSubmissions;
 	}
 
 	function goToPage(page) {
@@ -183,7 +226,11 @@
 									</h4>
 								</li>
 								<li>
-									<h4 class={h4Css()}>saleQty</h4>
+									{#each submissions.filter((sub) => sub.item === selectedItem.item) as submission}
+										<h4 class={h4Css()}>{submission.qty}</h4>
+									{:else}
+										<h4 class={h4Css()}>0</h4> <!-- Show 0 if no submission -->
+									{/each}
 								</li>
 								<li class="flex justify-center items-center">
 									<div class="bg-orange text-white py-1 px-3 rounded-full">
@@ -266,7 +313,7 @@
 										<h2 class={labelCss()}>Qty:</h2>
 										<input
 											class="max-sm:ml-3 translate-x-16 md:translate-x-24 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
-											type="text"
+											type="number"
 											id="qty"
 											bind:value={qty}
 											maxlength="5"
@@ -326,44 +373,44 @@
 							</ul>
 						</div>
 						<div class="bg-transparent py-1 md:py-2 font-patrick">
-							{#each submittedItems as entry, index}
+							{#each submissions.filter((sub) => sub.item === selectedItem.item) as submission, index}
 								<ul
 									class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 content-center md:gap-2"
 								>
 									<li class={secondOutputCss()}>
-										<h4>{entry.item}</h4>
+										<h4>{submission.item}</h4>
 									</li>
 
 									<li class={secondOutputCss()}>
-										<h4>{entry.materialName}</h4>
+										<h4>{submission.materialName}</h4>
 									</li>
 
 									<li
 										class="flex md:grid md:col-span-3 hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-white"
 									>
-										<h4 class="whitespace-nowrap">{entry.materialDescription}</h4>
+										<h4 class="whitespace-nowrap">{submission.materialDescription}</h4>
 									</li>
 									<li class={secondOutputCss()}>
-										<h4>{entry.code}</h4>
+										<h4>{submission.code}</h4>
 									</li>
 									<li class={secondOutputCss()}>
-										<h4>{entry.unit}</h4>
+										<h4>{submission.unit}</h4>
 									</li>
 									<li class={secondOutputCss()}>
-										<h4>{entry.qty}</h4>
+										<h4>{submission.qty}</h4>
 									</li>
 									<li class={secondOutputCss()}>
-										<h4>{entry.date}</h4>
+										<h4>{submission.date}</h4>
 									</li>
 									<li>
 										<button
 											class="max-sm:mb-2 h-5 md:h-7 w-6/12 md:w-9/12 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white hover:shadow-lg hover:shadow-red-400"
-											on:click={() => deleteEntry(index)}
+											on:click={() => handleDelete(index)}
 										>
 											Delete
 										</button>
 									</li>
-									<li class={secondOutputCss()}>{entry.remarks}</li>
+									<li class={secondOutputCss()}>{submission.remarks}</li>
 								</ul>
 							{/each}
 						</div>
