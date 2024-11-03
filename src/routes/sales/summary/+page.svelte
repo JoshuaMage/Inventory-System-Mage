@@ -84,8 +84,7 @@
 					{#each displayedItems as purchase, index}
 					<ul
 					class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-2 md:flex font-extrabold text-black justify-center"
-				>
-				
+				>	
 							<li><h4 class={h4Css()}>{[index + 1]}</h4></li>
 
 							<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>

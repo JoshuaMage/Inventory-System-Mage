@@ -68,62 +68,69 @@
 	});
 
 	function toggleForm(index) {
-    if (showForm === index) {
-        showForm = null;
-    } else {
-        showForm = index;
-        const purchase = displayedItems[index];
-        const inventoryItem = $INVENTORY.find((item) => item.materialName === purchase.materialName);
-        selectedItem = {
-            item: (currentPage - 1) * itemsPerPage + index + 1,
-            materialName: purchase.materialName,
-            unit: purchase.unit,
-            materialDescription: inventoryItem ? inventoryItem.materialDescription : '',
-            materialCode: inventoryItem ? inventoryItem.materialCode : '',
-            purchaseId: purchase.purchaseId
-        };
-        // Trigger any additional state updates here if necessary
-    }
-}
-
+		if (showForm === index) {
+			showForm = null;
+		} else {
+			showForm = index;
+			const purchase = displayedItems[index];
+			const inventoryItem = $INVENTORY.find((item) => item.materialName === purchase.materialName);
+			selectedItem = {
+				item: (currentPage - 1) * itemsPerPage + index + 1,
+				materialName: purchase.materialName,
+				unit: purchase.unit,
+				materialDescription: inventoryItem ? inventoryItem.materialDescription : '',
+				materialCode: inventoryItem ? inventoryItem.materialCode : '',
+				purchaseId: purchase.purchaseId
+			};
+			// Trigger any additional state updates here if necessary
+		}
+	}
 
 	function handleSubmit(event) {
-	event.preventDefault();
-	const form = event.target;
+		event.preventDefault();
+		const form = event.target;
 
-	if (form.checkValidity()) {
-		const submission = {
-			id: Date.now(),
-			item: selectedItem.item,
-			materialName: selectedItem.materialName,
-			materialDescription: selectedItem.materialDescription,
-			materialCode: selectedItem.materialCode,
-			unit: selectedItem.unit,
-			qty,
-			date,
-			remarks,
-			purchaseId: selectedItem.purchaseId
-		};
+		if (form.checkValidity()) {
+			const totalSubmittedQty = getQuantityForPurchase(selectedItem); // Check existing submissions for this item
+			const orderQty = materialPurchase.find(
+				(p) => p.purchaseId === selectedItem.purchaseId
+			)?.orderQty;
 
-		const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-		existingSubmissions.push(submission);
-		localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
+			if (totalSubmittedQty + parseFloat(qty) > orderQty) {
+				submissionMessage = "You cannot add more items as you've reached the allowed order quantity. Please check your entries.";
+				return; // Prevent submission if qty exceeds order quantity
+			}
 
-		submissions.push(submission); // Make sure submissions is reactive
-		const submissionsRef = ref(db, 'submissions'); // Adjust your path as needed
-		set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
+			const submission = {
+				id: Date.now(),
+				item: selectedItem.item,
+				materialName: selectedItem.materialName,
+				materialDescription: selectedItem.materialDescription,
+				materialCode: selectedItem.materialCode,
+				unit: selectedItem.unit,
+				qty,
+				date,
+				remarks,
+				purchaseId: selectedItem.purchaseId
+			};
 
-		submissionMessage = 'Submission successful!';
-		resetForm();
-		selectedItem.item = submission.item;
+			const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+			existingSubmissions.push(submission);
+			localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
 
-		// Update local submissions state if necessary
-		submissions = existingSubmissions; // Ensure UI updates
-	} else {
-		alert('Please fill in all required fields.');
+			submissions.push(submission); // Ensure submissions is reactive
+			const submissionsRef = ref(db, 'submissions');
+			set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
+
+			submissionMessage = 'Submission successful!';
+			resetForm();
+			selectedItem.item = submission.item;
+
+			submissions = existingSubmissions; // Ensure UI updates
+		} else {
+			alert('Please fill in all required fields.');
+		}
 	}
-}
-
 
 	function resetForm() {
 		qty = '';
@@ -174,13 +181,15 @@
 	);
 
 	function getQuantityForPurchase(purchase) {
-    const matchingSubmissions = submissions.filter(sub => 
-        sub.materialName === purchase.materialName && sub.purchaseId === purchase.purchaseId
-    );
-    const totalQuantity = matchingSubmissions.reduce((total, sub) => total + parseFloat(sub.qty || 0), 0);
-    return totalQuantity;
-}
-
+		const matchingSubmissions = submissions.filter(
+			(sub) => sub.materialName === purchase.materialName && sub.purchaseId === purchase.purchaseId
+		);
+		const totalQuantity = matchingSubmissions.reduce(
+			(total, sub) => total + parseFloat(sub.qty || 0),
+			0
+		);
+		return totalQuantity;
+	}
 
 	const PurchaseListCss = () =>
 		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
@@ -251,7 +260,9 @@
 								</li>
 
 								<li class="flex justify-center items-center">
-									<div class="bg-orange text-white hover:shadow-lg hover:shadow-black py-1 px-3 rounded-full hover:py-2 hover:px-4 ">
+									<div
+										class="bg-orange text-white hover:shadow-lg hover:shadow-black py-1 px-3 rounded-full hover:py-2 hover:px-4"
+									>
 										<button on:click={() => toggleForm(index)}>Select</button>
 									</div>
 								</li>
@@ -370,6 +381,10 @@
 							</div>
 						</div>
 					</form>
+
+					{#if submissionMessage}
+						<p class="text-red-600 font-black">{submissionMessage}</p>
+					{/if}
 
 					<div
 						class="flex flex-col text-center border md:border-black rounded-lg max-sm:w-screen max-sm:p-1 max-sm:m-0"
