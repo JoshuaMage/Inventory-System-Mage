@@ -68,56 +68,62 @@
 	});
 
 	function toggleForm(index) {
-		if (showForm === index) {
-			showForm = null;
-		} else {
-			showForm = index;
-			const purchase = displayedItems[index];
-			const inventoryItem = $INVENTORY.find((item) => item.materialName === purchase.materialName);
-			selectedItem = {
-				item: (currentPage - 1) * itemsPerPage + index + 1,
-				materialName: purchase.materialName,
-				unit: purchase.unit,
-				materialDescription: inventoryItem ? inventoryItem.materialDescription : '',
-				materialCode: inventoryItem ? inventoryItem.materialCode : '',
-				purchaseId: purchase.purchaseId
-			};
-		}
-	}
+    if (showForm === index) {
+        showForm = null;
+    } else {
+        showForm = index;
+        const purchase = displayedItems[index];
+        const inventoryItem = $INVENTORY.find((item) => item.materialName === purchase.materialName);
+        selectedItem = {
+            item: (currentPage - 1) * itemsPerPage + index + 1,
+            materialName: purchase.materialName,
+            unit: purchase.unit,
+            materialDescription: inventoryItem ? inventoryItem.materialDescription : '',
+            materialCode: inventoryItem ? inventoryItem.materialCode : '',
+            purchaseId: purchase.purchaseId
+        };
+        // Trigger any additional state updates here if necessary
+    }
+}
+
 
 	function handleSubmit(event) {
-		event.preventDefault();
-		const form = event.target;
+	event.preventDefault();
+	const form = event.target;
 
-		if (form.checkValidity()) {
-			const submission = {
-				id: Date.now(),
-				item: selectedItem.item,
-				materialName: selectedItem.materialName,
-				materialDescription: selectedItem.materialDescription,
-				materialCode: selectedItem.materialCode,
-				unit: selectedItem.unit,
-				qty,
-				date,
-				remarks,
-				purchaseId: selectedItem.purchaseId
-			};
+	if (form.checkValidity()) {
+		const submission = {
+			id: Date.now(),
+			item: selectedItem.item,
+			materialName: selectedItem.materialName,
+			materialDescription: selectedItem.materialDescription,
+			materialCode: selectedItem.materialCode,
+			unit: selectedItem.unit,
+			qty,
+			date,
+			remarks,
+			purchaseId: selectedItem.purchaseId
+		};
 
-			const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-			existingSubmissions.push(submission);
-			localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
+		const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+		existingSubmissions.push(submission);
+		localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
 
-			submissions.push(submission);
-			const submissionsRef = ref(db, 'submissions'); // Adjust your path as needed
-			set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
+		submissions.push(submission); // Make sure submissions is reactive
+		const submissionsRef = ref(db, 'submissions'); // Adjust your path as needed
+		set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
 
-			submissionMessage = 'Submission successful!';
-			resetForm();
-			selectedItem.item = submission.item;
-		} else {
-			alert('Please fill in all required fields.');
-		}
+		submissionMessage = 'Submission successful!';
+		resetForm();
+		selectedItem.item = submission.item;
+
+		// Update local submissions state if necessary
+		submissions = existingSubmissions; // Ensure UI updates
+	} else {
+		alert('Please fill in all required fields.');
 	}
+}
+
 
 	function resetForm() {
 		qty = '';
@@ -223,9 +229,11 @@
 								<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>
 								<li><h4 class={h4Css()}>{purchase.unit}</h4></li>
 								<li><h4 class={h4Css()}>{purchase.orderQty}</h4></li>
-								<li>
-									<h4 class={h4Css()}>
-										{(purchase.status === 'Arrive' ? purchase.orderQty : 0) - values[index]}
+								<li class={h4Css()}>
+									<h4
+										class={`${purchase.orderQty - getQuantityForPurchase(purchase) === 0 ? 'text-red-600' : 'text-black'}`}
+									>
+										{purchase.orderQty - getQuantityForPurchase(purchase)}
 									</h4>
 								</li>
 								<li class={h4Css()}>
@@ -244,7 +252,7 @@
 
 								<li class="flex justify-center items-center">
 									<div class="bg-orange text-white py-1 px-3 rounded-full">
-										<button on:click={() => toggleForm(index)}>BUTTON</button>
+										<button on:click={() => toggleForm(index)}>Select</button>
 									</div>
 								</li>
 								<li class={h4Css()}>
@@ -385,7 +393,7 @@
 						<div class="bg-transparent py-1 md:py-2 font-patrick">
 							{#each submissions.filter((sub) => sub.item === selectedItem.item) as submission, index}
 								<ul
-									class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 content-center md:gap-2"
+									class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 justify-items-center text-center md:gap-2 mt-3"
 								>
 									<li class={secondOutputCss()}>
 										<h4>{submission.item}</h4>
@@ -401,7 +409,7 @@
 										<h4 class="whitespace-nowrap">{submission.materialDescription}</h4>
 									</li>
 									<li class={secondOutputCss()}>
-										<h4>{submission.code}</h4>
+										<h4>{submission.materialCode}</h4>
 									</li>
 									<li class={secondOutputCss()}>
 										<h4>{submission.unit}</h4>
@@ -412,12 +420,15 @@
 									<li class={secondOutputCss()}>
 										<h4>{submission.date}</h4>
 									</li>
-									<li>
+									<li class="relative left-2 bottom-2">
 										<button
-											class="max-sm:mb-2 h-5 md:h-7 w-6/12 md:w-9/12 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white hover:shadow-lg hover:shadow-red-400"
 											on:click={() => handleDelete(index)}
+											class="button relative border-none outline-none bg-none py-1 px-2 rounded-lg min-w-28 cursor-pointer flex items-center justify-center bg-[#2B3044] text-white shadow-lg transition-transform duration-300 ease-in-out transform hover:bg-[#1E2235] hover:shadow-[0_5px_9px_rgba(0,9,61,.2)] active:scale-95"
 										>
-											Delete
+											<span
+												class="block text-sm leading-[25px] font-semibold transition-transform duration-400 ease-in-out transform translate-x-0"
+												>Delete</span
+											>
 										</button>
 									</li>
 									<li class={secondOutputCss()}>{submission.remarks}</li>
