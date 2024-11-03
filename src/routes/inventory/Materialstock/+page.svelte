@@ -251,7 +251,7 @@
 								</li>
 
 								<li class="flex justify-center items-center">
-									<div class="bg-orange text-white py-1 px-3 rounded-full">
+									<div class="bg-orange text-white hover:shadow-lg hover:shadow-black py-1 px-3 rounded-full hover:py-2 hover:px-4 ">
 										<button on:click={() => toggleForm(index)}>Select</button>
 									</div>
 								</li>
@@ -361,7 +361,7 @@
 									<div class="col-span-2 justify-self-end mt-4">
 										<button
 											type="submit"
-											class="h-7 max-sm:w-20 md:h-9 md:px-10 md:py-1 border-2 border-black rounded-lg hover:font-extrabold hover:bg-nextPrevButton hover:text-white cursor-pointer hover:shadow-md hover:shadow-nextPrevButton"
+											class="h-7 max-sm:w-20 md:h-9 md:px-10 hover:px-12 md:py-1 text-white bg-bgGrey border-2 border-black rounded-lg hover:font-extrabold hover:bg-white hover:text-black cursor-pointer hover:shadow-md hover:shadow-black"
 										>
 											Submit
 										</button>
@@ -423,12 +423,9 @@
 									<li class="relative left-2 bottom-2">
 										<button
 											on:click={() => handleDelete(index)}
-											class="button relative border-none outline-none bg-none py-1 px-2 rounded-lg min-w-28 cursor-pointer flex items-center justify-center bg-[#2B3044] text-white shadow-lg transition-transform duration-300 ease-in-out transform hover:bg-[#1E2235] hover:shadow-[0_5px_9px_rgba(0,9,61,.2)] active:scale-95"
+											class="py-1 px-4 hover:px-6 text-white bg-bgGrey border-2 border-black rounded-lg hover:font-extrabold hover:bg-white hover:text-black cursor-pointer hover:shadow-md hover:shadow-black"
 										>
-											<span
-												class="block text-sm leading-[25px] font-semibold transition-transform duration-400 ease-in-out transform translate-x-0"
-												>Delete</span
-											>
+											Delete
 										</button>
 									</li>
 									<li class={secondOutputCss()}>{submission.remarks}</li>
