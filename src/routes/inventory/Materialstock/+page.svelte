@@ -92,14 +92,16 @@
 
     if (form.checkValidity()) {
         const totalSubmittedQty = getQuantityForPurchase(selectedItem); 
-        const orderQty = materialPurchase.find(
-            (p) => p.purchaseId === selectedItem.purchaseId
-        )?.orderQty;
+		const orderQty = materialPurchase.find(
+			(p) => p.purchaseId === selectedItem.purchaseId	
+				)?.orderQty;
 
         if (totalSubmittedQty + parseFloat(qty) > orderQty) {
             submissionMessage = "You cannot add more items as you've reached the allowed order quantity. Please check your entries.";
             return; 
         }
+
+		
 
         const submission = {
             id: Date.now(),

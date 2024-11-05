@@ -13,7 +13,6 @@
 	let loading = true;
 	let values = [];
 
-
 function getUnitPrice(materialName) {
 	const item = $INVENTORY.find((material) => material.materialName === materialName);
 	return item ? item.uniPrice : 0;
@@ -103,7 +102,7 @@ function getUnitPrice(materialName) {
 							<li><h4 class={h4Css()}>{parseFloat(getUnitPrice(purchase.materialName)) * 2}</h4></li>
 							<li>
 								<h4 class={h4Css()}>
-									{(purchase.stockOut * (purchase.uniPrice * 2) || 0).toLocaleString()}
+									{purchase.qty *parseFloat(getUnitPrice(purchase.materialName)) * 2}
 								</h4>
 							</li>
 							<li class={h4Css()}>
