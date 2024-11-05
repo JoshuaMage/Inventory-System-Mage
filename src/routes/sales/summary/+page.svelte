@@ -31,7 +31,7 @@ function getUnitPrice(materialName) {
 					materialPurchase.push(purchaseData);
 				});
 				values = materialPurchase.map((_, index) => {
-					// Initialize values from localStorage or default to 0
+					
 					return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
 				});
 			} else {
@@ -88,7 +88,7 @@ function getUnitPrice(materialName) {
 							<li class={listCss()}><button class={PurchaseListCss()}>Status</button></li>
 						</ul>
 					</div>
-					{#each displayedItems as purchase, index}
+					{#each displayedItems as purchase}
 					<ul
 					class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-2 md:flex font-extrabold text-black justify-center"
 				>	
@@ -109,7 +109,7 @@ function getUnitPrice(materialName) {
 								<h4
 									class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
 								>
-									{purchase.remarks}
+									{purchase.status}
 								</h4>
 							</li>
 						</ul>

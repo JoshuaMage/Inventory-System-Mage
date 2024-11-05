@@ -30,6 +30,17 @@
 	let submissionMessage = '';
 	let stockOutQty = [];
 
+	// Reactive variable for updates
+	$: filteredItem = materialPurchase.filter((item) =>
+		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
+	);
+	$: displayedItems = filteredItem.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
+	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
+
+	// Handle fetching data on mount
 	onMount(() => {
 		const purchaseRef = ref(db, 'outputs');
 		const stockOutRef = ref(db, 'submissions');
@@ -67,6 +78,7 @@
 		});
 	});
 
+	// Handle the form toggle (when you click Select)
 	function toggleForm(index) {
 		if (showForm === index) {
 			showForm = null;
@@ -82,79 +94,80 @@
 				materialCode: inventoryItem ? inventoryItem.materialCode : '',
 				purchaseId: purchase.purchaseId
 			};
-			// Trigger any additional state updates here if necessary
 		}
 	}
 
+	// Handle submit action
 	function handleSubmit(event) {
-    event.preventDefault();
-    const form = event.target;
+		event.preventDefault();
+		const form = event.target;
 
-    if (form.checkValidity()) {
-        const totalSubmittedQty = getQuantityForPurchase(selectedItem); 
-		const orderQty = materialPurchase.find(
-			(p) => p.purchaseId === selectedItem.purchaseId	
-				)?.orderQty;
+		if (form.checkValidity()) {
+			const totalSubmittedQty = getQuantityForPurchase(selectedItem);
+			const orderQty = materialPurchase.find(
+				(p) => p.purchaseId === selectedItem.purchaseId
+			)?.orderQty;
 
-        if (totalSubmittedQty + parseFloat(qty) > orderQty) {
-            submissionMessage = "You cannot add more items as you've reached the allowed order quantity. Please check your entries.";
-            return; 
-        }
+			if (totalSubmittedQty + parseFloat(qty) > orderQty) {
+				submissionMessage = "You cannot add more items as you've reached the allowed order quantity.";
+				return;
+			}
 
-		
+			const purchase = materialPurchase.find(
+				(p) => p.purchaseId === selectedItem.purchaseId
+			);
 
-        const submission = {
-            id: Date.now(),
-            item: selectedItem.item,
-            materialName: selectedItem.materialName,
-            materialDescription: selectedItem.materialDescription,
-            materialCode: selectedItem.materialCode,
-            unit: selectedItem.unit,
-            qty,
-            date,
-            remarks,
-            purchaseId: selectedItem.purchaseId,
-            orderQty: orderQty
-        };
+			const submission = {
+				id: Date.now(),
+				item: selectedItem.item,
+				materialName: selectedItem.materialName,
+				materialDescription: selectedItem.materialDescription,
+				materialCode: selectedItem.materialCode,
+				unit: selectedItem.unit,
+				qty,
+				date,
+				remarks,
+				purchaseId: selectedItem.purchaseId,
+				orderQty: orderQty,
+				status: purchase.status
+			};
 
-        const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-        existingSubmissions.push(submission);
-        localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
-  
-		submissions = [...existingSubmissions];
-        const submissionsRef = ref(db, 'submissions');
-        set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
+			// Update the local submissions array reactively
+			submissions = [...submissions, submission];
+			localStorage.setItem('submissions', JSON.stringify(submissions));
 
-        submissionMessage = 'Submission successful!';
+			const submissionsRef = ref(db, 'submissions');
+			set(submissionsRef, submissions).catch((error) => console.error(error));
 
-        // Reset form fields
-        resetForm();
-    } else {
-        alert('Please fill in all required fields.');
-    }
-}
+			submissionMessage = 'Submission successful!';
 
+			resetForm();
+		} else {
+			alert('Please fill in all required fields.');
+		}
+	}
 
+	// Reset form fields
 	function resetForm() {
 		qty = '';
 		date = '';
 		remarks = '';
 	}
 
+	// Handle delete action
 	function handleDelete(index) {
-		const submissionToDelete = submissions.filter((sub) => sub.item === selectedItem.item)[index];
+		const submissionToDelete = submissions[index];
 
 		if (!submissionToDelete) {
 			console.error('Submission not found.');
 			return;
 		}
 
-		const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`); // Adjust this path based on your Firebase structure
+		const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`);
 
-		// Remove from Firebase
 		remove(submissionsRef)
 			.then(() => {
-				// Remove from local submissions array
+				// Update the local submissions array reactively
 				submissions = submissions.filter((sub) => sub.id !== submissionToDelete.id);
 				localStorage.setItem('submissions', JSON.stringify(submissions));
 				console.log('Submission deleted successfully from Firebase and local storage.');
@@ -164,25 +177,7 @@
 			});
 	}
 
-	if (typeof window !== 'undefined') {
-		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-		submissions = submissions.length ? submissions : storedSubmissions;
-	}
-
-	function goToPage(page) {
-		currentPage = page;
-	}
-
-	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
-	$: displayedItems = filteredItem.slice(
-		(currentPage - 1) * itemsPerPage,
-		currentPage * itemsPerPage
-	);
-
-	$: filteredItem = materialPurchase.filter((item) =>
-		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
-	);
-
+	// Get the total quantity submitted for a purchase
 	function getQuantityForPurchase(purchase) {
 		const matchingSubmissions = submissions.filter(
 			(sub) => sub.materialName === purchase.materialName && sub.purchaseId === purchase.purchaseId
@@ -192,6 +187,17 @@
 			0
 		);
 		return totalQuantity;
+	}
+
+	// Go to a specific page for pagination
+	function goToPage(page) {
+		currentPage = page;
+	}
+
+	// Initial data setup for localStorage
+	if (typeof window !== 'undefined') {
+		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+		submissions = storedSubmissions;
 	}
 
 	const PurchaseListCss = () =>
