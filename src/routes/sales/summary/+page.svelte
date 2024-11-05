@@ -4,6 +4,7 @@
 	import { ref, onValue } from 'firebase/database';
 	import SearchInput from '../../inventory/materialPurchase/SearchInput.svelte';
 	import Pagination from '../../inventory/materialPurchase/Pagination.svelte';
+	import {INVENTORY} from '$lib/materialStock.js'
 
 	let searchItem = '';
 	let currentPage = 1;
@@ -12,8 +13,14 @@
 	let loading = true;
 	let values = [];
 
+
+function getUnitPrice(materialName) {
+	const item = $INVENTORY.find((material) => material.materialName === materialName);
+	return item ? item.uniPrice : 0;
+}
+
 	onMount(() => {
-		const purchaseRef = ref(db, 'outputs');
+		const purchaseRef = ref(db, 'submissions');
 
 		onValue(purchaseRef, (snapshot) => {
 			loading = false;
@@ -33,6 +40,7 @@
 			}
 		});
 	});
+	
 
 	function goToPage(page) {
 		currentPage = page;
@@ -85,14 +93,14 @@
 					<ul
 					class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-2 md:flex font-extrabold text-black justify-center"
 				>	
-							<li><h4 class={h4Css()}>{[index + 1]}</h4></li>
+							<li><h4 class={h4Css()}>{purchase.item}</h4></li>
 
 							<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.unit}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.orderQty}</h4></li>
-							<li><h4 class={h4Css()}>{purchase.uniPrice}</h4></li>
-							<li><h4 class={h4Css()}>{purchase.stockOut || 0}</h4></li>
-							<li><h4 class={h4Css()}>{purchase.uniPrice * 2}</h4></li>
+							<li><h4 class={h4Css()}>{getUnitPrice(purchase.materialName)}</h4></li>
+							<li><h4 class={h4Css()}>{purchase.qty}</h4></li>
+							<li><h4 class={h4Css()}>{parseFloat(getUnitPrice(purchase.materialName)) * 2}</h4></li>
 							<li>
 								<h4 class={h4Css()}>
 									{(purchase.stockOut * (purchase.uniPrice * 2) || 0).toLocaleString()}
@@ -102,7 +110,7 @@
 								<h4
 									class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
 								>
-									{purchase.status}
+									{purchase.remarks}
 								</h4>
 							</li>
 						</ul>

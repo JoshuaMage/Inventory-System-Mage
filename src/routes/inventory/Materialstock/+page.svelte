@@ -87,50 +87,51 @@
 	}
 
 	function handleSubmit(event) {
-		event.preventDefault();
-		const form = event.target;
+    event.preventDefault();
+    const form = event.target;
 
-		if (form.checkValidity()) {
-			const totalSubmittedQty = getQuantityForPurchase(selectedItem); // Check existing submissions for this item
-			const orderQty = materialPurchase.find(
-				(p) => p.purchaseId === selectedItem.purchaseId
-			)?.orderQty;
+    if (form.checkValidity()) {
+        const totalSubmittedQty = getQuantityForPurchase(selectedItem); 
+        const orderQty = materialPurchase.find(
+            (p) => p.purchaseId === selectedItem.purchaseId
+        )?.orderQty;
 
-			if (totalSubmittedQty + parseFloat(qty) > orderQty) {
-				submissionMessage = "You cannot add more items as you've reached the allowed order quantity. Please check your entries.";
-				return; // Prevent submission if qty exceeds order quantity
-			}
+        if (totalSubmittedQty + parseFloat(qty) > orderQty) {
+            submissionMessage = "You cannot add more items as you've reached the allowed order quantity. Please check your entries.";
+            return; 
+        }
 
-			const submission = {
-				id: Date.now(),
-				item: selectedItem.item,
-				materialName: selectedItem.materialName,
-				materialDescription: selectedItem.materialDescription,
-				materialCode: selectedItem.materialCode,
-				unit: selectedItem.unit,
-				qty,
-				date,
-				remarks,
-				purchaseId: selectedItem.purchaseId
-			};
+        const submission = {
+            id: Date.now(),
+            item: selectedItem.item,
+            materialName: selectedItem.materialName,
+            materialDescription: selectedItem.materialDescription,
+            materialCode: selectedItem.materialCode,
+            unit: selectedItem.unit,
+            qty,
+            date,
+            remarks,
+            purchaseId: selectedItem.purchaseId,
+            orderQty: orderQty
+        };
 
-			const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
-			existingSubmissions.push(submission);
-			localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
+        const existingSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
+        existingSubmissions.push(submission);
+        localStorage.setItem('submissions', JSON.stringify(existingSubmissions));
+  
+		submissions = [...existingSubmissions];
+        const submissionsRef = ref(db, 'submissions');
+        set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
 
-			submissions.push(submission); // Ensure submissions is reactive
-			const submissionsRef = ref(db, 'submissions');
-			set(submissionsRef, existingSubmissions).catch((error) => console.error(error));
+        submissionMessage = 'Submission successful!';
 
-			submissionMessage = 'Submission successful!';
-			resetForm();
-			selectedItem.item = submission.item;
+        // Reset form fields
+        resetForm();
+    } else {
+        alert('Please fill in all required fields.');
+    }
+}
 
-			submissions = existingSubmissions; // Ensure UI updates
-		} else {
-			alert('Please fill in all required fields.');
-		}
-	}
 
 	function resetForm() {
 		qty = '';
@@ -383,7 +384,9 @@
 					</form>
 
 					{#if submissionMessage}
-						<p class="text-red-600 font-black">{submissionMessage}</p>
+   					 <p class="{submissionMessage.includes('successful') ? 'text-green-600' : 'text-red-600'} font-black">
+       					 {submissionMessage}
+  					  </p>
 					{/if}
 
 					<div
