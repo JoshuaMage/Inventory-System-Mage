@@ -5,6 +5,7 @@
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
 	import Pagination from './pagination.svelte';
 	import { INVENTORY } from '$lib/materialStock';
+	import Loader from '../../loader.svelte';
 
 	let searchItem = '';
 	let materialPurchase = [];
@@ -42,40 +43,42 @@
 
 	// Handle fetching data on mount
 	onMount(() => {
-		const purchaseRef = ref(db, 'outputs');
-		const stockOutRef = ref(db, 'submissions');
+		setTimeout(() => {
+			const purchaseRef = ref(db, 'outputs');
+			const stockOutRef = ref(db, 'submissions');
 
-		const storedItems = JSON.parse(localStorage.getItem('submittedItems')) || [];
-		submittedItems = storedItems;
+			const storedItems = JSON.parse(localStorage.getItem('submittedItems')) || [];
+			submittedItems = storedItems;
 
-		onValue(stockOutRef, (snapshot) => {
-			stockOutQty = [];
-			if (snapshot.exists()) {
-				snapshot.forEach((childSnapshot) => {
-					const data = childSnapshot.val();
-					stockOutQty.push(data);
-				});
-			} else {
-				console.log('No Stock Out Data available');
-			}
-		});
+			onValue(stockOutRef, (snapshot) => {
+				stockOutQty = [];
+				if (snapshot.exists()) {
+					snapshot.forEach((childSnapshot) => {
+						const data = childSnapshot.val();
+						stockOutQty.push(data);
+					});
+				} else {
+					console.log('No Stock Out Data available');
+				}
+			});
 
-		onValue(purchaseRef, (snapshot) => {
-			loading = false;
-			if (snapshot.exists()) {
-				materialPurchase = [];
-				values = [];
+			onValue(purchaseRef, (snapshot) => {
+				loading = false;	
+				if (snapshot.exists()) {
+					materialPurchase = [];
+					values = [];
 
-				snapshot.forEach((childSnapshot) => {
-					const purchaseData = childSnapshot.val();
-					purchaseData.purchaseId = childSnapshot.key;
-					materialPurchase.push(purchaseData);
-					values.push(purchaseData.stockOut || 0);
-				});
-			} else {
-				console.log('No Data available');
-			}
-		});
+					snapshot.forEach((childSnapshot) => {
+						const purchaseData = childSnapshot.val();
+						purchaseData.purchaseId = childSnapshot.key;
+						materialPurchase.push(purchaseData);
+						values.push(purchaseData.stockOut || 0);
+					});
+				} else {
+					console.log('No Data available');
+				}
+			});
+		}, 2000)
 	});
 
 	// Handle the form toggle (when you click Select)
@@ -109,13 +112,12 @@
 			)?.orderQty;
 
 			if (totalSubmittedQty + parseFloat(qty) > orderQty) {
-				submissionMessage = "You cannot add more items as you've reached the allowed order quantity.";
+				submissionMessage =
+					"You cannot add more items as you've reached the allowed order quantity.";
 				return;
 			}
 
-			const purchase = materialPurchase.find(
-				(p) => p.purchaseId === selectedItem.purchaseId
-			);
+			const purchase = materialPurchase.find((p) => p.purchaseId === selectedItem.purchaseId);
 
 			const submission = {
 				id: Date.now(),
@@ -219,8 +221,8 @@
 	<div class="flex justify-center w-screen">
 		<div class="flex flex-col">
 			{#if loading}
-				<div class="flex justify-center items-center bg-bgDarkGrey">
-					<h3 class="bg-white text-xl font-black">Loading please wait....</h3>
+				<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+				<Loader />
 				</div>
 			{:else}
 				<div class=" shadow md:block bg-white mt-24 text-center">
@@ -286,10 +288,10 @@
 						{/each}
 					</div>
 				</div>
-			{/if}
-			<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+				<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+				{/if}
+			</div>
 		</div>
-	</div>
 
 	<!-- form selection -->
 	{#if showForm !== null}
@@ -392,9 +394,13 @@
 					</form>
 
 					{#if submissionMessage}
-   					 <p class="{submissionMessage.includes('successful') ? 'text-green-600' : 'text-red-600'} font-black">
-       					 {submissionMessage}
-  					  </p>
+						<p
+							class="{submissionMessage.includes('successful')
+								? 'text-green-600'
+								: 'text-red-600'} font-black"
+						>
+							{submissionMessage}
+						</p>
 					{/if}
 
 					<div

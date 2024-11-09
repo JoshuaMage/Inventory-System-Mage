@@ -4,6 +4,7 @@
 	import { onDestroy } from 'svelte';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
 	import Pagination from '../materialPurchase/Pagination.svelte';
+	import Loader from '../../loader.svelte';
 
 	let INVENTORY = [];
 	let displayedInventory = [];
@@ -16,7 +17,7 @@
 	onMount(async () => {
 		loading = true;
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			await new Promise((resolve) => setTimeout(resolve, 2000));
 			const response = await fetch('/inventory/materialList');
 			data = await response.json();
 		} catch (error) {
@@ -62,10 +63,10 @@
 <main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
 	<div class="flex flex-col">
 		{#if loading}
-			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
-				<p class="bg-white text-xl font-black">Loading please wait....</p>
-			</div>
-		{:else}
+				<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+				<Loader />
+				</div>
+			{:else}
 			<div class=" shadow md:block bg-white mt-24 text-center">
 				<div class="flex flex-col font-patrick rounded-lg">
 					<div class="md:bg-bgGrey max-sm:px-1">
@@ -105,8 +106,8 @@
 					{/each}
 				</div>
 			</div>
-		{/if}
-		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+			<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+			{/if}
 	</div>
 </main>
 

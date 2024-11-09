@@ -2,12 +2,14 @@
 	import { onMount } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
 	import { ref, onValue } from 'firebase/database';
+	import Loader from '../../loader.svelte';
 
 	let materialPurchase = [];
 	let manPower = [];
 	let loading = true;
 
 	onMount(() => {
+		setTimeout(() => {
 		const purchaseRef = ref(db, 'outputs');
 		const operatingExpenses = ref(db, 'manPower');
 
@@ -39,6 +41,7 @@
 			manPowerLoaded = true;
 			loading = !(purchaseLoaded && manPowerLoaded);
 		});
+	}, 2000)
 	});
 
 	function saleSummary() {
@@ -70,14 +73,15 @@
 
 <main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick mt-20">
 	<div class="max-sm:w-screen max-sm:px-1 w-1/3 rounded-lg">
+		{#if loading}
+		<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+		<Loader />
+		</div>
+	{:else}
 		<div
 			class={`flex flex-col font-patrick text-center bg-white mt-6 container mx-auto drop-shadow-xl ${loading ? 'border-none drop-shadow-none' : 'border border-black border-solid'}`}
 		>
-			{#if loading}
-				<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
-					<p class="bg-white text-xl font-black">Loading please wait....</p>
-				</div>
-			{:else}
+		
 				<div class="bg-bgGrey p-2">
 					<h1 class="text-lg text-white font-black">Mage Hardware inc.</h1>
 					<h2 class="text-base text-white font-black">Income Statement</h2>
@@ -120,7 +124,7 @@
 						</h4>
 					</div>
 				</div>
+			</div>
 			{/if}
-		</div>
 	</div>
 </main>

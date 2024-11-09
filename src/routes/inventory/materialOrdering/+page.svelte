@@ -5,6 +5,7 @@
 	import { INVENTORY } from '$lib/materialStock';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
 	import Pagination from '../materialPurchase/Pagination.svelte';
+	import Loader from '../../loader.svelte';
 
 	let columns = [];
 	let output = [];
@@ -16,6 +17,7 @@
 	let searchItem = '';
 	let currentPage = 1;
 	let itemsPerPage = 7;
+	let loading = true;
 
 	const unsubscribe = INVENTORY.subscribe((value) => {
 		console.log(value);
@@ -27,24 +29,26 @@
 	});
 
 	onMount(() => {
-		const outputRef = ref(db, 'outputs');
+		setTimeout(() => {
+			const outputRef = ref(db, 'outputs');
 
-		onValue(
-			outputRef,
-			(snapshot) => {
-				const data = snapshot.val();
-				if (data) {
-					output = Object.values(data).map((item) => ({
-						...item,
-						...item.selections // Flatten selections
-					}));
+			onValue(
+				outputRef,
+				(snapshot) => {
+					const data = snapshot.val();
+					if (data) {
+						output = Object.values(data).map((item) => ({
+							...item,
+							...item.selections // Flatten selections
+						}));
+						loading = false;
+					}
+				},
+				(error) => {
+					console.error('Error fetching data: ', error);
 				}
-			},
-
-			(error) => {
-				console.error('Error fetching data: ', error);
-			}
-		);
+			);
+		}, 2000);
 	});
 
 	function addColumn() {
@@ -232,181 +236,192 @@
 	class="flex flex-col gap-8 w-screen overflow-hidden min-h-screen bg-bgDarkGrey font-patrick text-black m-0 p-0"
 >
 	<div>
-		<div class="flex justify-center">
-			<div class="overflow-hidden max-sm:px-1 md:rounded-lg shadow md:block mt-24 max-sm:w-screen">
-				<div class="flex flex-col justify-between bg-white text-white">
-					<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 md:flex md:font-bold">
-						{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
-							<div
-								class="max-sm:flex-1 max-sm:text-xs border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
-							>
-								{header}
-							</div>
-						{/each}
-					</div>
-
-					<div class=" bg-white py-2 text-black">
-						{#each columns as column (column.id)}
-							<div class="max-sm:grid max-sm:grid-cols-3 max-sm:px-1flex flex gap-0" id={column.id}>
-								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}<select
-										class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-										value={column[field]}
-										on:change={(event) => handleSelectChange(event, column.id, field)}
-									>
-										<option value="">Select</option>
-
-										{#each inventoryData as item}
-											<option value={item[field]}>{item[field]}</option>
-										{/each}
-									</select>
-								{/each}
-
-								<input
-									type="number"
-									placeholder="Order Qty"
-									class="border-gray-300 border-none sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-									value={column.orderQty}
-									on:input={(event) => handleInputChange(event, column.id, 'orderQty')}
-								/>
-
+		{#if loading}
+			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+				<Loader />
+			</div>
+		{:else}
+			<div class="flex justify-center">
+				<div
+					class="overflow-hidden max-sm:px-1 md:rounded-lg shadow md:block mt-24 max-sm:w-screen"
+				>
+					<div class="flex flex-col justify-between bg-white text-white">
+						<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 md:flex md:font-bold">
+							{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
 								<div
-									class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+									class="max-sm:flex-1 max-sm:text-xs border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
 								>
-									{computeTotal(column)}
+									{header}
 								</div>
+							{/each}
+						</div>
 
-								<input
-									type="date"
-									placeholder="Date Purchase"
-									class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-									value={column.datePurchase}
-									on:input={(event) => handleInputChange(event, column.id, 'datePurchase')}
-								/>
+						<div class=" bg-white py-2 text-black">
+							{#each columns as column (column.id)}
+								<div
+									class="max-sm:grid max-sm:grid-cols-3 max-sm:px-1flex flex gap-0"
+									id={column.id}
+								>
+									{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}<select
+											class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+											value={column[field]}
+											on:change={(event) => handleSelectChange(event, column.id, field)}
+										>
+											<option value="">Select</option>
 
-								<input
-									type="date"
-									placeholder="ETD"
-									class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-									value={column.etd}
-									on:input={(event) => handleInputChange(event, column.id, 'etd')}
-								/>
+											{#each inventoryData as item}
+												<option value={item[field]}>{item[field]}</option>
+											{/each}
+										</select>
+									{/each}
 
-								<input
-									type="date"
-									placeholder="ETA"
-									class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-									value={column.eta}
-									on:input={(event) => handleInputChange(event, column.id, 'eta')}
-								/>
+									<input
+										type="number"
+										placeholder="Order Qty"
+										class="border-gray-300 border-none sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+										value={column.orderQty}
+										on:input={(event) => handleInputChange(event, column.id, 'orderQty')}
+									/>
 
-								<input
-									type="date"
-									placeholder="Arrival Date"
-									class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-									value={column.arrivalDate}
-									on:input={(event) => handleInputChange(event, column.id, 'arrivalDate')}
-								/>
+									<div
+										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+									>
+										{computeTotal(column)}
+									</div>
+
+									<input
+										type="date"
+										placeholder="Date Purchase"
+										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+										value={column.datePurchase}
+										on:input={(event) => handleInputChange(event, column.id, 'datePurchase')}
+									/>
+
+									<input
+										type="date"
+										placeholder="ETD"
+										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+										value={column.etd}
+										on:input={(event) => handleInputChange(event, column.id, 'etd')}
+									/>
+
+									<input
+										type="date"
+										placeholder="ETA"
+										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+										value={column.eta}
+										on:input={(event) => handleInputChange(event, column.id, 'eta')}
+									/>
+
+									<input
+										type="date"
+										placeholder="Arrival Date"
+										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+										value={column.arrivalDate}
+										on:input={(event) => handleInputChange(event, column.id, 'arrivalDate')}
+									/>
+								</div>
+							{/each}
+						</div>
+						<div class="overflow-hidden">
+							{#if formError}
+								<div class="max-sm:text-xs text-red-500 mt-2 w-errorwidth bg-white">
+									{formError}
+								</div>
+							{/if}
+						</div>
+
+						<div class=" md:w-full md:flex md:flex-col justify-end gap-2 bg-white overflow-hidden">
+							<div class="flex gap-2 py-2 justify-end">
+								<button
+									on:click={addColumn}
+									class=" w-20 md:w-24 max-sm:text-xs h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-blue-200 hover:bg-blue-700"
+									>Add Column</button
+								>
+								<button
+									on:click={handleSubmit}
+									class="w-16 max-sm:text-xs md:w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700"
+									>Submit</button
+								>
+								<button
+									on:click={() => (columns = [])}
+									class="w-16 md:w-24 max-sm:text-xs h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700"
+									>Delete</button
+								>
 							</div>
-						{/each}
-					</div>
-					<div class="overflow-hidden">
-						{#if formError}
-							<div class="max-sm:text-xs text-red-500 mt-2 w-errorwidth bg-white">
-								{formError}
-							</div>
-						{/if}
-					</div>
-
-					<div class=" md:w-full md:flex md:flex-col justify-end gap-2 bg-white overflow-hidden">
-						<div class="flex gap-2 py-2 justify-end">
-							<button
-								on:click={addColumn}
-								class=" w-20 md:w-24 max-sm:text-xs h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-blue-200 hover:bg-blue-700"
-								>Add Column</button
-							>
-							<button
-								on:click={handleSubmit}
-								class="w-16 max-sm:text-xs md:w-24 h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700"
-								>Submit</button
-							>
-							<button
-								on:click={() => (columns = [])}
-								class="w-16 md:w-24 max-sm:text-xs h-8 text-sm font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700"
-								>Delete</button
-							>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="flex justify-center">
-			<div class="overflow-hidden rounded-lg shadow md:block md:font-bold md:bg-bgGrey">
-				<SearchInput bind:searchItem />
+			<div class="flex justify-center">
+				<div class="overflow-hidden rounded-lg shadow md:block md:font-bold md:bg-bgGrey">
+					<SearchInput bind:searchItem />
 
-				{#if output.length > 0}
-					<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 max-sm:mt-2 md:flex">
-						{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit', 'Delete'] as header}
-							<div
-								class=" max-sm:flex-1 max-sm:text-xs border text-white border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-full lg:w-20 xl:w-24 2xl:w-28 text-center"
-							>
-								{header}
-							</div>
-						{/each}
-					</div>
-
-					<div class="flex flex-col bg-white text-sm max-sm:mt-4">
-						{#each displayedItems as item, index}
-							<ul
-								key={item.id}
-								class="grid grid-cols-3 border max-sm:gap-2 md:flex max-sm:mt-1 max-sm:border-b-2 max-sm:border-black items-center py-1 hover:underline hover:font-semibold"
-							>
-								<li class={orderingCss()}>{index + 1}</li>
-								{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}<li
-										class={orderingCss()}
-									>
-										<h4>{item[field]}</h4>
-									</li>
-								{/each}
-
-								<li class={orderingCss()}>
-									{#if editingId === item.id}
-										<select
-											class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
-											value={item.status}
-											on:change={(event) => handleEdit(item.id, event.target.value)}
-										>
-											{#each status as status}
-												<option value={status}>{status}</option>
-											{/each}
-										</select>{:else}
-										<h4>{item.status}</h4>{/if}
-								</li>
-								<li class={orderingCss()}><h4>{item.orderQty}</h4></li>
-								<li class={orderingCss()}><h4>{computeTotal(item)}</h4></li>
-								<li class={orderingCss()}><h4>{item.datePurchase}</h4></li>
-								<li class={orderingCss()}><h4>{item.etd}</h4></li>
-								<li class={orderingCss()}><h4>{item.eta}</h4></li>
-								<li class={orderingCss()}><h4>{item.arrivalDate}</h4></li>
-								<li
-									class="flex max-sm:gap-2 max-sm:justify-end max-sm:w-screen max-sm:mb-1 md:flex-1 text-center gap-2"
+					{#if output.length > 0}
+						<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 max-sm:mt-2 md:flex">
+							{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit', 'Delete'] as header}
+								<div
+									class=" max-sm:flex-1 max-sm:text-xs border text-white border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-full lg:w-20 xl:w-24 2xl:w-28 text-center"
 								>
-									<button
-										on:click={() => startEdit(item.id, item.status)}
-										class="h-6 md:h-8 max-sm:w-16 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700 w-20"
-										>Edit</button
-									><button
-										on:click={() => handleDelete(item.id)}
-										class="h-6 md:h-8  max-sm:w-16 font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700 w-20"
-										>Delete</button
+									{header}
+								</div>
+							{/each}
+						</div>
+
+						<div class="flex flex-col bg-white text-sm max-sm:mt-4">
+							{#each displayedItems as item, index}
+								<ul
+									key={item.id}
+									class="grid grid-cols-3 border max-sm:gap-2 md:flex max-sm:mt-1 max-sm:border-b-2 max-sm:border-black items-center py-1 hover:underline hover:font-semibold"
+								>
+									<li class={orderingCss()}>{index + 1}</li>
+									{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}<li
+											class={orderingCss()}
+										>
+											<h4>{item[field]}</h4>
+										</li>
+									{/each}
+
+									<li class={orderingCss()}>
+										{#if editingId === item.id}
+											<select
+												class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+												value={item.status}
+												on:change={(event) => handleEdit(item.id, event.target.value)}
+											>
+												{#each status as status}
+													<option value={status}>{status}</option>
+												{/each}
+											</select>{:else}
+											<h4>{item.status}</h4>{/if}
+									</li>
+									<li class={orderingCss()}><h4>{item.orderQty}</h4></li>
+									<li class={orderingCss()}><h4>{computeTotal(item)}</h4></li>
+									<li class={orderingCss()}><h4>{item.datePurchase}</h4></li>
+									<li class={orderingCss()}><h4>{item.etd}</h4></li>
+									<li class={orderingCss()}><h4>{item.eta}</h4></li>
+									<li class={orderingCss()}><h4>{item.arrivalDate}</h4></li>
+									<li
+										class="flex max-sm:gap-2 max-sm:justify-end max-sm:w-screen max-sm:mb-1 md:flex-1 text-center gap-2"
 									>
-								</li>
-							</ul>
-						{/each}
-					</div>
-				{/if}
+										<button
+											on:click={() => startEdit(item.id, item.status)}
+											class="h-6 md:h-8 max-sm:w-16 text-sm font-bold rounded-lg text-black hover:text-white bg-green-200 hover:bg-green-700 w-20"
+											>Edit</button
+										><button
+											on:click={() => handleDelete(item.id)}
+											class="h-6 md:h-8 max-sm:w-16 font-bold rounded-lg text-black hover:text-white bg-red-200 hover:bg-red-700 w-20"
+											>Delete</button
+										>
+									</li>
+								</ul>
+							{/each}
+						</div>
+					{/if}
+				</div>
 			</div>
-		</div>
-		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+			<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+		{/if}
 	</div>
 </main>

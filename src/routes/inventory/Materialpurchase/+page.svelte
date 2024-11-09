@@ -4,6 +4,7 @@
 	import { ref, onValue } from 'firebase/database';
 	import SearchInput from './SearchInput.svelte';
 	import Pagination from './Pagination.svelte';
+	import Loader from '../../loader.svelte';
 
 	let materialPurchase = [];
 	let loading = true;
@@ -12,19 +13,21 @@
 	let itemsPerPage = 7;
 
 	onMount(() => {
-		const purchase = ref(db, 'outputs');
+		setTimeout(() => {
+			const purchase = ref(db, 'outputs');
 
-		onValue(purchase, (snapshot) => {
-			loading = false;
-			if (snapshot.exists()) {
-				materialPurchase = [];
-				snapshot.forEach((childSnapshot) => {
-					materialPurchase.push(childSnapshot.val());
-				});
-			} else {
-				console.log('No Date available');
-			}
-		});
+			onValue(purchase, (snapshot) => {
+				loading = false;
+				if (snapshot.exists()) {
+					materialPurchase = [];
+					snapshot.forEach((childSnapshot) => {
+						materialPurchase.push(childSnapshot.val());
+					});
+				} else {
+					console.log('No Date available');
+				}
+			});
+		}, 2000);
 	});
 
 	function goToPage(page) {
@@ -49,11 +52,11 @@
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex justify-center w-screen  h-screen bg-bgDarkGrey font-patrick text-black">
+<main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
 	<div class="flex flex-col">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
-				<p class="bg-white text-xl font-black">Loading please wait....</p>
+				<Loader />
 			</div>
 		{:else}
 			<div class="shadow md:block bg-white mt-24 text-center">
@@ -113,7 +116,7 @@
 					{/each}
 				</div>
 			</div>
-		{/if}
-		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
-	</div>
+			<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+			{/if}
+		</div>
 </main>

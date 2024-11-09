@@ -4,6 +4,7 @@
 	import { onDestroy } from 'svelte';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
 	import Pagination from '../materialPurchase/Pagination.svelte';
+	import Loader from '../../loader.svelte';
 
 	let INVENTORY = [];
 	let searchItem = '';
@@ -57,10 +58,10 @@
 <main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
 	<div class="flex flex-col max-sm:w-screen">
 		{#if loading}
-			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
-				<p class="bg-white text-xl font-black">Loading please wait....</p>
-			</div>
-		{:else}
+				<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+				<Loader />
+				</div>
+			{:else}
 			<div iv class=" shadow md:block bg-white mt-24 text-center">
 				<div class="flex flex-col font-patrick rounded-lg">
 					<div class="md:bg-bgGrey max-sm:px-1">
@@ -90,7 +91,7 @@
 					{/each}
 				</div>
 			</div>
-		{/if}
-		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+			<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
+			{/if}
 	</div>
 </main>
