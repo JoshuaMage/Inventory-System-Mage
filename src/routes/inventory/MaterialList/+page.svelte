@@ -3,7 +3,7 @@
 	import { INVENTORY as inventoryStore } from '$lib/materialStock';
 	import { onDestroy } from 'svelte';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
-	import Pagination from '../materialPurchase/Pagination.svelte';
+	import Pagination from '../materialStock/pagination.svelte';
 	import Loader from '../../loader.svelte';
 
 	let INVENTORY = [];
@@ -54,9 +54,9 @@
 	);
 
 	const PurchaseListCss = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'max-sm:text-xs text-sm border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'max-sm:text-xs text-sm border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
@@ -73,24 +73,24 @@
 						<SearchInput bind:searchItem />
 
 						<ul class="grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white">
-							<li class={listCss()}><button class={PurchaseListCss()}>ID </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Material Code </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Material Name </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Unit </button></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>ID </h4></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>Material Code </h4></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>Material Name </h4></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>Unit </h4></li>
 							<li class={listCss()}>
-								<button class={PurchaseListCss()}>Material Description </button>
+								<h4 class={PurchaseListCss()}>Material Description </h4>
 							</li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Supplier </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>telephone# </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>email </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>address </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Remarks </button></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>Supplier </h4></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>telephone# </h4></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>email </h4></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>address </h4></li>
+							<li class={listCss()}><h4 class={PurchaseListCss()}>Remarks </h4></li>
 						</ul>
 					</div>
 
 					{#each displayedItems as list}
 						<ul
-							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-black justify-center"
+							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-medium text-black justify-center"
 						>
 							<li><h4 class={h4Css()}>{list.id}</h4></li>
 							<li><h4 class={h4Css()}>{list.materialCode}</h4></li>

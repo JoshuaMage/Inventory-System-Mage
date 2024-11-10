@@ -3,7 +3,7 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, onValue } from 'firebase/database';
 	import SearchInput from './SearchInput.svelte';
-	import Pagination from './Pagination.svelte';
+	import Pagination from '../materialStock/Pagination.svelte';
 	import Loader from '../../loader.svelte';
 
 	let materialPurchase = [];
@@ -81,7 +81,7 @@
 
 					{#each displayedItems as purchase}
 						<ul
-							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-black justify-center"
+							class="max-sm:text-xs text-sm max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-black justify-center"
 						>
 							<li><h4 class={h4Css()}>{purchase.datePurchase}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>
