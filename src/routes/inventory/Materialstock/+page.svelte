@@ -3,7 +3,7 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, set, remove, onValue } from 'firebase/database';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
-	import Pagination from './pagination.svelte';
+	import Pagination from './Pagination.svelte';
 	import { INVENTORY } from '$lib/materialStock';
 	import Loader from '../../loader.svelte';
 
@@ -31,7 +31,6 @@
 	let submissionMessage = '';
 	let stockOutQty = [];
 
-	// Reactive variable for updates
 	$: filteredItem = materialPurchase.filter((item) =>
 		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
 	);
@@ -41,7 +40,6 @@
 	);
 	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
 
-	// Handle fetching data on mount
 	onMount(() => {
 		setTimeout(() => {
 			const purchaseRef = ref(db, 'outputs');
@@ -81,7 +79,6 @@
 		}, 2000)
 	});
 
-	// Handle the form toggle (when you click Select)
 	function toggleForm(index) {
 		if (showForm === index) {
 			showForm = null;
@@ -100,7 +97,6 @@
 		}
 	}
 
-	// Handle submit action
 	function handleSubmit(event) {
 		event.preventDefault();
 		const form = event.target;
@@ -149,14 +145,12 @@
 		}
 	}
 
-	// Reset form fields
 	function resetForm() {
 		qty = '';
 		date = '';
 		remarks = '';
 	}
 
-	// Handle delete action
 	function handleDelete(index) {
 		const submissionToDelete = submissions[index];
 
@@ -179,7 +173,6 @@
 			});
 	}
 
-	// Get the total quantity submitted for a purchase
 	function getQuantityForPurchase(purchase) {
 		const matchingSubmissions = submissions.filter(
 			(sub) => sub.materialName === purchase.materialName && sub.purchaseId === purchase.purchaseId
@@ -191,21 +184,19 @@
 		return totalQuantity;
 	}
 
-	// Go to a specific page for pagination
 	function goToPage(page) {
 		currentPage = page;
 	}
 
-	// Initial data setup for localStorage
 	if (typeof window !== 'undefined') {
 		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
 		submissions = storedSubmissions;
 	}
 
 	const PurchaseListCss = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-32 xl:w-28 2xl:w-32 text-center';
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  lg:w-32 xl:w-28 2xl:w-32 text-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 	const labelCss = () =>
 		'text-sm md:text-lg font-bold font-patrick text-start hover:underline hover:underline-offset-4 hover:decoration-solid hover:decoration-2 hover:decoration-nextPrevButton md:pr-2';
@@ -243,7 +234,7 @@
 						</div>
 						{#each displayedItems as purchase, index}
 							<ul
-								class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-black justify-center"
+								class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-semibold text-black justify-center"
 							>
 								<li><h4 class={h4Css()}>{(currentPage - 1) * itemsPerPage + index + 1}</h4></li>
 								<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>

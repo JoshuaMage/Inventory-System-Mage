@@ -4,7 +4,7 @@
 	import { ref, set, onValue } from 'firebase/database';
 	import { INVENTORY } from '$lib/materialStock';
 	import SearchInput from '../materialPurchase/SearchInput.svelte';
-	import Pagination from '../materialStock/pagination.svelte';
+	import Pagination from '../materialStock/Pagination.svelte';
 	import Loader from '../../loader.svelte';
 
 	let columns = [];
@@ -369,11 +369,11 @@
 							{/each}
 						</div>
 
-						<div class="flex flex-col bg-white text-xs font-normal max-sm:mt-4">
+						<div class="flex flex-col bg-white text-xs font-normal max-sm:mt-4 font-mono">
 							{#each displayedItems as item, index}
 								<ul
 									key={item.id}
-									class="grid grid-cols-3 border max-sm:gap-2 md:flex max-sm:mt-1 max-sm:border-b-2 max-sm:border-black items-center py-1 hover:underline hover:font-semibold"
+									class=" grid grid-cols-3 border max-sm:gap-2 md:flex max-sm:mt-1 max-sm:border-b-2 max-sm:border-black items-center py-1 hover:underline hover:font-semibold pt-2"
 								>
 									<li class={orderingCss()}>{index + 1}</li>
 									{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}<li
@@ -407,11 +407,11 @@
 									>
 										<button
 											on:click={() => startEdit(item.id, item.status)}
-											class="h-6 md:h-8 max-sm:w-16 text-xs font-bold rounded-lg text-white hover:text-black bg-black hover:bg-white w-20 hover:border hover:border-black"
+											class="h-4 md:h-8 max-sm:w-16 text-xs font-medium rounded-lg text-white hover:text-black bg-black hover:bg-white w-20 hover:border hover:border-black"
 											>Edit</button
 										><button
 											on:click={() => handleDelete(item.id)}
-											class="h-6 md:h-8 max-sm:w-16 text-xs font-bold rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700 w-20 hover:border hover:border-red-800"
+											class="h-4 md:h-8 max-sm:w- text-xs font-medium rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700 w-20 hover:border hover:border-red-800"
 											>Delete</button
 										>
 									</li>
