@@ -54,9 +54,9 @@
 	);
 
 	const PurchaseListCss = () =>
-		'max-sm:text-xs text-sm border border-gray-300  border-none m-0 py-2 md:py-2 2xl:place-content-center  w-40 text-center';
+		'max-sm:text-xs text-base border border-gray-300  border-none m-0 py-2 md:py-2 2xl:place-content-center  w-40 text-center';
 	const h4Css = () =>
-		'max-sm:text-xs text-sm border border-gray-300  border-none m-0 md:py-2 2xl:place-content-center w-40 flex text-center justify-center self-center';
+		'max-sm:text-xs text-base border border-gray-300  border-none m-0 md:py-2 2xl:place-content-center w-40 flex text-center justify-center self-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 

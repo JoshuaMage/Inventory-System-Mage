@@ -48,11 +48,11 @@
 	const PurchaseListCss = () =>
 		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'max-sm:text-xs border border-gray-300 font-normal  border-none m-0 md:py-4 2xl:place-content-center  lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
+<main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick ">
 	<div class="flex flex-col">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
@@ -81,7 +81,7 @@
 
 					{#each displayedItems as purchase}
 						<ul
-							class="max-sm:text-xs text-sm max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-black justify-center"
+							class="max-sm:text-xs text-base max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-extrabold text-medium justify-center"
 						>
 							<li><h4 class={h4Css()}>{purchase.datePurchase}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>

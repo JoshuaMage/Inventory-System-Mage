@@ -1,51 +1,27 @@
 <script>
 	import { onMount } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
-	import { ref, get, onValue } from 'firebase/database';  // <-- import onValue
+	import { ref, get, onValue } from 'firebase/database'; // <-- import onValue
 	import SearchInput from '../../inventory/materialPurchase/SearchInput.svelte';
 	import Pagination from '../../inventory/materialPurchase/Pagination.svelte';
 	import { INVENTORY } from '$lib/materialStock.js';
 	import Loader from '../../loader.svelte';
-  
+
 	let searchItem = '';
 	let currentPage = 1;
 	let itemsPerPage = 7;
 	let materialPurchase = [];
 	let loading = true;
 	let values = [];
-	let totalSalesAmount = 0; // To store the total sales
-  
-	// Function to get the unit price from INVENTORY
+
 	function getUnitPrice(materialName) {
-	  const item = $INVENTORY.find((material) => material.materialName === materialName);
-	  return item ? item.uniPrice : 0;
+		const item = $INVENTORY.find((material) => material.materialName === materialName);
+		return item ? item.uniPrice : 0;
 	}
-  
-	// Fetch total sales amount
-	async function totalSale() {
-	  const salesRef = ref(db, 'submissions');
-	  const snapshot = await get(salesRef);  // Fetch once using get()
-  
-	  if (snapshot.exists()) {
-		const salesData = snapshot.val();
-		const salesArray = Object.values(salesData);
-		const totalSales = salesArray.reduce((sum, transaction) => {
-		  return sum + (transaction.qty || 0);  // Handle qty safely
-		}, 0);
-  
-		return totalSales;
-	  } else {
-		console.log('No sales data available');
-		return 0;
-	  }
-	}
-  
-	// Fetch data on mount
+
 	onMount(async () => {
 		const purchaseRef = ref(db, 'submissions');
-		totalSalesAmount = await totalSale();
 
-		// Fetch data with onValue (for real-time updates)
 		onValue(purchaseRef, (snapshot) => {
 			loading = false;
 			if (snapshot.exists()) {
@@ -55,7 +31,7 @@
 					const purchaseData = childSnapshot.val();
 					materialPurchase.push(purchaseData);
 				});
-  
+
 				// Retrieve stored purchase values from localStorage (if needed)
 				values = materialPurchase.map((_, index) => {
 					return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
@@ -65,34 +41,29 @@
 			}
 		});
 	});
-  
-	// Handle page change
+
 	function goToPage(page) {
-	  currentPage = page;
+		currentPage = page;
 	}
-  
-	// Reactive variables for pagination
+
 	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
-  
-	// Filter material purchase data based on search
+
 	$: filteredItem = materialPurchase.filter((item) =>
-	  item.materialName.toLowerCase().includes(searchItem.toLowerCase())
+		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
 	);
-  
-	// Remove duplicates based on the 'item' property
+
 	$: uniqueItems = [...new Map(filteredItem.map((item) => [item.item, item])).values()];
-  
-	// Pagination: Slice items to display per page
+
 	$: displayedItems = uniqueItems.slice(
-	  (currentPage - 1) * itemsPerPage,
-	  currentPage * itemsPerPage
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
 	);
-  
-	// Styling functions for list and header
+
+	$: totalSale = displayedItems.reduce((sum, purhcase) => sum + (purhcase.qty || 0), 0);
 	const PurchaseListCss = () =>
-	  'max-sm:text-xs border border-gray-300 border-none m-0 py-2 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'max-sm:text-xs border border-gray-300 border-none m-0 py-2 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const h4Css = () =>
-	  'max-sm:text-xs border border-gray-300 border-none m-0 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'max-sm:text-xs border border-gray-300 border-none m-0 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
@@ -130,7 +101,7 @@
 							<li><h4 class={h4Css()}>{purchase.unit}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.orderQty}</h4></li>
 							<li><h4 class={h4Css()}>{getUnitPrice(purchase.materialName)}</h4></li>
-							<li><h4 class={h4Css()}>{totalSalesAmount}</h4></li>
+							<li><h4 class={h4Css()}>{totalSale}</h4></li>
 							<!-- Display the total sales amount -->
 							<li>
 								<h4 class={h4Css()}>{parseFloat(getUnitPrice(purchase.materialName)) * 2}</h4>
@@ -140,7 +111,7 @@
 									{purchase.qty * parseFloat(getUnitPrice(purchase.materialName)) * 2}
 								</h4>
 							</li>
-							<li class={h4Css()} >
+							<li class={h4Css()}>
 								<h4
 									class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
 								>

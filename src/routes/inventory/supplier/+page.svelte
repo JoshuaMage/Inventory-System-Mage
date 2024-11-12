@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { INVENTORY as inventoryStore } from '$lib/materialStock';
 	import { onDestroy } from 'svelte';
-	import Pagination from '../materialPurchase/Pagination.svelte';
+	import Pagination from '../materialStock/Pagination.svelte';
 	import Loader from '../../loader.svelte';
 
 	let INVENTORY = [];
