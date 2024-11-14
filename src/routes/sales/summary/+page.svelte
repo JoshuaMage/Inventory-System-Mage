@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
-	import { ref, get, onValue } from 'firebase/database'; // <-- import onValue
+	import { ref, get, onValue } from 'firebase/database';
 	import SearchInput from '../../inventory/materialPurchase/SearchInput.svelte';
 	import Pagination from '../../inventory/materialPurchase/Pagination.svelte';
 	import { INVENTORY } from '$lib/materialStock.js';
@@ -13,34 +13,61 @@
 	let materialPurchase = [];
 	let loading = true;
 	let values = [];
+	let totalQtyByItem = {}
+	
 
 	function getUnitPrice(materialName) {
 		const item = $INVENTORY.find((material) => material.materialName === materialName);
 		return item ? item.uniPrice : 0;
 	}
 
-	onMount(async () => {
-		const purchaseRef = ref(db, 'submissions');
+	const getTotalQtyByItem = async () => {
+    const submissionsRef = ref(db, 'submissions');
+    get(submissionsRef).then((snapshot) => {
+      const data = snapshot.val();
 
-		onValue(purchaseRef, (snapshot) => {
-			loading = false;
-			if (snapshot.exists()) {
-				materialPurchase = [];
-				values = [];
-				snapshot.forEach((childSnapshot) => {
-					const purchaseData = childSnapshot.val();
-					materialPurchase.push(purchaseData);
-				});
+      if (data) {
+        const totalQty = {}; 
+        for (let submissionId in data) {
+          const submission = data[submissionId];
+          const itemId = submission.item; 
+          const qty = parseFloat(submission.qty); 
 
-				// Retrieve stored purchase values from localStorage (if needed)
-				values = materialPurchase.map((_, index) => {
-					return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
-				});
-			} else {
-				console.log('No Data available');
-			}
-		});
-	});
+          if (!totalQty[itemId]) {
+            totalQty[itemId] = 0;
+          }
+          totalQty[itemId] += qty;
+        }
+        totalQtyByItem = totalQty; 
+      }
+    }).catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+  };
+
+  onMount(async () => {
+    await getTotalQtyByItem();
+
+    const purchaseRef = ref(db, 'submissions');
+    onValue(purchaseRef, (snapshot) => {
+      loading = false;
+      if (snapshot.exists()) {
+        materialPurchase = [];
+        values = [];
+        snapshot.forEach((childSnapshot) => {
+          const purchaseData = childSnapshot.val();
+          materialPurchase.push(purchaseData);
+        });
+
+        values = materialPurchase.map((_, index) => {
+          return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
+        });
+      } else {
+        console.log('No Data available');
+      }
+    });
+  });
+
 
 	function goToPage(page) {
 		currentPage = page;
@@ -59,7 +86,7 @@
 		currentPage * itemsPerPage
 	);
 
-	$: totalSale = displayedItems.reduce((sum, purhcase) => sum + (purhcase.qty || 0), 0);
+	
 	const PurchaseListCss = () =>
 		'max-sm:text-xs border border-gray-300 border-none m-0 py-2 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const h4Css = () =>
@@ -101,8 +128,7 @@
 							<li><h4 class={h4Css()}>{purchase.unit}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.orderQty}</h4></li>
 							<li><h4 class={h4Css()}>{getUnitPrice(purchase.materialName)}</h4></li>
-							<li><h4 class={h4Css()}>{totalSale}</h4></li>
-							<!-- Display the total sales amount -->
+							<li><h4 class={h4Css()}>{totalQtyByItem[purchase.item] || 0}</h4></li>
 							<li>
 								<h4 class={h4Css()}>{parseFloat(getUnitPrice(purchase.materialName)) * 2}</h4>
 							</li>
