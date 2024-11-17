@@ -386,7 +386,7 @@
 
 						{#if submissionMessage}
 							<p
-								class="{submissionMessage.includes('successful')
+r								class="{submissionMessage.includes('successful')
 									? 'text-green-600'
 									: 'text-red-600'} font-black"
 							>

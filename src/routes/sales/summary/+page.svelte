@@ -43,7 +43,7 @@
     }).catch((error) => {
       console.error("Error fetching data:", error);
     });
-  };
+  };	
 
   onMount(async () => {
     await getTotalQtyByItem();
