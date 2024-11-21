@@ -2,12 +2,12 @@
     export let searchItem = '';
   </script>
 
-<div class=" flex justify-center ">
-    <div class="relative" >
+<div class=" flex justify-center mt-4">
+    <div class="relative " >
     <input
         type="text"
-        class="max-sm:mb-2 md:mt-4 max-sm:text-xs max-sm:text-center px-8 py-2 md:px-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-        placeholder="Material Name...."
+        class="max-sm:mb-2 md:mt-4 max-sm:text-xs max-sm:text-center px-8 py-2 md:px-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black hover:border-2 hover:border-orange"
+        placeholder=" Material Name...."
         bind:value={searchItem}
     />
     <svg
