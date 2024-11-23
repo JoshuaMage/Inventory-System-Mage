@@ -67,8 +67,7 @@
 			return acc + (wage.salary * 26 * 12 || 0);
 		}, 0);
 	}
-	$: currentSaleSummary = saleSummary();
-	$: currentManPowerWage = manPowerWage();
+
 </script>
 
 <main class="flex justify-center min-h-screen bg-bgDarkGrey font-patrick mt-20">

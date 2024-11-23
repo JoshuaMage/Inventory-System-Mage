@@ -14,7 +14,6 @@
 	let itemsPerPage = 7;
 	let loading = true;
 	let showForm = null;
-
 	let selectedItem = {
 		item: '',
 		materialName: '',
@@ -24,7 +23,6 @@
 		purchaseId: ''
 	};
 	let firstDivVisible = true;
-
 	let qty = '';
 	let date = '';
 	let remarks = '';
@@ -79,6 +77,7 @@
 					});
 				} else {
 					console.log('No Data available');
+					materialPurchase = [];
 				}
 			});
 		}, 2000);
@@ -185,32 +184,39 @@
 		showModal = true;
 	}
 
-	function confirmDelete(index) {
-		const submissionToDelete = submissions[index];
-
-			if (!submissionToDelete) {
-				console.error('Submission not found.');
-				return;
+	function confirmDelete(filteredIndex) {
+		// Find the original index of the submission in the submissions array
+		const submissionToDelete = submissions.find((sub, originalIndex) => {
+			if (sub.item === selectedItem.item) {
+				if (filteredIndex === 0) {
+					filteredIndex--;
+					return true;
+				}
+				filteredIndex--;
 			}
+			return false;
+		});
 
-			const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`);
-
-			remove(submissionsRef)
-				.then(() => {
-					// Update the local submissions array reactively
-					submissions = submissions.filter((sub) => sub.id !== submissionToDelete.id);
-					localStorage.setItem('submissions', JSON.stringify(submissions));
-					console.log('Submission deleted successfully from Firebase and local storage.');
-	
-				})
-		
-				.catch((error) => {
-					console.error('Error deleting submission from Firebase: ', error);
-				});
-			showModal = false;
+		if (!submissionToDelete) {
+			console.error('Submission not found.');
+			return;
 		}
-	
 
+		const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`);
+
+		remove(submissionsRef)
+			.then(() => {
+				// Update the local submissions array reactively
+				submissions = submissions.filter((sub) => sub.id !== submissionToDelete.id);
+				localStorage.setItem('submissions', JSON.stringify(submissions));
+				console.log('Submission deleted successfully from Firebase and local storage.');
+			})
+			.catch((error) => {
+				console.error('Error deleting submission from Firebase: ', error);
+			});
+		showModal = false;
+	}
+	
 	function cancelDelete(cancel) {
 		isConfirmed = cancel;
 		showModal = false;
@@ -316,7 +322,7 @@
 
 									<li class="flex justify-center items-center">
 										<div
-											class="bg-orange text-white hover:shadow-lg hover:shadow-black py-1 px-3 rounded-full hover:py-2 hover:p-5"
+											class="bg-orange text-white hover:shadow-lg hover:shadow-black py-1 px-3 rounded-full hover:py-2 hover:p-5 hover:border hover:border-black"
 										>
 											<button on:click={() => toggleForm(index)}>Select</button>
 										</div>
@@ -337,8 +343,6 @@
 			</div>
 		</div>
 	{/if}
-
-	<!-- form selection -->
 
 	{#if showForm !== null}
 		<div class="flex justify-center items-center relative top-16 h-screen p-0 m-0 bg-bgDarkGrey">
@@ -518,7 +522,9 @@
 											<div
 												class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
 											>
-												<div class="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+												<div
+													class="bg-white p-6 rounded shadow-lg max-w-sm w-full border-2 border-black"
+												>
 													<h3 class="text-lg font-semibold">
 														Are you sure you want to delete this Materials?
 													</h3>
