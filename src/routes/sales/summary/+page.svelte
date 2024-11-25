@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
-	import { ref, get, set, onValue, remove } from 'firebase/database';
+	import { ref, get, onValue } from 'firebase/database';
 	import SearchInput from '../../inventory/materialPurchase/SearchInput.svelte';
 	import Pagination from '../../inventory/materialPurchase/Pagination.svelte';
 	import { INVENTORY } from '$lib/materialStock.js';
@@ -13,7 +13,8 @@
 	let materialPurchase = [];
 	let loading = true;
 	let values = [];
-	let totalQtyByItem = {};
+	let totalQtyByItem = {}
+	
 
 	function getUnitPrice(materialName) {
 		const item = $INVENTORY.find((material) => material.materialName === materialName);
@@ -21,101 +22,52 @@
 	}
 
 	const getTotalQtyByItem = async () => {
-		const submissionsRef = ref(db, 'submissions');
-		get(submissionsRef)
-			.then((snapshot) => {
-				const data = snapshot.val();
+    const submissionsRef = ref(db, 'submissions');
+    get(submissionsRef).then((snapshot) => {
+      const data = snapshot.val();
 
-				if (data) {
-					const totalQty = {};
-					for (let submissionId in data) {
-						const submission = data[submissionId];
-						const itemId = submission.item;
-						const qty = parseFloat(submission.qty);
+      if (data) {
+        const totalQty = {}; 
+        for (let submissionId in data) {
+          const submission = data[submissionId];
+          const itemId = submission.item; 
+          const qty = parseFloat(submission.qty); 
 
-						if (!totalQty[itemId]) {
-							totalQty[itemId] = 0;
-						}
-						totalQty[itemId] += qty;
-					}
-					totalQtyByItem = { ...totalQty };
-				}
-			})
-			.catch((error) => {
-				console.error('Error fetching data:', error);
-			});
-	};
+          if (!totalQty[itemId]) {
+            totalQty[itemId] = 0;
+          }
+          totalQty[itemId] += qty;
+        }
+        totalQtyByItem = totalQty; 
+      }
+    }).catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+  };	
 
-	const addPurchaseToFirebase = async (purchase) => {
-		const unitPrice = parseFloat(getUnitPrice(purchase.materialName));
-		const totalQty = totalQtyByItem[purchase.item] || 0;
-		const marketPrice = unitPrice * 2;
-		const revenue = purchase.qty * unitPrice * 2; //
+  onMount(async () => {
+    await getTotalQtyByItem();
 
-		const purchaseRef = ref(db, 'saleSummary/' + purchase.item);
+    const purchaseRef = ref(db, 'submissions');
+    onValue(purchaseRef, (snapshot) => {
+      loading = false;
+      if (snapshot.exists()) {
+        materialPurchase = [];
+        values = [];
+        snapshot.forEach((childSnapshot) => {
+          const purchaseData = childSnapshot.val();
+          materialPurchase.push(purchaseData);
+        });
 
-		// Prepare the data to be saved in Firebase
-		const purchaseData = {
-			item: purchase.item,
-			materialName: purchase.materialName,
-			unit: purchase.unit,
-			orderQty: purchase.orderQty,
-			qty: purchase.qty,
-			status: purchase.status,
-			unitPrice: unitPrice,
-			totalQty: totalQty,
-			marketPrice: marketPrice,
-			revenue: revenue
-		};
+        values = materialPurchase.map((_, index) => {
+          return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
+        });
+      } else {
+        console.log('No Data available');
+      }
+    });
+  });
 
-		try {
-			// Push the data to Firebase
-			await set(purchaseRef, purchaseData);
-			console.log('Purchase added automatically to Firebase!');
-		} catch (error) {
-			console.error('Error adding purchase to Firebase: ', error);
-		}
-	};
-
-	onMount(async () => {
-		await getTotalQtyByItem();
-
-		const purchaseRef = ref(db, 'submissions');
-		onValue(purchaseRef, (snapshot) => {
-			loading = false;
-			if (snapshot.exists()) {
-				materialPurchase = [];
-				values = [];
-				snapshot.forEach((childSnapshot) => {
-					const purchaseData = childSnapshot.val();
-					materialPurchase.push(purchaseData);
-					addPurchaseToFirebase(purchaseData);
-				});
-
-				displayedItems.forEach((purchase) => {
-					const removeInFb = newItems.some((item) => item.item === purchase.item);
-					if (!removeInFb) {
-						const summaryToRemove = ref(db, `saleSummary/${purchase.item}`);
-						remove(summaryToRemove)
-							.then(() => {
-								console.log(`item${purchase.item}remove from firebase(saleSummary)`);
-							})
-							.catch((error) => {
-								console.error('Error remove summary from firebase', error);
-							});
-					}
-				});
-			
-
-				values = materialPurchase.map((_, index) => {
-					return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
-				});
-				getTotalQtyByItem();
-			} else {
-				console.log('No Data available');
-			}
-		});
-	});
 
 	function goToPage(page) {
 		currentPage = page;
@@ -133,8 +85,8 @@
 		(currentPage - 1) * itemsPerPage,
 		currentPage * itemsPerPage
 	);
-	
 
+	
 	const PurchaseListCss = () =>
 		'max-sm:text-xs border border-gray-300 border-none m-0 py-2 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const h4Css = () =>

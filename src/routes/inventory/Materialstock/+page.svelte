@@ -34,19 +34,11 @@
 	let showModal = false;
 	let isConfirmed = false;
 
-	$: filteredItem = materialPurchase.filter((item) =>
-		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
-	);
-	$: displayedItems = filteredItem.slice(
-		(currentPage - 1) * itemsPerPage,
-		currentPage * itemsPerPage
-	);
-	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
-
 	onMount(() => {
 		setTimeout(() => {
 			const purchaseRef = ref(db, 'outputs');
 			const stockOutRef = ref(db, 'submissions');
+			const incomeStatementRef = ref(db, 'incomeStatementData');
 
 			const storedItems = JSON.parse(localStorage.getItem('submittedItems')) || [];
 			submittedItems = storedItems;
@@ -74,6 +66,39 @@
 						purchaseData.purchaseId = childSnapshot.key;
 						materialPurchase.push(purchaseData);
 						values.push(purchaseData.stockOut || 0);
+					});
+				} else {
+					console.log('No Data available');
+					materialPurchase = [];
+				}
+			});
+
+			onValue(purchaseRef, (snapshot) => {
+				loading = false;
+				if (snapshot.exists()) {
+					materialPurchase = [];
+					values = [];
+
+					snapshot.forEach((childSnapshot) => {
+						const purchaseData = childSnapshot.val();
+						purchaseData.purchaseId = childSnapshot.key;
+						materialPurchase.push(purchaseData);
+						values.push(purchaseData.stockOut || 0);
+
+						// Add data to incomeStatementData
+						const incomeStatementItem = {
+							purchaseId: purchaseData.purchaseId,
+							datePurchase: purchaseData.datePurchase,
+							orderQty: purchaseData.orderQty,
+							unitPrice: purchaseData.uniPrice,
+							stockOut: purchaseData.stockOut || 0
+						};
+
+						// Set the item in the incomeStatementData
+						set(
+							ref(db, `incomeStatementData/${purchaseData.purchaseId}`),
+							incomeStatementItem
+						).catch((error) => console.error('Error adding data to incomeStatementData:', error));
 					});
 				} else {
 					console.log('No Data available');
@@ -216,7 +241,7 @@
 			});
 		showModal = false;
 	}
-	
+
 	function cancelDelete(cancel) {
 		isConfirmed = cancel;
 		showModal = false;
@@ -240,6 +265,33 @@
 	if (typeof window !== 'undefined') {
 		const storedSubmissions = JSON.parse(localStorage.getItem('submissions')) || [];
 		submissions = storedSubmissions;
+	}
+
+	$: filteredItem = materialPurchase.filter((item) =>
+		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
+	);
+	$: displayedItems = filteredItem.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
+	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
+
+	$: {
+		// Check for any updates in the displayedItems and update the Firebase
+		displayedItems.forEach((purchase) => {
+			const incomeStatementItem = {
+				purchaseId: purchase.purchaseId,
+				datePurchase: purchase.datePurchase,
+				orderQty: purchase.orderQty,
+				unitPrice: purchase.uniPrice,
+				stockOut: getQuantityForPurchase(purchase) // Update stockOut based on current data
+			};
+
+			// Update or add to incomeStatementData in Firebase
+			set(ref(db, `incomeStatementData/${purchase.purchaseId}`), incomeStatementItem).catch(
+				(error) => console.error('Error updating incomeStatementData:', error)
+			);
+		});
 	}
 
 	const PurchaseListCss = () =>
@@ -274,12 +326,16 @@
 								<SearchInput bind:searchItem />
 
 								<ul
-									class="mt-4 max-sm:text-xs grid grid-cols-3 md:grid-cols-10 md:gap-0 font-semibold text-white"
+									class="mt-4 max-sm:text-xs grid grid-cols-3 md:grid-cols-12 md:gap-0 font-semibold text-white"
 								>
 									<li class={listCss()}><button class={PurchaseListCss()}>Item</button></li>
+									<li class={listCss()}>
+										<button class={PurchaseListCss()}>Date Purchase</button>
+									</li>
 									<li class={`${listCss()} col-span-2 text-center place-content-center`}>
 										<button class="text-lg">Material Name</button>
 									</li>
+									<li class={listCss()}><button class={PurchaseListCss()}>Unit Price</button></li>
 									<li class={listCss()}><button class={PurchaseListCss()}>Unit</button></li>
 									<li class={listCss()}><button class={PurchaseListCss()}>Purchase Qty</button></li>
 									<li class={listCss()}><button class={PurchaseListCss()}>Stock</button></li>
@@ -291,12 +347,14 @@
 							</div>
 							{#each displayedItems as purchase, index}
 								<ul
-									class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 gap-1 md:grid-cols-10 md:gap-0 font-semibold text-black"
+									class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 gap-1 md:grid-cols-12 md:gap-0 font-semibold text-black"
 								>
 									<li><h4 class={h4Css()}>{(currentPage - 1) * itemsPerPage + index + 1}</h4></li>
+									<li><h4 class={h4Css()}>{purchase.datePurchase}</h4></li>
 									<li class="col-span-2 flex justify-center items-center">
 										<h4 class={h4Css()}>{purchase.materialName}</h4>
 									</li>
+									<li><h4 class={`${h4Css()} uppercase`}>{purchase.uniPrice}</h4></li>
 									<li><h4 class={`${h4Css()} uppercase`}>{purchase.unit}</h4></li>
 									<li><h4 class={h4Css()}>{purchase.orderQty}</h4></li>
 									<li class={h4Css()}>
