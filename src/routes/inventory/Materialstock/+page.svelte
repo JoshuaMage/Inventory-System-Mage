@@ -258,6 +258,19 @@
 		return totalQuantity;
 	}
 
+	function getLatestSubmissionDate(purchase) {
+		const matchingSubmissions = submissions.filter(
+			(sub) => sub.materialName === purchase.materialName && sub.purchaseId === purchase.purchaseId
+		);
+
+		if (matchingSubmissions.length === 0) {
+			return 'No Sale Data';
+		}
+
+		matchingSubmissions.sort((a, b) => new Date(b.date) - new Date(a.date));
+		return matchingSubmissions[0].date;
+	}
+
 	function goToPage(page) {
 		currentPage = page;
 	}
@@ -284,7 +297,9 @@
 				datePurchase: purchase.datePurchase,
 				orderQty: purchase.orderQty,
 				unitPrice: purchase.uniPrice,
-				stockOut: getQuantityForPurchase(purchase) // Update stockOut based on current data
+				stockOut: getQuantityForPurchase(purchase),
+				currentStock: purchase.orderQty - getQuantityForPurchase(purchase),
+				saleDate: getLatestSubmissionDate(purchase)
 			};
 
 			// Update or add to incomeStatementData in Firebase
@@ -332,7 +347,7 @@
 									<li class={listCss()}>
 										<button class={PurchaseListCss()}>Date Purchase</button>
 									</li>
-									<li class={`${listCss()} col-span-2 text-center place-content-center`}>
+									<li class={listCss()}>
 										<button class="text-lg">Material Name</button>
 									</li>
 									<li class={listCss()}><button class={PurchaseListCss()}>Unit Price</button></li>
@@ -341,6 +356,7 @@
 									<li class={listCss()}><button class={PurchaseListCss()}>Stock</button></li>
 									<li class={listCss()}><button class={PurchaseListCss()}>Pending</button></li>
 									<li class={listCss()}><button class={PurchaseListCss()}>Stock-out</button></li>
+									<li class={listCss()}><button class={PurchaseListCss()}>Date-sale</button></li>
 									<li class={listCss()}><button class={PurchaseListCss()}>Selection</button></li>
 									<li class={listCss()}><button class={PurchaseListCss()}>Status</button></li>
 								</ul>
@@ -351,7 +367,7 @@
 								>
 									<li><h4 class={h4Css()}>{(currentPage - 1) * itemsPerPage + index + 1}</h4></li>
 									<li><h4 class={h4Css()}>{purchase.datePurchase}</h4></li>
-									<li class="col-span-2 flex justify-center items-center">
+									<li>
 										<h4 class={h4Css()}>{purchase.materialName}</h4>
 									</li>
 									<li><h4 class={`${h4Css()} uppercase`}>{purchase.uniPrice}</h4></li>
@@ -376,6 +392,10 @@
 
 									<li>
 										<h4 class={h4Css()}>{getQuantityForPurchase(purchase)}</h4>
+									</li>
+
+									<li>
+										<h4 class={h4Css()}>{getLatestSubmissionDate(purchase)}</h4>
 									</li>
 
 									<li class="flex justify-center items-center">
