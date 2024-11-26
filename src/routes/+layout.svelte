@@ -40,13 +40,13 @@
 
 	$: hideLayout = ['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname);
 	const headerSelection = () => 'font-bold max-sm:text-xs  md:text-lg font-sans text-center';
-	const headerList = () => 'block text-start max-sm:text-xs md:font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-2'
+	const headerList = () => 'block text-start max-sm:text-xs md:font-bold hover:font-extrabold hover:bg-orange hover:text-white rounded p-2'
 </script>
 
 {#if !hideLayout}
 	<main class=" border-b-gray-600 border-solid">
 		<nav
-			class="grid grid-cols-2 h-20 w-full md:px-10 fixed top-0 left-0 right-0 z-50 bg-white shadow"
+			class="grid grid-cols-2 h-20 w-full md:px-10 fixed top-0 left-0 right-0 z-50 bg-white shadow border"
 		>
 			<div class="justify-self-start place-self-center">
 				<h1
@@ -63,7 +63,7 @@
 						<a href="/product" class={headerSelection()}>Products</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 w-22 md:w-48 p-2 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 w-22 md:w-48 p-2 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
 						>
 							<a
 								href="/product/productKg"
@@ -93,7 +93,7 @@
 						<a href="/inventory" class={headerSelection()}>Inventory</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-28 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-28 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
 						>
 							<a
 								href="/inventory/materialStock"
@@ -128,7 +128,7 @@
 						<a href="/sales" class={headerSelection()}>Sales</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-40 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-40 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
 						>
 							<a
 								href="/sales/summary"
@@ -152,12 +152,12 @@
 					<div class="relative group flex justify-center hover:underline-">
 						<a href="/user" class={headerSelection()}>User</a>
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-28 md:w-40 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300"
+							class="opacity-0 invisible right-1 absolute top-10 z-10 p-2 w-20 md:w-28 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
 						>
 							<button
 								on:click={handleLogout}
 								disabled={loading}
-								class="disabled:opacity-50 block text-start max-sm:text-xs md:font-bold hover:font-extrabold hover:bg-nextPrevButton hover:text-white rounded p-1"
+								class={headerList()}
 							>
 								{#if loading}
 									Logging out...

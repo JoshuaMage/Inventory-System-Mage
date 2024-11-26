@@ -10,7 +10,7 @@
 	let displayedInventory = [];
 	let searchItem = '';
 	let currentPage = 1;
-	let itemsPerPage = 10;
+	let itemsPerPage = 7;
 	let data;
 	let loading = true;
 
@@ -56,23 +56,24 @@
 	const PurchaseListCss = () =>
 		'max-sm:text-xs text-base border border-gray-300  border-none m-0 py-2 md:py-2 2xl:place-content-center  w-40 text-center';
 	const h4Css = () =>
-		'max-sm:text-xs text-base border border-gray-300  border-none m-0 md:py-2 2xl:place-content-center w-40 flex text-center justify-center self-center';
+		'max-sm:text-xs text-base  font-semibold border border-gray-300  border-none m-0 md:py-2 2xl:place-content-center w-40 flex text-center justify-center self-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
+<main class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen"
+>
 	<div class="flex flex-col">
 		{#if loading}
-			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+		<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
 				<Loader />
 			</div>
 		{:else}
 			<div class="shadow md:block bg-white mt-24 text-center">
 				<div class="flex flex-col font-patrick rounded-lg">
-					<div class="md:bg-bgGrey max-sm:px-1">
+					<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
 						<SearchInput bind:searchItem />
 
-						<ul class="grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white">
+						<ul class="mt-5 mb-2 max-sm:text-xs  grid grid-cols-3 max-sm:gap-1 md:flex font-semibold text-white">
 							<li class={listCss()}><h4 class={PurchaseListCss()}>ID</h4></li>
 							<li class={listCss()}><h4 class={PurchaseListCss()}>Material Name</h4></li>
 							<li class={listCss()}><h4 class={PurchaseListCss()}>Material Code</h4></li>
@@ -87,7 +88,8 @@
 
 					{#each displayedItems as list}
 						<ul
-							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-medium text-black font-mono h-16 justify-center items-center mx-auto w-full"
+							class="h-16 max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-medium text-black justify-center items-center mx-auto w-full"
+				
 						>
 							<li><h4 class={h4Css()}>{list.id}</h4></li>
 							<li><h4 class={h4Css()}>{list.materialName}</h4></li>

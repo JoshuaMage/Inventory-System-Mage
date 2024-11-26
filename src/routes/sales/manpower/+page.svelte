@@ -5,7 +5,8 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, set } from 'firebase/database';
 	import SearchInput from '../../inventory/materialPurchase/SearchInput.svelte';
-	import Pagination from '../../inventory/materialPurchase/Pagination.svelte';
+	import Pagination from '../../inventory/materialStock/Pagination.svelte';
+	import Loader from '../../loader.svelte';
 
 	let MANPOWER = [];
 	let displayedInventory = [];
@@ -75,14 +76,14 @@
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
+<main class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen">
 	<div class="flex flex-col max-sm:w-screen">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
-				<p class="bg-white text-xl font-black">Loading please wait....</p>
+				<Loader />
 			</div>
 		{:else}
-			<div class=" shadow md:block bg-white mt-24 text-center">
+			<div class=" shadow md:block bg-white  text-center">
 				<div class="flex flex-col font-patrick rounded-lg">
 					<div class="md:bg-bgGrey max-sm:px-1">
 						<div class=" flex justify-center">

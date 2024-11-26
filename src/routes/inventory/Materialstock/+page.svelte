@@ -348,17 +348,17 @@
 										<button class={PurchaseListCss()}>Date Purchase</button>
 									</li>
 									<li class={listCss()}>
-										<button class="text-lg">Material Name</button>
+										<button class={PurchaseListCss()}>Material Name</button>
 									</li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Unit Price</button></li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Unit</button></li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Purchase Qty</button></li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Stock</button></li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Pending</button></li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Stock-out</button></li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Date-sale</button></li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Selection</button></li>
-									<li class={listCss()}><button class={PurchaseListCss()}>Status</button></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Unit Price</h4></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Unit</h4></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Purchase Qty</h4></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Stock</h4></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Pending</h4></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Stock-out</h4></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Date-sale</h4></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Selection</h4></li>
+									<li class={listCss()}><h4 class={PurchaseListCss()}>Status</h4></li>
 								</ul>
 							</div>
 							{#each displayedItems as purchase, index}

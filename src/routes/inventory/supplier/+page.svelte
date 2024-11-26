@@ -50,11 +50,11 @@
 	const PurchaseListCss = () =>
 		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  w-48 text-center';
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  w-48 text-center';
+		'max-sm:text-xs border border-gray-300   font-semibold  border-none m-0 md:py-4 2xl:place-content-center  w-48 text-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
+<main class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen">
 	<div class="flex flex-col max-sm:w-screen">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
@@ -63,17 +63,16 @@
 		{:else}
 			<div iv class=" shadow md:block bg-white mt-24 text-center">
 				<div class="flex flex-col font-patrick rounded-lg">
-					<div class="md:bg-bgGrey max-sm:px-1">
-						<ul class="grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white">
-							<li class={listCss()}><button class={PurchaseListCss()}>Supplier </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Phone Number </button></li>
-							<li class={listCss()}>
-								<button class={PurchaseListCss()}>Telephone Number </button>
-							</li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Email </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Address </button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Bank Account </button></li>
+					<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
+						<ul class="grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white h-24 justify-center items-center ">
+							<li class={listCss()}><button class={PurchaseListCss()}>Supplier</button></li>
+							<li class={listCss()}><button class={PurchaseListCss()}>Phone Number</button></li>
+							<li class={listCss()}><button class={PurchaseListCss()}>Telephone Number</button></li>
+							<li class={listCss()}><button class={PurchaseListCss()}>Email</button></li>
+							<li class={listCss()}><button class={PurchaseListCss()}>Address</button></li>
+							<li class={listCss()}><button class={PurchaseListCss()}>Bank Account</button></li>
 						</ul>
+						
 					</div>
 
 					{#each displayedItems as supplier}

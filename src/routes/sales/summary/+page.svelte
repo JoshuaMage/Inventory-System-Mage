@@ -3,7 +3,7 @@
 	import { db } from '$lib/firebaseConfig';
 	import { ref, get, onValue } from 'firebase/database';
 	import SearchInput from '../../inventory/materialPurchase/SearchInput.svelte';
-	import Pagination from '../../inventory/materialPurchase/Pagination.svelte';
+	import Pagination from '../../inventory/materialStock/Pagination.svelte';
 	import { INVENTORY } from '$lib/materialStock.js';
 	import Loader from '../../loader.svelte';
 
@@ -13,8 +13,7 @@
 	let materialPurchase = [];
 	let loading = true;
 	let values = [];
-	let totalQtyByItem = {}
-	
+	let totalQtyByItem = {};
 
 	function getUnitPrice(materialName) {
 		const item = $INVENTORY.find((material) => material.materialName === materialName);
@@ -22,52 +21,53 @@
 	}
 
 	const getTotalQtyByItem = async () => {
-    const submissionsRef = ref(db, 'submissions');
-    get(submissionsRef).then((snapshot) => {
-      const data = snapshot.val();
+		const submissionsRef = ref(db, 'submissions');
+		get(submissionsRef)
+			.then((snapshot) => {
+				const data = snapshot.val();
 
-      if (data) {
-        const totalQty = {}; 
-        for (let submissionId in data) {
-          const submission = data[submissionId];
-          const itemId = submission.item; 
-          const qty = parseFloat(submission.qty); 
+				if (data) {
+					const totalQty = {};
+					for (let submissionId in data) {
+						const submission = data[submissionId];
+						const itemId = submission.item;
+						const qty = parseFloat(submission.qty);
 
-          if (!totalQty[itemId]) {
-            totalQty[itemId] = 0;
-          }
-          totalQty[itemId] += qty;
-        }
-        totalQtyByItem = totalQty; 
-      }
-    }).catch((error) => {
-      console.error("Error fetching data:", error);
-    });
-  };	
+						if (!totalQty[itemId]) {
+							totalQty[itemId] = 0;
+						}
+						totalQty[itemId] += qty;
+					}
+					totalQtyByItem = totalQty;
+				}
+			})
+			.catch((error) => {
+				console.error('Error fetching data:', error);
+			});
+	};
 
-  onMount(async () => {
-    await getTotalQtyByItem();
+	onMount(async () => {
+		await getTotalQtyByItem();
 
-    const purchaseRef = ref(db, 'submissions');
-    onValue(purchaseRef, (snapshot) => {
-      loading = false;
-      if (snapshot.exists()) {
-        materialPurchase = [];
-        values = [];
-        snapshot.forEach((childSnapshot) => {
-          const purchaseData = childSnapshot.val();
-          materialPurchase.push(purchaseData);
-        });
+		const purchaseRef = ref(db, 'submissions');
+		onValue(purchaseRef, (snapshot) => {
+			loading = false;
+			if (snapshot.exists()) {
+				materialPurchase = [];
+				values = [];
+				snapshot.forEach((childSnapshot) => {
+					const purchaseData = childSnapshot.val();
+					materialPurchase.push(purchaseData);
+				});
 
-        values = materialPurchase.map((_, index) => {
-          return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
-        });
-      } else {
-        console.log('No Data available');
-      }
-    });
-  });
-
+				values = materialPurchase.map((_, index) => {
+					return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
+				});
+			} else {
+				console.log('No Data available');
+			}
+		});
+	});
 
 	function goToPage(page) {
 		currentPage = page;
@@ -86,7 +86,6 @@
 		currentPage * itemsPerPage
 	);
 
-	
 	const PurchaseListCss = () =>
 		'max-sm:text-xs border border-gray-300 border-none m-0 py-2 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const h4Css = () =>
@@ -94,16 +93,16 @@
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
+<main class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen">
 	<div class="flex flex-col max-sm:w-screen">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
 				<Loader />
 			</div>
 		{:else}
-			<div class="shadow md:block bg-white mt-24 text-center">
-				<div class="flex flex-col font-patrick rounded-lg">
-					<div class="md:bg-bgGrey max-sm:px-1">
+		<div iv class=" shadow md:block bg-white mt-24 text-center">
+			<div class="flex flex-col font-patrick rounded-lg">
+				<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
 						<SearchInput bind:searchItem />
 						<ul
 							class="max-sm:text-xs grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white"
