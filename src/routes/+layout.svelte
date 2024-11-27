@@ -9,6 +9,8 @@
 
 	let loading = false;
 	let authenticated = false;
+	let showModal = false;
+	let isConfirmed = false;
 
 	const unsubscribe = isAuthenticated.subscribe((value) => {
 		authenticated = value;
@@ -26,7 +28,13 @@
 		unsubscribe();
 	});
 
-	async function handleLogout() {
+	
+	function handleLogout() {
+		showModal = true;
+	}
+
+	
+		async function handleConfirmLout() {
 		loading = true;
 		try {
 			await signOut(auth);
@@ -37,6 +45,15 @@
 			loading = false;
 		}
 	}
+
+	
+
+	function cancelLogOut(cancel) {
+		isConfirmed = cancel;
+		showModal = false;
+	}
+
+	
 
 	$: hideLayout = ['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname);
 	const headerSelection = () => 'font-bold max-sm:text-xs  md:text-lg font-sans text-center';
@@ -165,6 +182,33 @@
 									Log-out
 								{/if}
 							</button>
+							{#if showModal}
+											<div
+												class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+											>
+												<div
+													class="bg-white p-6 rounded shadow-lg max-w-sm w-full border-2 border-black"
+												>
+													<h3 class="text-lg font-semibold">
+														Logging out will end your session. Do you want to continue?
+													</h3>
+													<div class="mt-4 flex justify-between">
+														<button
+															class="bg-green-500 text-white px-14 py-2  rounded hover:bg-green-600 hover:border-2 hover:border-black"
+															on:click={() => handleConfirmLout()}
+														>
+															Yes
+														</button>
+														<button
+															class="bg-red-500 text-white rounded px-14 py-2  hover:bg-red-600 hover:border-2 hover:border-black"
+															on:click={() => cancelLogOut(false)}
+														>
+														No
+														</button>
+													</div>
+												</div>
+											</div>
+										{/if}
 						</div>
 					</div>
 				</div>

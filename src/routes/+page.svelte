@@ -1,4 +1,4 @@
-<script>
+ <script>
 	import '../../src/app.css';
 	import { LOGIN } from '$lib/userLogin.js';
 	import { signInWithEmailAndPassword } from 'firebase/auth';

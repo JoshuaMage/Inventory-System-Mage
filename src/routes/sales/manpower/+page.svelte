@@ -4,7 +4,7 @@
 	import { onDestroy } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
 	import { ref, set } from 'firebase/database';
-	import SearchInput from '../../inventory/materialPurchase/SearchInput.svelte';
+
 	import Pagination from '../../inventory/materialStock/Pagination.svelte';
 	import Loader from '../../loader.svelte';
 
@@ -70,23 +70,25 @@
 		}
 	}
 	const PurchaseListCss = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  sm:w-14 md:w-16 lg:w-48 xl:w-52 2xl:w-56 text-center';
+		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center   text-center';
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-48 xl:w-52 2xl:w-56  text-center';
+		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  text-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen">
+<main
+	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen"
+>
 	<div class="flex flex-col max-sm:w-screen">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
 				<Loader />
 			</div>
 		{:else}
-			<div class=" shadow md:block bg-white  text-center">
+			<div class="shadow md:block bg-white text-center">
 				<div class="flex flex-col font-patrick rounded-lg">
 					<div class="md:bg-bgGrey max-sm:px-1">
-						<div class=" flex justify-center">
+						<div class="flex justify-center">
 							<div class="relative">
 								<input
 									type="text"
@@ -117,27 +119,29 @@
 								</svg>
 							</div>
 						</div>
-						<ul
-							class="max-sm:text-xs grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white"
-						>
+
+						<ul class="max-sm:text-xs grid grid-cols-7 max-sm:gap-1 font-extrabold text-white">
 							<li class={listCss()}><button class={PurchaseListCss}>ID</button></li>
 							<li class={listCss()}><button class={PurchaseListCss}>Full Name</button></li>
 							<li class={listCss()}><button class={PurchaseListCss}>Email</button></li>
 							<li class={listCss()}><button class={PurchaseListCss}>Contact Number</button></li>
-							<li class={listCss()}><button class={PurchaseListCss}>Address</button></li>
+							<li class={`${listCss()} col-span-2`}>
+								<button class={PurchaseListCss}>Address</button>
+							</li>
 							<li class={listCss()}><button class={PurchaseListCss}>Salary</button></li>
 						</ul>
 					</div>
 
 					{#each displayedItems as person}
 						<ul
-							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-2 md:flex font-extrabold text-black justify-center"
+							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-7 max-sm:gap-2 font-extrabold text-black justify-center"
 						>
 							<li><h4 class={h4Css()}>{person.id}</h4></li>
 							<li><h4 class={h4Css()}>{person.fullName}</h4></li>
 							<li><h4 class={h4Css()}>{person.email}</h4></li>
 							<li><h4 class={h4Css()}>{person.phoneNumber}</h4></li>
-							<li><h4 class={h4Css()}>{person.address}</h4></li>
+							<li class="col-span-2"><h4 class={h4Css()}>{person.address}</h4></li>
+
 							<li><h4 class={h4Css()}>₱ {person.salary}</h4></li>
 						</ul>
 					{/each}

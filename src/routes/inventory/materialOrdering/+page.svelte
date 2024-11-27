@@ -13,7 +13,6 @@
 	let inventoryData = [];
 	let status = ['Arrive', 'Pending', 'Delay'];
 	let editingId = null;
-	let tempStatus = '';
 	let searchItem = '';
 	let currentPage = 1;
 	let itemsPerPage = 7;
@@ -64,9 +63,9 @@
 				vendorPhoneNumber: '',
 				vendorEmail: '',
 				vendorAddress: '',
-				uniPrice: '',
+				uniPrice: 0,
 				status: '',
-				orderQty: '',
+				orderQty: 0,
 				datePurchase: '',
 				etd: '',
 				eta: '',
@@ -121,7 +120,8 @@
 		for (const column of columns) {
 			const errors = [];
 			if (!column.materialName) errors.push('Material Name is required.');
-			if (!column.orderQty) errors.push('Order Qty is required.');
+			if (!column.status) errors.push('Order Qty is required.');
+			if (!column.orderQty) errors.push('Material Status is required.');
 			if (!column.datePurchase) errors.push('Date Purchase is required.');
 			if (!column.etd) errors.push('ETD is required.');
 			if (!column.eta) errors.push('ETA is required.');
@@ -262,18 +262,30 @@
 									class="max-sm:grid max-sm:grid-cols-3 max-sm:px-1flex flex gap-0"
 									id={column.id}
 								>
-									{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice', 'status'] as field}<select
+									{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}
+										<select
 											class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2 text-xs"
 											value={column[field]}
 											on:change={(event) => handleSelectChange(event, column.id, field)}
 										>
 											<option value="" class="text-xs">Select</option>
-
-											{#each inventoryData as item}
-												<option value={item[field]}>{item[field]}</option>
+											{#each Array.from(new Set(inventoryData.map((item) => item[field]))) as uniqueValue}
+												<option value={uniqueValue}>{uniqueValue}</option>
 											{/each}
 										</select>
 									{/each}
+
+									<!-- Separate dropdown for status -->
+									<select
+										class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2 text-xs"
+										value={column.status}
+										on:change={(event) => handleSelectChange(event, column.id, 'status')}
+									>
+										<option value="" class="text-xs">Select Status</option>
+										{#each status as statusOption}
+											<option value={statusOption}>{statusOption}</option>
+										{/each}
+									</select>
 
 									<input
 										type="number"
@@ -342,10 +354,10 @@
 									on:click={handleSubmit}
 									class="w-16 max-sm:text-xs md:w-24 h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-green-300 hover:bg-green-700 hover:border hover:border-green-800"
 									>Submit</button
-								>	
+								>
 								<button
 									on:click={() => (columns = [])}
-									class="w-16 md:w-24 max-sm:text-xs h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700  hover:border hover:border-red-800"
+									class="w-16 md:w-24 max-sm:text-xs h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700 hover:border hover:border-red-800"
 									>Delete</button
 								>
 							</div>
@@ -390,14 +402,14 @@
 												value={item.status}
 												on:change={(event) => handleEdit(item.id, event.target.value)}
 											>
-												{#each status as status}
-													<option value={status}>{status}</option>
+												{#each status as statusOption}
+													<option value={statusOption}>{statusOption}</option>
 												{/each}
 											</select>{:else}
 											<h4>{item.status}</h4>{/if}
 									</li>
 									<li class={orderingCss()}><h4>{item.orderQty}</h4></li>
-									<li class={orderingCss()}><h4>{computeTotal(item)}</h4></li>
+									<li class={orderingCss()}><h4>{computeTotal(item).toLocaleString()}</h4></li>
 									<li class={orderingCss()}><h4>{item.datePurchase}</h4></li>
 									<li class={orderingCss()}><h4>{item.etd}</h4></li>
 									<li class={orderingCss()}><h4>{item.eta}</h4></li>

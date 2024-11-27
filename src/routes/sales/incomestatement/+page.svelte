@@ -52,45 +52,47 @@
 		});
 	});
 
-	// Filter the data by the selected year
-	function filterByYear(data, year) {
-		console.log('Filtering data for year:', year);
+	//  Filter the data by the selected year for saleSummaryValue
+	function filterBySaleYear(data, year) {
 		return data.filter((item) => {
 			const itemYear = new Date(item.saleDate).getFullYear();
-			console.log('Item Year:', itemYear);
+			return itemYear === year;
+		});
+	}
+
+	// Filter the data by the selected year for purchaseSummaryValue
+
+	function filterByPurchaseYear(data, year) {
+		return data.filter((item) => {
+			const itemYear = new Date(item.datePurchase).getFullYear();
+
 			return itemYear === year;
 		});
 	}
 
 	// Reactive statement: filter data when selectedYear changes
-	$: filteredData = filterByYear(materialPurchase, selectedYear);
+	$: filteredData = filterBySaleYear(materialPurchase, selectedYear);
+	$: filteredPurchaseData = filterByPurchaseYear(materialPurchase, selectedYear);
 
 	// Calculate sale summary
-	function saleSummary() {
-		console.log('Calculating saleSummary for filteredData:', filteredData);
-		return filteredData.reduce((acc, purchase) => {
-			return acc + (purchase.stockOut * (parseFloat(purchase.unitPrice) * 2) || 0);
-		}, 0);
-	}
+	$: saleSummaryValue = filteredData.reduce((acc, purchase) => {
+		return acc + (purchase.stockOut * purchase.unitPrice * 2 || 0);
+	}, 0);
 
-	// Calculate purchase summary
-	function purchaseSummary() {
-		console.log('Calculating purchaseSummary for filteredData:', filteredData);
-		return filteredData.reduce((acc, purchase) => {
-			return acc + (parseFloat(purchase.orderQty) * parseFloat(purchase.unitPrice) || 0);
-		}, 0);
-	}
+	$: purchaseSummaryValue = filteredPurchaseData.reduce((acc, purchase) => {
+		return acc + (purchase.orderQty * purchase.unitPrice || 0);
+	}, 0);
 
 	// Calculate manpower wage summary
-	function manPowerWage() {
-		return manPower.reduce((acc, wage) => {
-			return acc + (wage.salary * 26 * 12 || 0); // Assuming `wage.salary` exists
-		}, 0);
-	}
+	$: manPowerWageValue = manPower.reduce((acc, wage) => {
+		return acc + (wage.salary * 26 * 12 || 0); // Assuming `wage.salary` exists
+	}, 0);
 </script>
 
-<main 	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen">
-	<div class="max-sm:w-screen max-sm:px-1 w-1/3 ">
+<main
+	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen"
+>
+	<div class="max-sm:w-screen max-sm:px-1 w-1/3">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
 				<Loader />
@@ -104,10 +106,7 @@
 					<h2 class="text-base text-white font-black">Income Statement</h2>
 					<h2 class="text-white">
 						For the year ended:
-						<select
-							bind:value={selectedYear}
-							class="text-white font-black bg-bgGrey text-base"
-						>
+						<select bind:value={selectedYear} class="text-white font-black bg-bgGrey text-base px-2">
 							{#each years as year}
 								<option value={year}>{year}</option>
 							{/each}
@@ -124,30 +123,30 @@
 						<h2 class="text-lg p-7 font-black max-sm:h-24">Net Income :</h2>
 					</div>
 					<div>
-						<h4 class="text-lg p-7 font-black max-sm:h-24">{saleSummary().toLocaleString()}</h4>
+						<h4 class="text-lg p-7 font-black max-sm:h-24">{saleSummaryValue.toLocaleString()}</h4>
 
 						<h4
 							class="text-lg p-7 font-black max-sm:h-24 underline decoration-solid decoration-2 underline-offset-8"
 						>
-							{purchaseSummary().toLocaleString()}
+							{purchaseSummaryValue.toLocaleString()}
 						</h4>
 						<h4
-						class={`text-lg p-7 font-black max-sm:h-24 ${saleSummary() - purchaseSummary() < 0 ? 'text-red-500' : 'text-black'}`}
+							class={`text-lg p-7 font-black max-sm:h-24 ${saleSummaryValue - purchaseSummaryValue < 0 ? 'text-red-500' : 'text-black'}`}
 						>
-							{(saleSummary() - purchaseSummary()).toLocaleString()}
+							{(saleSummaryValue - purchaseSummaryValue).toLocaleString()}
 						</h4>
-						<h4 class="text-lg p-7 font-black max-sm:h-24">{manPowerWage().toLocaleString()}</h4>
+						<h4 class="text-lg p-7 font-black max-sm:h-24">{manPowerWageValue.toLocaleString()}</h4>
 						<h4 class="text-lg p-7 font-black max-sm:h-24">
-							{(manPowerWage() / 12).toLocaleString()}
+							{(manPowerWageValue / 12).toLocaleString()}
 						</h4>
 						<h4
 							class={`text-lg p-7 font-black max-sm:h-24 underline decoration-double decoration-2 underline-offset-8 ${
-								saleSummary() - manPowerWage() < 0 ? 'text-red-500' : 'text-black'
+								saleSummaryValue - manPowerWageValue < 0 ? 'text-red-500' : 'text-black'
 							}`}
 						>
 							{(
-								saleSummary() -
-								(purchaseSummary() + manPowerWage() + manPowerWage() / 12)
+								saleSummaryValue -
+								(purchaseSummaryValue + manPowerWageValue + manPowerWageValue / 12)
 							).toLocaleString()}
 						</h4>
 					</div>

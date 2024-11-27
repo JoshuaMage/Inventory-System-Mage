@@ -3,8 +3,8 @@
 	import { MANPOWER as manpowerList } from '$lib/manPowerList';
 	import { onDestroy } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
-	import { ref, set, remove, onValue  } from 'firebase/database';	
-	import Pagination from '../inventory/materialStock/pagination.svelte';
+	import { ref, set} from 'firebase/database';	
+	import Pagination from '../inventory/materialStock/Pagination.svelte';
 
 	let MANPOWER = [];
 	let displayedInventory = [];
