@@ -13,6 +13,7 @@
 	let inventoryData = [];
 	let status = ['Arrive', 'Pending', 'Delay'];
 	let editingId = null;
+	let tempOrderQty = null;
 	let searchItem = '';
 	let currentPage = 1;
 	let itemsPerPage = 7;
@@ -137,19 +138,19 @@
 		return valid;
 	}
 
-	async function handleDelete(id) {
-		// Filter out the item to be deleted
-		const newOutput = output.filter((item) => item.id !== id);
+	// async function handleDelete(id) {
+	// 	// Filter out the item to be deleted
+	// 	const newOutput = output.filter((item) => item.id !== id);
 
-		// Update the local state
-		output = newOutput;
+	// 	// Update the local state
+	// 	output = newOutput;
 
-		// Update Firebase with the new state
-		const outputRef = ref(db, 'outputs');
-		await set(outputRef, newOutput).catch((error) =>
-			console.error('Error updating Firebase:', error)
-		);
-	}
+	// 	// Update Firebase with the new state
+	// 	const outputRef = ref(db, 'outputs');
+	// 	await set(outputRef, newOutput).catch((error) =>
+	// 		console.error('Error updating Firebase:', error)
+	// 	);
+	// }
 
 	function computeTotal(column) {
 		const uniPrice = parseFloat(column.uniPrice) || 0;
@@ -215,9 +216,20 @@
 
 	function startEdit(id, currentStatus) {
 		editingId = id; // Set the current item ID to edit
-
-		tempStatus = currentStatus; // Set the temporary status
+		tempOrderQty = currentStatus; // Set the temporary status
 	}
+
+	function saveEdit(id) {
+        const itemToUpdate = output.find((item) => item.id === id);
+
+        if (itemToUpdate) {
+            itemToUpdate.orderQty = tempOrderQty;
+            saveToFirebase(); 
+        }
+
+        editingId = null; 
+        tempOrderQty = null; 
+    }
 
 	function goToPage(page) {
 		currentPage = page;
@@ -378,7 +390,7 @@
 
 					{#if output.length > 0}
 						<div class="max-sm:gap-1 text-sm max-sm:grid max-sm:grid-cols-3 max-sm:mt-2 md:flex">
-							{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit', 'Delete'] as header}
+							{#each ['ID', 'Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date', 'Edit'] as header}
 								<div
 									class=" max-sm:flex-1 max-sm:text-xs border text-white border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-full lg:w-20 xl:w-24 2xl:w-28 text-center"
 								>
@@ -414,24 +426,39 @@
 											</select>{:else}
 											<h4>{item.status}</h4>{/if}
 									</li>
-									<li class={orderingCss()}><h4>{item.orderQty}</h4></li>
+									<li class={orderingCss()}>
+										{#if editingId === item.id}
+											<input
+												type="number"
+												class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
+												bind:value={tempOrderQty} 
+											/>
+										{:else}
+											<h4>{item.orderQty}</h4>
+										{/if}
+									</li>
 									<li class={orderingCss()}><h4>{computeTotal(item).toLocaleString()}</h4></li>
 									<li class={orderingCss()}><h4>{item.datePurchase}</h4></li>
 									<li class={orderingCss()}><h4>{item.etd}</h4></li>
 									<li class={orderingCss()}><h4>{item.eta}</h4></li>
 									<li class={orderingCss()}><h4>{item.arrivalDate}</h4></li>
-									<li
-										class="grid grid-cols-2 justify-items-center content-center max-sm:w-screen max-sm:mb-1 md:flex-1 text-center gap-2"
-									>
-										<button
-											on:click={() => startEdit(item.id, item.status)}
-											class="h-4 md:h-8 max-sm:w-16 text-xs font-medium rounded-lg text-white hover:text-black bg-black hover:bg-white w-20 hover:border hover:border-black"
-											>Edit</button
-										><button
+									<li class="grid justify-items-center content-center max-sm:w-screen max-sm:mb-1 md:flex-1 text-center gap-2">
+										{#if editingId === item.id}
+											<button
+												on:click={() => saveEdit(item.id)}
+												class="h-4 md:h-8 max-sm:w-16 text-xs font-medium rounded-lg text-white hover:text-black bg-green-500 hover:bg-green-700 w-20 hover:border hover:border-black"
+											>Save</button>
+										{:else}
+											<button
+												on:click={() => startEdit(item.id, item.orderQty)}
+												class="h-4 md:h-8 max-sm:w-16 text-xs font-medium rounded-lg text-white hover:text-black bg-black hover:bg-white w-20 hover:border hover:border-black"
+											>Edit</button>
+										{/if}
+						
+										<!-- <button
 											on:click={() => handleDelete(item.id)}
 											class="h-4 md:h-8 max-sm:w-16 text-xs font-medium rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700 w-20 hover:border hover:border-black"
-											>Delete</button
-										>
+										>Delete</button> -->
 									</li>
 								</ul>
 							{/each}

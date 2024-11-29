@@ -102,6 +102,18 @@
 					materialPurchase = [];
 				}
 			});
+			onValue(purchaseRef, (snapshot) => {
+                const currentPurchaseIds = new Set();
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        currentPurchaseIds.add(childSnapshot.key);
+                    });
+                }
+
+                // Remove submissions for deleted purchases
+                submissions = submissions.filter(submission => currentPurchaseIds.has(submission.purchaseId));
+                localStorage.setItem('submissions', JSON.stringify(submissions));
+            });
 		}, 2000);
 	});
 
@@ -290,6 +302,8 @@
 
 			const incomeStatementItem = {
 				purchaseId: purchase.purchaseId,
+				materialName: purchase.materialName,
+				unit: purchase.unit,
 				datePurchase: purchase.datePurchase,
 				orderQty: purchase.orderQty,
 				unitPrice: purchase.uniPrice,

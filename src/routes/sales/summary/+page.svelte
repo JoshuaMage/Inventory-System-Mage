@@ -1,10 +1,9 @@
 <script>
 	import { onMount } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
-	import { ref, get, onValue } from 'firebase/database';
+	import { ref, onValue } from 'firebase/database';
 	import SearchInput from '../../inventory/materialPurchase/SearchInput.svelte';
 	import Pagination from '../../inventory/materialStock/Pagination.svelte';
-	import { INVENTORY } from '$lib/materialStock.js';
 	import Loader from '../../loader.svelte';
 
 	let searchItem = '';
@@ -13,56 +12,19 @@
 	let materialPurchase = [];
 	let loading = true;
 	let values = [];
-	let totalQtyByItem = {};
 
-	function getUnitPrice(materialName) {
-		const item = $INVENTORY.find((material) => material.materialName === materialName);
-		return item ? item.uniPrice : 0;
-	}
-
-	const getTotalQtyByItem = async () => {
-		const submissionsRef = ref(db, 'submissions');
-		get(submissionsRef)
-			.then((snapshot) => {
-				const data = snapshot.val();
-
-				if (data) {
-					const totalQty = {};
-					for (let submissionId in data) {
-						const submission = data[submissionId];
-						const itemId = submission.item;
-						const qty = parseFloat(submission.qty);
-
-						if (!totalQty[itemId]) {
-							totalQty[itemId] = 0;
-						}
-						totalQty[itemId] += qty;
-					}
-					totalQtyByItem = totalQty;
-				}
-			})
-			.catch((error) => {
-				console.error('Error fetching data:', error);
-			});
-	};
-
-	onMount(async () => {
-		await getTotalQtyByItem();
-
-		const purchaseRef = ref(db, 'submissions');
+	onMount(() => {
+		const purchaseRef = ref(db, 'incomeStatementData');
 		onValue(purchaseRef, (snapshot) => {
 			loading = false;
 			if (snapshot.exists()) {
 				materialPurchase = [];
-				values = [];
 				snapshot.forEach((childSnapshot) => {
 					const purchaseData = childSnapshot.val();
+					console.log('Fetched data:', purchaseData); // Debugging line
 					materialPurchase.push(purchaseData);
 				});
-
-				values = materialPurchase.map((_, index) => {
-					return parseFloat(localStorage.getItem(`purchaseValue_${index}`)) || 0;
-				});
+				console.log('Material Purchase:', materialPurchase); // Log the entire array
 			} else {
 				console.log('No Data available');
 			}
@@ -73,13 +35,14 @@
 		currentPage = page;
 	}
 
+	$: console.log('Displayed Items:', displayedItems);
+
 	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
 
-	$: filteredItem = materialPurchase.filter((item) =>
-		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
+	$: filteredItem = materialPurchase.filter(
+		(item) => item.purchaseId && item.purchaseId.toString().includes(searchItem)
 	);
-
-	$: uniqueItems = [...new Map(filteredItem.map((item) => [item.item, item])).values()];
+	$: uniqueItems = [...new Map(filteredItem.map((item) => [item.itemNumber, item])).values()];
 
 	$: displayedItems = uniqueItems.slice(
 		(currentPage - 1) * itemsPerPage,
@@ -93,16 +56,18 @@
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen">
+<main
+	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen"
+>
 	<div class="flex flex-col max-sm:w-screen">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
 				<Loader />
 			</div>
 		{:else}
-		<div iv class=" shadow md:block bg-white mt-24 text-center">
-			<div class="flex flex-col font-patrick rounded-lg">
-				<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
+			<div iv class=" shadow md:block bg-white mt-24 text-center">
+				<div class="flex flex-col font-patrick rounded-lg">
+					<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
 						<SearchInput bind:searchItem />
 						<ul
 							class="max-sm:text-xs grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white"
@@ -115,32 +80,24 @@
 							<li class={listCss()}><button class={PurchaseListCss()}>Sale Qty</button></li>
 							<li class={listCss()}><button class={PurchaseListCss()}>Market Price</button></li>
 							<li class={listCss()}><button class={PurchaseListCss()}>Revenue</button></li>
-							<li class={listCss()}><button class={PurchaseListCss()}>Status</button></li>
 						</ul>
 					</div>
 					{#each displayedItems as purchase}
 						<ul
 							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-2 md:flex font-extrabold text-black justify-center"
 						>
-							<li><h4 class={h4Css()}>{purchase.item}</h4></li>
+							<li><h4 class={h4Css()}>{purchase.itemNumber}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.unit}</h4></li>
-							<li><h4 class={h4Css()}>{purchase.orderQty}</h4></li>
-							<li><h4 class={h4Css()}>{getUnitPrice(purchase.materialName)}</h4></li>
-							<li><h4 class={h4Css()}>{totalQtyByItem[purchase.item] || 0}</h4></li>
+							<li><h4 class={h4Css()}>{purchase.orderQty.toLocaleString()}</h4></li>
+							<li><h4 class={h4Css()}>{purchase.unitPrice}</h4></li>
+							<li><h4 class={h4Css()}>{purchase.stockOut.toLocaleString()}</h4></li>
 							<li>
-								<h4 class={h4Css()}>{parseFloat(getUnitPrice(purchase.materialName)) * 2}</h4>
+								<h4 class={h4Css()}>{purchase.unitPrice * 2}</h4>
 							</li>
 							<li>
 								<h4 class={h4Css()}>
-									{purchase.qty * parseFloat(getUnitPrice(purchase.materialName)) * 2}
-								</h4>
-							</li>
-							<li class={h4Css()}>
-								<h4
-									class={`${purchase.status === 'Pending' || purchase.status === 'Delay' ? 'text-red-600' : 'text-black'}`}
-								>
-									{purchase.status}
+									{(purchase.stockOut * purchase.unitPrice * 2).toLocaleString()}
 								</h4>
 							</li>
 						</ul>

@@ -130,6 +130,7 @@
 						>
 							{purchaseSummaryValue.toLocaleString()}
 						</h4>
+						
 						<h4
 							class={`text-lg p-7 font-black max-sm:h-24 ${saleSummaryValue - purchaseSummaryValue < 0 ? 'text-red-500' : 'text-black'}`}
 						>
@@ -141,7 +142,7 @@
 						</h4>
 						<h4
 							class={`text-lg p-7 font-black max-sm:h-24 underline decoration-double decoration-2 underline-offset-8 ${
-								saleSummaryValue - manPowerWageValue < 0 ? 'text-red-500' : 'text-black'
+								saleSummaryValue - (purchaseSummaryValue + manPowerWageValue + manPowerWageValue / 12) < 0 ? 'text-red-500' : 'text-black'
 							}`}
 						>
 							{(
