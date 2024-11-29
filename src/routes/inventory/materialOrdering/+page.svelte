@@ -138,11 +138,17 @@
 	}
 
 	async function handleDelete(id) {
+		// Filter out the item to be deleted
 		const newOutput = output.filter((item) => item.id !== id);
+
+		// Update the local state
 		output = newOutput;
-		// Update Firebase
+
+		// Update Firebase with the new state
 		const outputRef = ref(db, 'outputs');
-		await set(outputRef, newOutput); // Update entire outputs after deletion
+		await set(outputRef, newOutput).catch((error) =>
+			console.error('Error updating Firebase:', error)
+		);
 	}
 
 	function computeTotal(column) {
@@ -245,8 +251,8 @@
 				<div
 					class="overflow-hidden max-sm:px-1 md:rounded-lg shadow md:block mt-24 max-sm:w-screen"
 				>
-					<div class="flex flex-col justify-between bg-white text-white">
-						<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 md:flex md:font-bold">
+					<div class="flex flex-col justify-between bg-white text-white border-2 border-black">
+						<div class="max-sm:gap-1 max-sm:grid max-sm:grid-cols-3 md:flex md:font-bold h-20">
 							{#each ['Mtrl Name', 'Mtrl Code', 'Mtrl Unit', 'Vendor', 'Phone#', 'Vendor Email', 'Address', 'Unit Price', 'Status', 'Order Qty', 'Total Amount', 'Date Purchase', 'Delivery Date', 'ETA Date', 'Arrival Date'] as header}
 								<div
 									class="max-sm:flex-1 max-sm:text-xs text-sm border border-gray-300 bg-bgGrey border-none m-0 py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center"
@@ -256,10 +262,10 @@
 							{/each}
 						</div>
 
-						<div class=" bg-white py-2 text-black">
+						<div class=" bg-white text-black">
 							{#each columns as column (column.id)}
 								<div
-									class="max-sm:grid max-sm:grid-cols-3 max-sm:px-1flex flex gap-0"
+									class="max-sm:grid max-sm:grid-cols-3 max-sm:px-1flex flex gap-0 border border-gray-400 py-2"
 									id={column.id}
 								>
 									{#each ['materialName', 'materialCode', 'unit', 'vendor', 'vendorPhoneNumber', 'vendorEmail', 'vendorAddress', 'uniPrice'] as field}
@@ -277,7 +283,7 @@
 
 									<!-- Separate dropdown for status -->
 									<select
-										class="border-none border-gray-300 place-content-center sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2 text-xs"
+										class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
 										value={column.status}
 										on:change={(event) => handleSelectChange(event, column.id, 'status')}
 									>
@@ -290,13 +296,13 @@
 									<input
 										type="number"
 										placeholder="Order Qty"
-										class="border-gray-300 border-none sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2 text-xs"
+										class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
 										value={column.orderQty}
 										on:input={(event) => handleInputChange(event, column.id, 'orderQty')}
 									/>
 
 									<div
-										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+										class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
 									>
 										{computeTotal(column)}
 									</div>
@@ -304,7 +310,7 @@
 									<input
 										type="date"
 										placeholder="Date Purchase"
-										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2 text-xs"
+										class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
 										value={column.datePurchase}
 										on:input={(event) => handleInputChange(event, column.id, 'datePurchase')}
 									/>
@@ -312,7 +318,7 @@
 									<input
 										type="date"
 										placeholder="ETD"
-										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2 text-xs"
+										class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
 										value={column.etd}
 										on:input={(event) => handleInputChange(event, column.id, 'etd')}
 									/>
@@ -320,7 +326,7 @@
 									<input
 										type="date"
 										placeholder="ETA"
-										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2 text-xs"
+										class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
 										value={column.eta}
 										on:input={(event) => handleInputChange(event, column.id, 'eta')}
 									/>
@@ -328,7 +334,7 @@
 									<input
 										type="date"
 										placeholder="Arrival Date"
-										class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2 text-xs"
+										class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
 										value={column.arrivalDate}
 										on:input={(event) => handleInputChange(event, column.id, 'arrivalDate')}
 									/>
@@ -337,27 +343,27 @@
 						</div>
 						<div class="overflow-hidden">
 							{#if formError}
-								<div class="max-sm:text-xs text-red-500 mt-2 w-errorwidth bg-white">
+								<div class="max-sm:text-xs font-black text-red-500 mt-2 w-errorwidth bg-white">
 									{formError}
 								</div>
 							{/if}
 						</div>
 
 						<div class=" md:w-full md:flex md:flex-col justify-end gap-2 bg-white overflow-hidden">
-							<div class="flex gap-2 py-2 justify-end">
+							<div class="flex gap-2 py-2 px-1 justify-end">
 								<button
 									on:click={addColumn}
-									class=" w-20 md:w-24 max-sm:text-xs h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-blue-400 hover:bg-blue-700 hover:border hover:border-blue-800"
-									>Add Column</button
+									class=" w-20 md:w-24 max-sm:text-xs h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-blue-400 hover:bg-blue-700 hover:border hover:border-black"
+									>Purchase</button
 								>
 								<button
 									on:click={handleSubmit}
-									class="w-16 max-sm:text-xs md:w-24 h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-green-300 hover:bg-green-700 hover:border hover:border-green-800"
+									class="w-16 max-sm:text-xs md:w-24 h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-green-300 hover:bg-green-700 hover:border hover:border-black"
 									>Submit</button
 								>
 								<button
 									on:click={() => (columns = [])}
-									class="w-16 md:w-24 max-sm:text-xs h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700 hover:border hover:border-red-800"
+									class="w-16 md:w-24 max-sm:text-xs h-8 text-xs font-bold rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700 hover:border hover:border-black"
 									>Delete</button
 								>
 							</div>
@@ -381,7 +387,7 @@
 							{/each}
 						</div>
 
-						<div class="flex flex-col bg-white text-xs font-normal max-sm:mt-4 font-mono">
+						<div class="flex flex-col bg-white text-xs font-normal font-mono border-2 border-black">
 							{#each displayedItems as item, index}
 								<ul
 									key={item.id}
@@ -398,7 +404,7 @@
 									<li class={orderingCss()}>
 										{#if editingId === item.id}
 											<select
-												class="border-gray-300 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center py-2"
+												class="border-none border-gray-300 place-content-center py-0 sm:w-14 md:w-16 lg:w-20 xl:w-24 2xl:w-28 text-center text-xs"
 												value={item.status}
 												on:change={(event) => handleEdit(item.id, event.target.value)}
 											>
@@ -415,7 +421,7 @@
 									<li class={orderingCss()}><h4>{item.eta}</h4></li>
 									<li class={orderingCss()}><h4>{item.arrivalDate}</h4></li>
 									<li
-										class="flex max-sm:gap-2 max-sm:justify-end max-sm:w-screen max-sm:mb-1 md:flex-1 text-center gap-2"
+										class="grid grid-cols-2 justify-items-center content-center max-sm:w-screen max-sm:mb-1 md:flex-1 text-center gap-2"
 									>
 										<button
 											on:click={() => startEdit(item.id, item.status)}
@@ -423,7 +429,7 @@
 											>Edit</button
 										><button
 											on:click={() => handleDelete(item.id)}
-											class="h-4 md:h-8 max-sm:w- text-xs font-medium rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700 w-20 hover:border hover:border-red-800"
+											class="h-4 md:h-8 max-sm:w-16 text-xs font-medium rounded-lg text-black hover:text-white bg-red-300 hover:bg-red-700 w-20 hover:border hover:border-black"
 											>Delete</button
 										>
 									</li>

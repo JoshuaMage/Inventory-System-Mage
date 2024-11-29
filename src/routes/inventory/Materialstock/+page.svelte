@@ -22,6 +22,7 @@
 		materialCode: '',
 		purchaseId: ''
 	};
+
 	let firstDivVisible = true;
 	let qty = '';
 	let date = '';
@@ -39,7 +40,6 @@
 			const purchaseRef = ref(db, 'outputs');
 			const stockOutRef = ref(db, 'submissions');
 			const incomeStatementRef = ref(db, 'incomeStatementData');
-
 			const storedItems = JSON.parse(localStorage.getItem('submittedItems')) || [];
 			submittedItems = storedItems;
 
@@ -60,7 +60,6 @@
 				if (snapshot.exists()) {
 					materialPurchase = [];
 					values = [];
-
 					snapshot.forEach((childSnapshot) => {
 						const purchaseData = childSnapshot.val();
 						purchaseData.purchaseId = childSnapshot.key;
@@ -69,6 +68,7 @@
 					});
 				} else {
 					console.log('No Data available');
+
 					materialPurchase = [];
 				}
 			});
@@ -78,14 +78,12 @@
 				if (snapshot.exists()) {
 					materialPurchase = [];
 					values = [];
-
 					snapshot.forEach((childSnapshot) => {
 						const purchaseData = childSnapshot.val();
 						purchaseData.purchaseId = childSnapshot.key;
 						materialPurchase.push(purchaseData);
 						values.push(purchaseData.stockOut || 0);
 
-						// Add data to incomeStatementData
 						const incomeStatementItem = {
 							purchaseId: purchaseData.purchaseId,
 							datePurchase: purchaseData.datePurchase,
@@ -94,7 +92,6 @@
 							stockOut: purchaseData.stockOut || 0
 						};
 
-						// Set the item in the incomeStatementData
 						set(
 							ref(db, `incomeStatementData/${purchaseData.purchaseId}`),
 							incomeStatementItem
@@ -123,7 +120,6 @@
 		} else {
 			showForm = index;
 			firstDivVisible = false;
-
 			const purchase = displayedItems[index];
 			const inventoryItem = $INVENTORY.find((item) => item.materialName === purchase.materialName);
 
@@ -160,7 +156,6 @@
 			}
 
 			const purchase = materialPurchase.find((p) => p.purchaseId === selectedItem.purchaseId);
-
 			const submission = {
 				id: Date.now(),
 				item: selectedItem.item,
@@ -176,10 +171,8 @@
 				status: purchase.status
 			};
 
-			// Update the local submissions array reactively
 			submissions = [...submissions, submission];
 			localStorage.setItem('submissions', JSON.stringify(submissions));
-
 			const submissionsRef = ref(db, 'submissions');
 			set(submissionsRef, submissions).catch((error) => console.error(error));
 
@@ -187,8 +180,10 @@
 				if (p.purchaseId === selectedItem.purchaseId) {
 					return { ...p, stockOutQty: getQuantityForPurchase(p) };
 				}
+
 				return p;
 			});
+
 			materialPurchase = updatedPurchase;
 
 			submissionMessage = 'Submission successful!';
@@ -210,7 +205,6 @@
 	}
 
 	function confirmDelete(filteredIndex) {
-		// Find the original index of the submission in the submissions array
 		const submissionToDelete = submissions.find((sub, originalIndex) => {
 			if (sub.item === selectedItem.item) {
 				if (filteredIndex === 0) {
@@ -226,19 +220,19 @@
 			console.error('Submission not found.');
 			return;
 		}
-
 		const submissionsRef = ref(db, `submissions/${submissionToDelete.id}`);
 
 		remove(submissionsRef)
 			.then(() => {
-				// Update the local submissions array reactively
 				submissions = submissions.filter((sub) => sub.id !== submissionToDelete.id);
 				localStorage.setItem('submissions', JSON.stringify(submissions));
 				console.log('Submission deleted successfully from Firebase and local storage.');
 			})
+
 			.catch((error) => {
 				console.error('Error deleting submission from Firebase: ', error);
 			});
+
 		showModal = false;
 	}
 
@@ -253,6 +247,7 @@
 		);
 		const totalQuantity = matchingSubmissions.reduce(
 			(total, sub) => total + parseFloat(sub.qty || 0),
+
 			0
 		);
 		return totalQuantity;
@@ -262,11 +257,9 @@
 		const matchingSubmissions = submissions.filter(
 			(sub) => sub.materialName === purchase.materialName && sub.purchaseId === purchase.purchaseId
 		);
-
 		if (matchingSubmissions.length === 0) {
 			return 'No Sale Data';
 		}
-
 		matchingSubmissions.sort((a, b) => new Date(b.date) - new Date(a.date));
 		return matchingSubmissions[0].date;
 	}
@@ -283,15 +276,18 @@
 	$: filteredItem = materialPurchase.filter((item) =>
 		item.materialName.toLowerCase().includes(searchItem.toLowerCase())
 	);
+
 	$: displayedItems = filteredItem.slice(
 		(currentPage - 1) * itemsPerPage,
 		currentPage * itemsPerPage
 	);
+
 	$: totalPages = Math.ceil(materialPurchase.length / itemsPerPage);
 
 	$: {
-		// Check for any updates in the displayedItems and update the Firebase
-		displayedItems.forEach((purchase) => {
+		displayedItems.forEach((purchase, index) => {
+			const itemNumber = (currentPage - 1) * itemsPerPage + index + 1; // Calculate the item number
+
 			const incomeStatementItem = {
 				purchaseId: purchase.purchaseId,
 				datePurchase: purchase.datePurchase,
@@ -299,7 +295,8 @@
 				unitPrice: purchase.uniPrice,
 				stockOut: getQuantityForPurchase(purchase),
 				currentStock: purchase.orderQty - getQuantityForPurchase(purchase),
-				saleDate: getLatestSubmissionDate(purchase)
+				saleDate: getLatestSubmissionDate(purchase),
+				itemNumber: itemNumber // Add the item number to the object
 			};
 
 			// Update or add to incomeStatementData in Firebase
@@ -311,15 +308,22 @@
 
 	const PurchaseListCss = () =>
 		'text-lg max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-32 xl:w-28 2xl:w-32 text-center';
+
 	const listCss = () => 'max-sm:bg-bgGrey';
+
 	const h4Css = () =>
 		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  lg:w-32 xl:w-28 2xl:w-32 text-center';
+
 	const labelCss = () =>
 		'text-sm md:text-lg font-bold font-patrick text-start hover:underline hover:underline-offset-4 hover:decoration-solid hover:decoration-2 hover:decoration-nextPrevButton md:pr-2';
+
 	const outputCss = () =>
 		' h-6 md:h-8  flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center  text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity';
+
 	const outputDiv = () => 'flex py-2 md:py-5';
+
 	const secondConCss = () => 'max-sm:text-xs text-base';
+
 	const secondOutputCss = () =>
 		' hover:underline hover:underline-offset-4 hover:decoration-black decoration-2';
 </script>
@@ -336,7 +340,7 @@
 					</div>
 				{:else}
 					<div class="flex justify-center items-center bg-white text-center">
-						<div class="flex flex-col font-patrick">
+						<div class="flex flex-col font-patrick border-2 border-black">
 							<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
 								<SearchInput bind:searchItem />
 
