@@ -56,31 +56,31 @@
 	
 
 	$: hideLayout = ['/', '/ForgotPassword', '/CreateAccount'].includes($page.url.pathname);
-	const headerSelection = () => 'font-bold max-sm:text-xs  md:text-lg font-sans text-center';
-	const headerList = () => 'block text-start max-sm:text-xs md:font-bold hover:font-extrabold hover:bg-orange hover:text-white rounded p-2'
+	const headerSelection = () => ' font-medium md:font-bold max-sm:text-xs  md:text-lg font-sans text-center';
+	const headerList = () => 'block md:text-start max-sm:text-small text-nowrap md:font-bold md:hover:font-extrabold hover:bg-orange hover:text-white rounded p-2'
 </script>
 
 {#if !hideLayout}
 	<main class=" border-b-gray-600 border-solid">
 		<nav
-			class="grid grid-cols-2 h-20 w-full md:px-10 fixed top-0 left-0 right-0 z-50 bg-white shadow border"
+			class="flex h-20 w-full md:px-10 fixed top-0 left-0 right-0 z-50 bg-white shadow border"
 		>
-			<div class="justify-self-start place-self-center">
+			<div class="max-sm:basis-40 md:grow justify-self-start place-self-center">
 				<h1
-					class="font-black max-sm:text-xs md:text-3xl italic font-sans p-2 underline decoration-solid decoration-2"
+					class="md:font-black font-bold max-sm:text-xs md:text-3xl italic font-sans p-2 underline md:decoration-solid md:decoration-2"
 				>
 					Mage Hardware
 				</h1>
 			</div>
 
 			<div class="place-content-center justify-start md:justify-self-end">
-				<div class="flex  gap-3 md:gap-12 text-center">
+				<div class="flex max-sm:space-x-3 > * + *  md:gap-12 text-center">
 					<!-- Products Dropdown -->
 					<div class="relative group flex justify-center hover:underline">
 						<a href="/product" class={headerSelection()}>Products</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 w-22 md:w-48 p-2 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
+							class=" opacity-0 invisible absolute top-10 z-10 w-22 md:w-48 p-2 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
 						>
 							<a
 								href="/product/productKg"
@@ -110,7 +110,7 @@
 						<a href="/inventory" class={headerSelection()}>Inventory</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-28 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-22 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
 						>
 							<a
 								href="/inventory/materialStock"
@@ -145,7 +145,7 @@
 						<a href="/sales" class={headerSelection()}>Sales</a>
 
 						<div
-							class="opacity-0 invisible absolute top-10 z-10 p-2 w-40 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
+							class="opacity-0 invisible absolute top-10 z-10 p-2 w-22 md:w-48 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
 						>
 							<a
 								href="/sales/summary"
@@ -169,7 +169,7 @@
 					<div class="relative group flex justify-center hover:underline-">
 						<a href="/user" class={headerSelection()}>User</a>
 						<div
-							class="opacity-0 invisible right-1 absolute top-10 z-10 p-2 w-20 md:w-28 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
+							class="opacity-0 invisible  right-1 absolute top-10 z-10 p-2 w-20 md:w-28 text-black bg-white rounded group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-black"
 						>
 							<button
 								on:click={handleLogout}

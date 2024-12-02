@@ -92,7 +92,7 @@
 <main
 	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen"
 >
-	<div class="max-sm:w-screen max-sm:px-1 w-1/3">
+	<div class="max-sm:w-full  max-sm:px-1 w-1/3">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
 				<Loader />
@@ -103,45 +103,45 @@
 			>
 				<div class="bg-bgGrey p-2 rounded-t-lg">
 					<h1 class="text-lg text-white font-black">Mage Hardware inc.</h1>
-					<h2 class="text-base text-white font-black">Income Statement</h2>
-					<h2 class="text-white">
+					<h2 class="max-sm:text-sm text-base text-white font-black">Income Statement</h2>
+					<h2 class="max-sm:text-xs text-white">
 						For the year ended:
-						<select bind:value={selectedYear} class="text-white font-black bg-bgGrey text-base px-2">
+						<select bind:value={selectedYear} class="max-sm:text-xs text-white font-black bg-bgGrey text-base px-2">
 							{#each years as year}
-								<option value={year}>{year}</option>
+								<option value={year} class="max-sm:text-xs">{year}</option>``
 							{/each}
 						</select>
 					</h2>
 				</div>
-				<div class="bg-white grid grid-cols-2 text-1xl">
-					<div>
-						<h2 class="text-lg p-7 font-black max-sm:h-24">Revenue (Net Sales) :</h2>
-						<h2 class="text-lg p-7 font-black max-sm:h-24">Cost of Good Sold (COGS) :</h2>
-						<h2 class="text-lg p-7 font-black max-sm:h-24">Gross Profit :</h2>
-						<h2 class="text-lg p-7 font-black max-sm:h-24">Operating Expenses (Manpower Wage) :</h2>
-						<h2 class="text-lg p-7 font-black max-sm:h-24">Income Tax Expense :</h2>
-						<h2 class="text-lg p-7 font-black max-sm:h-24">Net Income :</h2>
+				<div class="bg-white grid grid-cols-2  text-1xl">
+					<div class='grid grid-rows-6'>
+						<h2 class="max-sm:text-sm text-lg py-5 font-black">Revenue (Net Sales) :</h2>
+						<h2 class="max-sm:text-sm text-lg py-5 font-black text-nowrap">Cost of Good Sold (COGS) :</h2>
+						<h2 class="max-sm:text-sm text-lg py-5 font-black">Gross Profit :</h2>
+						<h2 class="max-sm:text-sm text-lg py-5 font-black">Operating Expenses (Manpower Wage) :</h2>
+						<h2 class="max-sm:text-sm text-lg py-5 font-black">Income Tax Expense :</h2>
+						<h2 class="max-sm:text-sm text-lg py-5 font-black">Net Income :</h2>
 					</div>
-					<div>
-						<h4 class="text-lg p-7 font-black max-sm:h-24">{saleSummaryValue.toLocaleString()}</h4>
+					<div class='grid grid-rows-6'>
+						<h4 class="max-sm:text-sm text-lg py-5 font-black">{saleSummaryValue.toLocaleString()}</h4>
 
 						<h4
-							class="text-lg p-7 font-black max-sm:h-24 underline decoration-solid decoration-2 underline-offset-8"
+							class="max-sm:text-sm text-lg py-5 font-black underline  decoration-solid decoration-2 underline-offset-8"
 						>
 							{purchaseSummaryValue.toLocaleString()}
 						</h4>
 						
 						<h4
-							class={`text-lg p-7 font-black max-sm:h-24 ${saleSummaryValue - purchaseSummaryValue < 0 ? 'text-red-500' : 'text-black'}`}
+							class={`max-sm:text-sm text-lg py-5 font-black ${saleSummaryValue - purchaseSummaryValue < 0 ? 'text-red-500' : 'text-black'}`}
 						>
 							{(saleSummaryValue - purchaseSummaryValue).toLocaleString()}
 						</h4>
-						<h4 class="text-lg p-7 font-black max-sm:h-24">{manPowerWageValue.toLocaleString()}</h4>
-						<h4 class="text-lg p-7 font-black max-sm:h-24">
+						<h4 class="max-sm:text-sm text-lg py-5 font-black">{manPowerWageValue.toLocaleString()}</h4>
+						<h4 class="max-sm:text-sm text-lg py-5 font-black">
 							{(manPowerWageValue / 12).toLocaleString()}
 						</h4>
 						<h4
-							class={`text-lg p-7 font-black max-sm:h-24 underline decoration-double decoration-2 underline-offset-8 ${
+							class={`max-sm:text-sm text-lg py-5 font-black underline decoration-double decoration-2 underline-offset-8 ${
 								saleSummaryValue - (purchaseSummaryValue + manPowerWageValue + manPowerWageValue / 12) < 0 ? 'text-red-500' : 'text-black'
 							}`}
 						>

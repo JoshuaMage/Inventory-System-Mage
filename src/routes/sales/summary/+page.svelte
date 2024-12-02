@@ -50,27 +50,27 @@
 	);
 
 	const PurchaseListCss = () =>
-		'max-sm:text-xs border border-gray-300 border-none m-0 py-2 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
+		'max-sm:text-small border border-gray-300 border-none m-0 py-2 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300 border-none m-0 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
-	const listCss = () => 'max-sm:bg-bgGrey';
+		'max-sm:text-small max-sm:py-1 border border-gray-300 border-none m-0 md:py-4 2xl:place-content-center lg:w-24 xl:w-28 2xl:w-32 text-center';
+	const listCss = () => ' max-sm:bg-bgGrey';
 </script>
 
 <main
 	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen"
 >
-	<div class="flex flex-col max-sm:w-screen">
+	<div class="flex flex-col max-sm:w-full max-sm:px-1 ">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
 				<Loader />
 			</div>
 		{:else}
-			<div iv class=" shadow md:block bg-white mt-24 text-center">
+			<div iv class=" shadow md:block bg-white text-center border border-black">
 				<div class="flex flex-col font-patrick rounded-lg">
-					<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
+					<div class="md:bg-bgGrey  rounded-t-lg">
 						<SearchInput bind:searchItem />
 						<ul
-							class="max-sm:text-xs grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white"
+							class="max-sm:text-xs grid max-sm:grid-cols-4 md:grid-cols-3 max-sm:gap-px md:flex font-extrabold text-white"
 						>
 							<li class={listCss()}><button class={PurchaseListCss()}>Item</button></li>
 							<li class={listCss()}><button class={PurchaseListCss()}>Material Name</button></li>
@@ -84,7 +84,7 @@
 					</div>
 					{#each displayedItems as purchase}
 						<ul
-							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-2 md:flex font-extrabold text-black justify-center"
+							class="max-sm:text-xs max-sm:mt-2 border grid max-sm:grid-cols-4 md:grid-cols-3 md:flex font-extrabold text-black justify-center"
 						>
 							<li><h4 class={h4Css()}>{purchase.itemNumber}</h4></li>
 							<li><h4 class={h4Css()}>{purchase.materialName}</h4></li>

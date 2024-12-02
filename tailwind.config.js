@@ -26,6 +26,10 @@ export default {
 		height: {
 		  tableHeight: '90vh'
 		},
+		fontSize: {
+			'small': '10px',
+		
+		},
 		fontStyle: {
 		  normal: 'normal'
 		},

@@ -4,11 +4,11 @@
     export let onPageChange;
 </script>
 
-<div class="flex   justify-center mt-4">
+<div class="max-sm:text-small flex justify-center mt-4">
     {#if currentPage > 1}
       <button
       class="bg-orange text-white hover:shadow-lg hover:shadow-black 
-      px-4 py-1 hover:px-6 hover:py-2 rounded-md"
+      max-sm:px-2 md:px-4 py-1 md:hover:px-6 md:hover:py-2 rounded-md"
         on:click={() => onPageChange(currentPage - 1)}
       >
         Previous
@@ -28,7 +28,7 @@
     {#if currentPage < totalPages}
       <button
         class="bg-orange text-white hover:shadow-lg hover:shadow-black 
-          px-4 py-1 hover:px-6 hover:py-2 rounded-md"
+          max-sm:px-3 md:px-4 py-1 hover:px-6 hover:py-2 rounded-md"
         on:click={() => onPageChange(currentPage + 1)}
       >
         Next

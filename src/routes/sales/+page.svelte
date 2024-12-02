@@ -3,8 +3,10 @@
 	import { MANPOWER as manpowerList } from '$lib/manPowerList';
 	import { onDestroy } from 'svelte';
 	import { db } from '$lib/firebaseConfig';
-	import { ref, set} from 'firebase/database';	
+	import { ref, set } from 'firebase/database';
+
 	import Pagination from '../inventory/materialStock/Pagination.svelte';
+	import Loader from '../loader.svelte';
 
 	let MANPOWER = [];
 	let displayedInventory = [];
@@ -68,24 +70,26 @@
 		}
 	}
 	const PurchaseListCss = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  sm:w-14 md:w-16 lg:w-48 xl:w-52 2xl:w-56 text-center';
+		'max-sm:text-small border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center   text-center';
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center sm:w-14 md:w-16 lg:w-48 xl:w-52 2xl:w-56  text-center';
+		'max-sm:text-small max-sm:py-1 border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  text-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex justify-center w-screen h-screen bg-bgDarkGrey font-patrick text-black">
-	<div class="flex flex-col max-sm:w-screen">
+<main
+	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-full"
+>
+	<div class="flex flex-col max-sm:w-full">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
-				<p class="bg-white text-xl font-black">Loading please wait....</p>
+				<Loader />
 			</div>
 		{:else}
-			<div class=" shadow md:block bg-white mt-24 text-center">
-				<div class="flex flex-col font-patrick rounded-lg">
-					<div class="md:bg-bgGrey max-sm:px-1">
-						<div class=" flex justify-center">
-							<div class="relative">
+			<div class="shadow md:block bg-white text-center max-sm:px-1 max-sm:mt-24">
+				<div class="flex flex-col font-patrick rounded-lg border border-black">
+					<div class="md:bg-bgGrey">
+						<div class="flex justify-center">
+							<div class="relative max-sm:mt-4">
 								<input
 									type="text"
 									class="max-sm:mb-2 md:mt-4 max-sm:text-xs max-sm:text-center px-8 py-2 md:px-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
@@ -115,33 +119,37 @@
 								</svg>
 							</div>
 						</div>
+
 						<ul
-							class="max-sm:text-xs grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white"
+							class="max-sm:text-small grid max-sm:grid-cols-3 md:grid-cols-7 max-sm:gap-px md:font-extrabold text-white"
 						>
 							<li class={listCss()}><button class={PurchaseListCss}>ID</button></li>
 							<li class={listCss()}><button class={PurchaseListCss}>Full Name</button></li>
 							<li class={listCss()}><button class={PurchaseListCss}>Email</button></li>
 							<li class={listCss()}><button class={PurchaseListCss}>Contact Number</button></li>
-							<li class={listCss()}><button class={PurchaseListCss}>Address</button></li>
+							<li class={`${listCss()} md:col-span-2`}>
+								<button class={PurchaseListCss}>Address</button>
+							</li>
 							<li class={listCss()}><button class={PurchaseListCss}>Salary</button></li>
 						</ul>
 					</div>
 
 					{#each displayedItems as person}
 						<ul
-							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-2 md:flex font-extrabold text-black justify-center"
+							class="max-sm:text-xs max-sm:mt-2 border grid max-sm:grid-cols-3 md:grid-cols-7 max-sm:gap-2 md:font-extrabold text-black justify-center"
 						>
 							<li><h4 class={h4Css()}>{person.id}</h4></li>
 							<li><h4 class={h4Css()}>{person.fullName}</h4></li>
 							<li><h4 class={h4Css()}>{person.email}</h4></li>
 							<li><h4 class={h4Css()}>{person.phoneNumber}</h4></li>
-							<li><h4 class={h4Css()}>{person.address}</h4></li>
+							<li class="md:col-span-2"><h4 class={h4Css()}>{person.address}</h4></li>
+
 							<li><h4 class={h4Css()}>₱ {person.salary}</h4></li>
 						</ul>
 					{/each}
 				</div>
 			</div>
+			<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
 		{/if}
-		<Pagination {currentPage} {totalPages} onPageChange={goToPage} />
 	</div>
 </main>

@@ -48,23 +48,23 @@
 	);
 
 	const PurchaseListCss = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  w-48 text-center';
+		'max-sm:text-small border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  md:w-48 text-center';
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300   font-semibold  border-none m-0 md:py-4 2xl:place-content-center  w-48 text-center';
+		'max-sm:text-small border border-gray-300   md:font-semibold  border-none m-0 md:py-4 2xl:place-content-center  md:w-48 text-center';
 	const listCss = () => 'max-sm:bg-bgGrey';
 </script>
 
-<main class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen">
-	<div class="flex flex-col max-sm:w-screen">
+<main class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-full">
+	<div class="flex flex-col max-sm:w-full max-sm:px-1">
 		{#if loading}
 			<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
 				<Loader />
 			</div>
 		{:else}
-			<div iv class=" shadow md:block bg-white mt-24 text-center">
-				<div class="flex flex-col font-patrick rounded-lg">
-					<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
-						<ul class="grid grid-cols-3 max-sm:gap-1 md:flex font-extrabold text-white h-24 justify-center items-center ">
+			<div iv class=" shadow md:block bg-white mt-24 text-center rounded-t-lg border border-black ">
+				<div class="flex flex-col font-patrick rounded-t-lg">
+					<div class="md:bg-bgGrey rounded-t-lg ">
+						<ul class="grid grid-cols-3 max-sm:gap-px  md:flex font-extrabold  text-white md:h-24 justify-center items-center ">
 							<li class={listCss()}><button class={PurchaseListCss()}>Supplier</button></li>
 							<li class={listCss()}><button class={PurchaseListCss()}>Phone Number</button></li>
 							<li class={listCss()}><button class={PurchaseListCss()}>Telephone Number</button></li>
@@ -77,7 +77,7 @@
 
 					{#each displayedItems as supplier}
 						<ul
-							class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 max-sm:gap-1 md:flex md:font-medium text-black justify-center"
+							class="max-sm:text-xs max-sm:mt-1 border grid grid-cols-3 max-sm:py-2 md:flex md:font-medium text-black justify-center"
 						>
 							<li class={h4Css()}><h4>{supplier.vendor}</h4></li>
 							<li class={h4Css()}><h4>{supplier.vendorPhoneNumber}</h4></li>

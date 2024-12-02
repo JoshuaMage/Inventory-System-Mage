@@ -31,15 +31,17 @@
 	let submittedItems;
 	let submissionMessage = '';
 	let stockOutQty = [];
-	let svg = `<svg width="36px" height="36px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM15.36 14.3C15.65 14.59 15.65 15.07 15.36 15.36C15.21 15.51 15.02 15.58 14.83 15.58C14.64 15.58 14.45 15.51 14.3 15.36L12 13.06L9.7 15.36C9.55 15.51 9.36 15.58 9.17 15.58C8.98 15.58 8.79 15.51 8.64 15.36C8.35 15.07 8.35 14.59 8.64 14.3L10.94 12L8.64 9.7C8.35 9.41 8.35 8.93 8.64 8.64C8.93 8.35 9.41 8.35 9.7 8.64L12 10.94L14.3 8.64C14.59 8.35 15.07 8.35 15.36 8.64C15.65 8.93 15.65 9.41 15.36 9.7L13.06 12L15.36 14.3Z" fill="#FFFFFF"></path> </g></svg>`;
+	let svg = `<svg  width="36px"  :height="36px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM15.36 14.3C15.65 14.59 15.65 15.07 15.36 15.36C15.21 15.51 15.02 15.58 14.83 15.58C14.64 15.58 14.45 15.51 14.3 15.36L12 13.06L9.7 15.36C9.55 15.51 9.36 15.58 9.17 15.58C8.98 15.58 8.79 15.51 8.64 15.36C8.35 15.07 8.35 14.59 8.64 14.3L10.94 12L8.64 9.7C8.35 9.41 8.35 8.93 8.64 8.64C8.93 8.35 9.41 8.35 9.7 8.64L12 10.94L14.3 8.64C14.59 8.35 15.07 8.35 15.36 8.64C15.65 8.93 15.65 9.41 15.36 9.7L13.06 12L15.36 14.3Z" fill="#FFFFFF"></path> </g></svg>`;
 	let showModal = false;
 	let isConfirmed = false;
+	let incomeStatementData = {};
 
 	onMount(() => {
 		setTimeout(() => {
 			const purchaseRef = ref(db, 'outputs');
 			const stockOutRef = ref(db, 'submissions');
 			const incomeStatementRef = ref(db, 'incomeStatementData');
+
 			const storedItems = JSON.parse(localStorage.getItem('submittedItems')) || [];
 			submittedItems = storedItems;
 
@@ -103,19 +105,72 @@
 				}
 			});
 			onValue(purchaseRef, (snapshot) => {
-                const currentPurchaseIds = new Set();
-                if (snapshot.exists()) {
-                    snapshot.forEach((childSnapshot) => {
-                        currentPurchaseIds.add(childSnapshot.key);
-                    });
-                }
+				const currentPurchaseIds = new Set();
+				if (snapshot.exists()) {
+					snapshot.forEach((childSnapshot) => {
+						currentPurchaseIds.add(childSnapshot.key);
+					});
+				}
 
-                // Remove submissions for deleted purchases
-                submissions = submissions.filter(submission => currentPurchaseIds.has(submission.purchaseId));
-                localStorage.setItem('submissions', JSON.stringify(submissions));
-            });
+				// Remove submissions for deleted purchases
+				submissions = submissions.filter((submission) =>
+					currentPurchaseIds.has(submission.purchaseId)
+				);
+				localStorage.setItem('submissions', JSON.stringify(submissions));
+			});
+			onValue(incomeStatementRef, (snapshot) => {
+				if (snapshot.exists()) {
+					incomeStatementData = snapshot.val();
+				}
+			});
+
+			updateIncomeStatementData();
 		}, 2000);
 	});
+
+	function updateIncomeStatementData() {
+		const displayedPurchaseIds = new Set(displayedItems.map((item) => item.purchaseId));
+
+		// Remove items not in displayedItems
+		for (const purchaseId in incomeStatementData) {
+			if (!displayedPurchaseIds.has(purchaseId)) {
+				remove(ref(db, `incomeStatementData/${purchaseId}`)).catch((error) =>
+					console.error('Error removing data:', error)
+				);
+			}
+		}
+		// Add or update displayed items in Firebase
+		displayedItems.forEach((purchase) => {
+			const incomeStatementItem = {
+				purchaseId: purchase.purchaseId,
+				materialName: purchase.materialName,
+				unit: purchase.unit,
+				datePurchase: purchase.datePurchase,
+				orderQty: purchase.orderQty,
+				unitPrice: purchase.uniPrice,
+				stockOut: getQuantityForPurchase(purchase),
+				currentStock: purchase.orderQty - getQuantityForPurchase(purchase),
+				saleDate: getLatestSubmissionDate(purchase)
+			};
+
+			set(ref(db, `incomeStatementData/${purchase.purchaseId}`), incomeStatementItem).catch(
+				(error) => console.error('Error updating incomeStatementData:', error)
+			);
+		});
+	}
+
+	function removeItem(purchaseId) {
+		// Remove the item from displayedItems
+		displayedItems = displayedItems.filter((item) => item.purchaseId !== purchaseId);
+
+		// Remove related submissions
+		submissions = submissions.filter((submission) => submission.purchaseId !== purchaseId);
+
+		// Update Firebase and local storage
+		const submissionsRef = ref(db, 'submissions');
+		set(submissionsRef, submissions).catch((error) => console.error(error));
+		localStorage.setItem('submissions', JSON.stringify(submissions));
+	}
 
 	function toggleForm(index) {
 		if (showForm === index) {
@@ -215,7 +270,6 @@
 	function handleDelete() {
 		showModal = true;
 	}
-
 	function confirmDelete(filteredIndex) {
 		const submissionToDelete = submissions.find((sub, originalIndex) => {
 			if (sub.item === selectedItem.item) {
@@ -321,45 +375,44 @@
 	}
 
 	const PurchaseListCss = () =>
-		'text-lg max-sm:text-xs border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  lg:w-32 xl:w-28 2xl:w-32 text-center';
+		' max-sm:text-small border border-gray-300  border-none m-0 py-2 md:py-4 2xl:place-content-center  text-center';
 
-	const listCss = () => 'max-sm:bg-bgGrey';
+	const listCss = () => 'max-sm:py-2 max-sm:bg-bgGrey';
 
 	const h4Css = () =>
-		'max-sm:text-xs border border-gray-300  border-none m-0 md:py-4 2xl:place-content-center  lg:w-32 xl:w-28 2xl:w-32 text-center';
-
+	'max-sm:text-small text-center border border-gray-300 border-none m-0 md:py-4 2xl:place-content-center lg:w-32 xl:w-28 2xl:w-32 text-center flex justify-center items-center';
 	const labelCss = () =>
-		'text-sm md:text-lg font-bold font-patrick text-start hover:underline hover:underline-offset-4 hover:decoration-solid hover:decoration-2 hover:decoration-nextPrevButton md:pr-2';
+		'max-sm:text-small md:text-lg font-bold font-patrick text-start hover:underline hover:underline-offset-4 hover:decoration-solid hover:decoration-2 hover:decoration-nextPrevButton md:pr-2';
 
 	const outputCss = () =>
-		' h-6 md:h-8  flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center  text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity';
+		'max-sm:text-small h-6 md:h-8  flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center  text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity';
 
-	const outputDiv = () => 'flex py-2 md:py-5';
+	const outputDiv = () => 'max-sm:text-small grid grid-cols-3 md:flex py-2 md:py-5';
 
-	const secondConCss = () => 'max-sm:text-xs text-base';
+	const secondConCss = () => 'max-sm:text-small max-sm:py-1 text-base';
 
 	const secondOutputCss = () =>
-		' hover:underline hover:underline-offset-4 hover:decoration-black decoration-2';
+		' hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 w-100';
 </script>
 
 <main
-	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-screen"
+	class="flex flex-col justify-center items-center h-screen bg-bgDarkGrey font-patrick text-black w-full overflow-hidden"
 >
 	{#if firstDivVisible}
-		<div class="flex justify-center">
+		<div class="md:flex md:justify-center max-sm:w-full max-sm:px-1">
 			<div class="flex flex-col">
 				{#if loading}
-					<div class="flex justify-center items-center h-screen bg-bgDarkGrey">
+					<div class="flex justify-center items-center w-full h-screen bg-bgDarkGrey">
 						<Loader />
 					</div>
 				{:else}
-					<div class="flex justify-center items-center bg-white text-center">
-						<div class="flex flex-col font-patrick border-2 border-black">
-							<div class="md:bg-bgGrey max-sm:px-1 rounded-t-lg">
+					<div class="flex justify-center items-center bg-white text-center ">
+						<div class="flex flex-col font-patrick border-2 border-black w-full">
+							<div class="md:bg-bgGrey rounded-t-lg w-full">
 								<SearchInput bind:searchItem />
 
 								<ul
-									class="mt-4 max-sm:text-xs grid grid-cols-3 md:grid-cols-12 md:gap-0 font-semibold text-white"
+									class="mt-4 max-sm:text-xs max-sm:gap-px grid grid-cols-3 md:grid-cols-12 md:gap-0 font-semibold text-white w-full "
 								>
 									<li class={listCss()}><button class={PurchaseListCss()}>Item</button></li>
 									<li class={listCss()}>
@@ -381,7 +434,7 @@
 							</div>
 							{#each displayedItems as purchase, index}
 								<ul
-									class="max-sm:text-xs max-sm:mt-2 border grid grid-cols-3 gap-1 md:grid-cols-12 md:gap-0 font-semibold text-black"
+									class="max-sm:text-xs max-sm:mt-2 max-sm:p border grid grid-cols-3 gap-1 md:grid-cols-12 md:gap-0 md:font-semibold text-black"
 								>
 									<li><h4 class={h4Css()}>{(currentPage - 1) * itemsPerPage + index + 1}</h4></li>
 									<li><h4 class={h4Css()}>{purchase.datePurchase}</h4></li>
@@ -412,13 +465,13 @@
 										<h4 class={h4Css()}>{getQuantityForPurchase(purchase)}</h4>
 									</li>
 
-									<li>
-										<h4 class={h4Css()}>{getLatestSubmissionDate(purchase)}</h4>
+									<li class={h4Css()}>
+										<h4 >{getLatestSubmissionDate(purchase)}</h4>
 									</li>
 
-									<li class="flex justify-center items-center">
+									<li class="flex justify-center items-center max-sm:py-2">
 										<div
-											class="bg-orange text-white hover:shadow-lg hover:shadow-black py-1 px-3 rounded-full hover:py-2 hover:p-5 hover:border hover:border-black"
+											class=" max-sm:text-small bg-orange text-white hover:shadow-lg hover:shadow-black py-1 px-2 md:px-3 rounded-full hover:py-2 hover:p-5 hover:border hover:border-black"
 										>
 											<button on:click={() => toggleForm(index)}>Select</button>
 										</div>
@@ -441,31 +494,35 @@
 	{/if}
 
 	{#if showForm !== null}
-		<div class="flex justify-center items-center relative top-16 h-screen p-0 m-0 bg-bgDarkGrey">
+		<div
+			class="flex justify-center items-center md:relative md:top16  h-screen p-0 m-0 bg-bgDarkGrey "
+		>
 			<div class="flex justify-center w-full md:w-auto">
-				<div class="flex flex-col gap-10 w-full md:w-auto">
-					<form action="" class="max-sm:relative max-sm:left-14" on:submit={handleSubmit}>
+				<div class="md:flex md:flex-col gap-10  md:w-auto">
+					<form action="" class="max-sm:relative max-sm:px-2" on:submit={handleSubmit}>
 						<div class=" flex flex-col bg-white border border-black rounded-xl">
 							<div
-								class="flex text-white text-center bg-bgGrey h-14 md:h-24 content-center font-bold text-lg md:text-3xl rounded-xl"
+								class="flex text-white text-center bg-bgGrey h-14 md:h-24 content-center font-bold text-lg md:text-3xl md:rounded-xl"
 							>
-								<h1 class="flex grow justify-center items-center">Mage Stock-Out History</h1>
+								<h1 class="flex grow justify-center items-center max-sm:text-small">
+									Mage Stock-Out History
+								</h1>
 
 								<button
 									type="button"
 									on:click={handleClick}
-									class=" text-white bg-transparent rounded-md col-span-1 flex justify-center items-center mr-10"
+									class=" max-sm:relative max-sm:right-5 text-white bg-transparent rounded-md md:col-span-1 flex justify-center items-center md:mr-10"
 								>
 									{@html svg}
 								</button>
 							</div>
 
 							<div class="overflow-hidden">
-								<div class=" md:grid md:grid-cols-2 px-5 py-2 md:py-10 md:px-24">
+								<div class="= grid grid-cols-2 p-1 md:py-10 md:px-24">
 									<div class={outputDiv()}>
 										<h2 class={labelCss()}>Item:</h2>
 										<h3
-											class="max-sm:ml-3 translate-x-16 md:translate-x-40 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
+											class="max-sm:text-small max-sm:col-start-2 max-sm:col-end-6 max-sm:w-11/12 md:translate-x-40 h-6 md:h-8 md:flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 										>
 											{selectedItem.item}
 										</h3>
@@ -474,7 +531,7 @@
 									<div class={outputDiv()}>
 										<h2 class={labelCss()}>Material Name:</h2>
 										<h3
-											class="translate-x-16 max-sm:ml-1 md:translate-x-1 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
+											class="max-sm:text-small max-sm:ml-1 max-sm:col-start-2 max-sm:col-end-6 max-sm:w-11/12 md:translate-x-1 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 										>
 											{selectedItem.materialName}
 										</h3>
@@ -483,7 +540,7 @@
 									<div class={outputDiv()}>
 										<h2 class={labelCss()}>Material Description:</h2>
 										<h3
-											class="translate-x-16 max-sm:ml-1 md:translate-x-1 h-6 md:h-auto flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
+											class=" max-sm:text-small max-sm:mr-2 max-sm:col-start-2 max-sm:col-end-6 max-sm:w-11/12 max-sm:tracking-tighter md:translate-x-1  h-auto flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 										>
 											{selectedItem.materialDescription}
 										</h3>
@@ -491,13 +548,17 @@
 
 									<div class={outputDiv()}>
 										<h2 class={labelCss()}>Material Code:</h2>
-										<h3 class={outputCss()}>{selectedItem.materialCode}</h3>
+										<h3
+											class="max-sm:text-small max-sm:ml-1 max-sm:col-start-2 max-sm:col-end-6 max-sm:w-11/12 md:translate-x-1 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
+										>
+											{selectedItem.materialCode}
+										</h3>
 									</div>
 
 									<div class={outputDiv()}>
 										<h2 class={labelCss()}>Unit:</h2>
 										<h3
-											class="translate-x-16 max-sm:ml-1 md:translate-x-40 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
+											class="max-sm:text-small max-sm:ml-1 max-sm:col-start-2 max-sm:col-end-6 max-sm:w-11/12 md:translate-x-40 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 										>
 											{selectedItem.unit}
 										</h3>
@@ -506,28 +567,30 @@
 									<div class={outputDiv()}>
 										<h2 class={labelCss()}>Qty:</h2>
 										<input
-											class="max-sm:ml-3 translate-x-16 md:translate-x-24 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
-											type="number"
+										class="max-sm:text-small max-sm:col-start-2 max-sm:col-end-6 max-sm:w-11/12 md:translate-x-24 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 md:px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-8 hover:shadow-md hover:shadow-black opacity"
+										type="number"
 											id="qty"
 											bind:value={qty}
 											maxlength="5"
 											required
 										/>
 									</div>
+
 									<div class={outputDiv()}>
 										<h2 class={labelCss()}>Date:</h2>
 										<input
-											class="max-sm:ml-1 translate-x-16 md:translate-x-40 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
+											class="max-sm:ml-1 max-sm:text-small max-sm:col-start-2 max-sm:col-end-6 max-sm:w-11/12 md:translate-x-40 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 											type="date"
 											bind:value={date}
 											id="date"
 											required
 										/>
 									</div>
+
 									<div class={outputDiv()}>
 										<h2 class={labelCss()}>Remarks:</h2>
 										<input
-											class=" translate-x-11 md:translate-x-14 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
+											class="max-sm:text-small max-sm:col-start-2 max-sm:col-end-6 max-sm:w-11/12 md:translate-x-14 h-6 md:h-8 flex justify-center w-6/12 md:w-7/12 px-3 font-normal md:font-medium text-center text-xs md:text-base border border-black rounded-lg pl-2 hover:shadow-md hover:shadow-black opacity"
 											type="text"
 											bind:value={remarks}
 											id="remarks"
@@ -537,7 +600,7 @@
 									<div class="col-span-2 justify-self-end mt-4">
 										<button
 											type="submit"
-											class="h-7 max-sm:w-20 md:h-9 md:px-10 hover:px-12 md:py-1 text-white bg-bgGrey border-2 border-black rounded-lg hover:font-extrabold hover:bg-white hover:text-black cursor-pointer hover:shadow-md hover:shadow-black"
+											class=" max-sm:text-small h-7 max-sm:w-20 md:h-9 md:px-10 hover:px-12 md:py-1 text-white bg-bgGrey border-2 border-black rounded-lg hover:font-extrabold hover:bg-white hover:text-black cursor-pointer hover:shadow-md hover:shadow-black"
 										>
 											Submit
 										</button>
@@ -559,55 +622,49 @@
 					{/if}
 
 					<div
-						class="flex flex-col text-center border md:border-black rounded-lg max-sm:w-screen max-sm:p-1 max-sm:m-0"
+						class="max-sm:mt-10 flex flex-col text-center border md:border-black rounded-lg max-sm:w-full"
 					>
-						<div class="rounded-lg bg-bgGrey">
+						<div class="md:rounded-lg bg-bgGrey">
 							<ul
-								class=" grid grid-cols-3 gap-2 max-sm:py-3 md:grid-cols-11 font-thin md:font-bold md:h-14 content-center text-white"
+								class=" grid grid-cols-3 md:gap-2  md:grid-cols-11 font-thin md:font-bold md:h-14 content-center text-white"
 							>
 								<li class={secondConCss()}>Item</li>
 								<li class={secondConCss()}>Material Name</li>
-								<li class="max-sm:text-xs md:grid md:col-span-3">Material Description</li>
+								<li class="md:grid md:col-span-3">Material Description</li>
 								<li class={secondConCss()}>Material Code</li>
 								<li class={secondConCss()}>Unit</li>
 								<li class={secondConCss()}>Quantity</li>
 								<li class={secondConCss()}>Date Stock-out</li>
-
 								<li class={secondConCss()}>Delete</li>
 								<li class={secondConCss()}>Remarks</li>
 							</ul>
 						</div>
-						<div class="bg-transparent py-1 md:py-2 font-patrick">
+
+						<div class="bg-transparent md:py-2 font-patrick">
 							{#each submissions.filter((sub) => sub.item === selectedItem.item) as submission, index}
-								<ul
-									class="max-sm:text-sm gap-2 max-sm:border max-sm:border-black grid grid-cols-3 md:grid-cols-11 justify-items-center text-center md:gap-2 mt-3"
-								>
-									<li class={secondOutputCss()}>
+								<ul class="max-sm:text-small max-sm:py-1 max-sm:border max-sm:border-black grid grid-cols-3 max-sm:grid-rows-3 md:grid-cols-11 justify-items-center max-sm:content-center text-center md:gap-2 md:mt-3">
+									<li class={`${secondOutputCss()}  flex items-center justify-center`}>
 										<h4>{submission.item}</h4>
 									</li>
-
-									<li class={secondOutputCss()}>
+									<li class={`${secondOutputCss()} flex items-center justify-center`}>
 										<h4>{submission.materialName}</h4>
 									</li>
-
-									<li
-										class="flex md:grid md:col-span-3 hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-white"
-									>
-										<h4 class="whitespace-nowrap">{submission.materialDescription}</h4>
+									<li class="flex md:grid md:col-span-3 hover:underline hover:underline-offset-4 hover:decoration-black decoration-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-white items-center justify-center">
+										<h4 class="whitespace-wrap">{submission.materialDescription}</h4>
 									</li>
-									<li class={secondOutputCss()}>
+									<li class={`${secondOutputCss()} flex items-center justify-center`}>
 										<h4>{submission.materialCode}</h4>
 									</li>
-									<li class={secondOutputCss()}>
+									<li class={`${secondOutputCss()} flex items-center justify-center`}>
 										<h4>{submission.unit}</h4>
 									</li>
-									<li class={secondOutputCss()}>
+									<li class={`${secondOutputCss()} flex items-center justify-center`}>
 										<h4>{submission.qty}</h4>
 									</li>
-									<li class={secondOutputCss()}>
+									<li class={`${secondOutputCss()} flex items-center justify-center`}>
 										<h4>{submission.date}</h4>
 									</li>
-									<li class="relative left-2 bottom-2">
+									<li class="relative left-2  flex items-center justify-center">
 										<button
 											on:click={handleDelete}
 											class="py-1 px-4 hover:px-6 text-white bg-bgGrey border-2 border-black rounded-lg hover:font-extrabold hover:bg-white hover:text-black cursor-pointer hover:shadow-md hover:shadow-black"
@@ -615,12 +672,8 @@
 											Delete
 										</button>
 										{#if showModal}
-											<div
-												class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-											>
-												<div
-													class="bg-white p-6 rounded shadow-lg max-w-sm w-full border-2 border-black"
-												>
+											<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+												<div class="bg-white p-6 rounded shadow-lg max-w-sm border-2 border-black">
 													<h3 class="text-lg font-semibold">
 														Are you sure you want to delete this Materials?
 													</h3>
@@ -642,7 +695,9 @@
 											</div>
 										{/if}
 									</li>
-									<li class={secondOutputCss()}>{submission.remarks}</li>
+									<li class={`${secondOutputCss()} flex items-center justify-center`}>
+										{submission.remarks}
+									</li>
 								</ul>
 							{/each}
 						</div>
